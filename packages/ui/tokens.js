@@ -32,6 +32,14 @@ const colors = {
   warning: '#F2792A',
   // The violet star on the "Manual Project" pill, sampled off screenshot 09
   violet: '#6C4FD8',
+  // The deeper teal of the "Super Cleaner" chip and the completed "While you wait" circles
+  primaryDeep: '#2DA4A8',
+  // Review stars
+  star: '#F5BA5C',
+  // The purple "Background Checked" shield
+  badge: '#6510CC',
+  // The slate warning block under the cleaning-needs textarea
+  slate: '#6F7C8B',
 };
 
 const radius = {

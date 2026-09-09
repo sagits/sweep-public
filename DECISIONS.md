@@ -354,3 +354,73 @@ merges into a checkout that has a stale `router.d.ts` listing only the old route
 - **Typed routes: the dev server was run before trusting `pnpm typecheck`**, per the integration
   note above. `.expo/types/router.d.ts` lists `/project/new` and `/project/[id]`; navigation uses
   the `{ pathname: '/project/[id]', params: { id } }` form rather than a template literal.
+## 05 — Marketplace
+
+- **The type scale is anchored on shipped code, not on raw screenshot pixels.** The references
+  export at 768px for a 393pt device, so ink measured in them is ~1.95× a point. Rather than guess
+  the factor, `SectionHeader`'s known 19px was measured in screenshot `03` ("Notifications", 29px
+  of ink) — so **code px ≈ ink × 0.655**, which also reproduces the shipped 17px row name and 15px
+  row subtitle exactly. Everything on these screens is measured that way: screen titles 18px
+  ("Marketplace searches", "Beach apartment", "New Cleaner Search" all measure a 25–26px cap),
+  the empty-state headline 22px over 15px body and 26px stat figures, bid-card name 19px, price
+  19px over "per project" 17px, "While you wait" 19px over 15px. Payments' 30px header was scaled
+  off a different anchor and is left alone — it is ticket 07's screen.
+- **Four tokens appended, all sampled off the references:** `primaryDeep` (`#2DA4A8`, the deeper
+  teal of the "Super Cleaner" chip *and* the completed "While you wait" circles — measurably not
+  `primary`, `primaryDark` or `primaryInk`), `star` (`#F5BA5C`), `badge` (`#6510CC`, the purple
+  background-check shield) and `slate` (`#6F7C8B`, the warning block under the notes textarea).
+  The pale circle on an unfinished checklist row is `bg-primary/20`, which lands on the sampled
+  `#D9F8F1` without a fifth token. The handshake samples `#9B999D`, darker than ticket 07's
+  `illustration` `#CDCBCF`; the token was reused rather than adding a second illustration gray.
+- **Neither `Bid` nor `CleanerSearch` carries a status.** Accepting a bid is inert per the PRD and
+  nothing in the PoC closes a search, so both fields would have exactly one value forever — the
+  same reason ticket 07's `Payment` has no `status`. The Accepted-bids tab renders an empty line
+  and the Closed tab renders the handshake empty state, **which is how that empty state stays
+  reachable without disabling the seed** — one tap, and `marketplace.e2e.ts` asserts it there.
+- **Screenshot conflict — the Congrats overlay is a 🎉 above the word "Congrats!", not the PRD's
+  "Congrats! 🎉".** Screenshot `13` also shows it as a hard-edged teal rectangle at half the
+  screen's width and height over a ~30% black scrim, with the footer button holding its spinner
+  underneath. Built as shown.
+- **Screenshot conflict — the "Super Cleaner" chip and the "is also a Rental Handy Pro" line are
+  per cleaner, not per card.** The PRD lists both as parts of the bid card; `14`/`15` show Aurea
+  with neither. They are booleans on `Cleaner`, and Aurea has them false.
+- **Deliberate deviation — the wizard's inputs are the property form's field primitives.**
+  Screenshots `11`/`12` draw filled boxes with the label outside; `Field` / `ReadOnlyField` /
+  `SelectField` / `SegmentedToggle` are underlined. Reusing them keeps one field vocabulary across
+  the app and, more to the point, reuses `SelectField`'s inline expansion — the machinery that
+  exists because `Modal` renders nothing under jest-expo. Labels, order, values, copy and the
+  footer button text all follow the reference; only the chrome differs. The notes textarea is the
+  filled box the screenshot shows, since no primitive covers it.
+- **A Property picker was added as step 1's first field.** The reference wizard is entered with a
+  property already chosen, and this PoC has no screen that does the choosing — without it every
+  posted search would land on the same property. It is a `SelectField` over the registered
+  properties, and picking one re-derives the address and the bed/bath counts below it.
+- **`useMarketplace.load()` holds its in-flight promise at module scope, and `post()` awaits it.**
+  A `loading` flag alone is not enough: a second caller sees it, returns immediately, and the seed
+  landing afterwards overwrites what it appended in between. Reaching `/search/new` directly did
+  exactly that — the posted search was created, then wiped by the bid list's own `load()`, and the
+  screen bounced back to an unchanged list of three. Pinned by a store test.
+- **Detox cannot match a string that React Native split into nodes.** `Expires in {n} days` and
+  `{n} reviews` render as three and two separate text nodes; `by.text('Expires in 2 days')` never
+  matches them. Every interpolated string on these screens is one template literal, and the price
+  is two sibling `Text`s (`$100`, `per project`) rather than one nested pair. Worth copying: it is
+  invisible until a spec runs.
+- **`MarketplaceHeader`, `Segmented`, `StarRating` and the Super Cleaner chip stay local.**
+  `HeaderBand` is the teal band and centres nothing, `SegmentedToggle` is the small unpadded
+  sq. ft. pair, and `Pill` is a full-radius label without an icon. Three of the four screens that
+  want this header are in this one folder; promote them when a fourth feature asks.
+- **`BidCard` takes an `onPress` that nothing passes yet.** Ticket 06 owns `/cleaner/...`; wiring
+  it here would have added a route that does not exist. The whole `Cleaner` rides on the `Bid`, so
+  that screen needs no lookup: `completedProjects`, `location`, `distanceMiles`, `memberSince`,
+  `message`, `workPhotos`, `superCleaner`, `rentalHandyPro` and `backgroundChecked` are all there.
+- **Cleaner photos are emoji**, for the reason ticket 03 gave for property images — and the
+  reference photos are of real people.
+- **The header's magnifier is inert.** There is no search field behind it in the reference, and
+  unlike Payments' filter icon it has no empty state to unlock: the Closed tab already reaches it.
+- **Typed routes were generated before trusting `pnpm typecheck`**, per the note above: `expo
+  start` was run once, and `.expo/types/router.d.ts` lists `/search/new` and `/search/[id]`.
+- **Verified in the browser, not the simulator**, since two agents share one dev client. `serve
+  dist` over a clean `build:web`: all 17 routes prerender, the seeded list, the bids list, both
+  wizard steps and the Closed empty state render, posting a fourth search lands on its own bids
+  and appends to Home's card, and the console is free of errors and react-native-web warnings.
+  `marketplace.e2e.ts` is written but was not run.
