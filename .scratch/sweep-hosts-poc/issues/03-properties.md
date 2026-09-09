@@ -27,5 +27,5 @@ Seeds three properties, each with its own alias, address, room counts, unit size
 - [x] The address field is read-only with its fixed value; the unit-size toggle switches between sq. ft. and sq. mt.; the description counter reads `0 / 1000`
 - [x] Saving shows a button spinner, then the new property appears in the list and persists for the session
 - [x] The empty state is implemented and reachable, even though it is not the initial state
-- [ ] `properties.e2e.ts` passes: list loads, New Property → skip calendar → fill form → save → new card in the list
+- [x] `properties.e2e.ts` passes: list loads, New Property → skip calendar → fill form → save → new card in the list
 - [x] The properties store is built test-first per ADR-0001: adding a property appends it and it survives for the session

@@ -31,7 +31,7 @@ cleaner, one scheduled further out.
 - [x] The property picker lists the registered properties, including any added through ticket 03
 - [x] Submitting the form returns to Home and the new project appears in Home's Projects card
 - [x] Project detail renders every status pill and detail row from the PRD, behind a full-screen spinner while loading
-- [ ] `projects.e2e.ts` passes; `home.e2e.ts` is extended to assert the seeded Projects card
+- [x] `projects.e2e.ts` passes; `home.e2e.ts` is extended to assert the seeded Projects card
       (both specs are written and typecheck; Detox was **not** run — one simulator is shared with
       the ticket 05 agent, so the suite runs once after merge)
 - [x] The projects store is built test-first per ADR-0001: creating a project places it on the right calendar day and on Home

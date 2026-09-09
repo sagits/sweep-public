@@ -20,6 +20,5 @@ button.
 - [x] Every section renders for each of the three seeded cleaners, with their own ratings, prices and copy
 - [x] The Show/Hide expander on the cleaner's message works, and so does the price card's "More" expander
 - [x] Chat, Accept Bid and Reject Bid are present and tapping them changes nothing
-- [ ] `cleaner-detail.e2e.ts` passes — written, but **not run**: the accumulated Detox suite was
-      running on the one simulator, so `pnpm e2e:build` / `pnpm e2e:test` were off limits for this
-      ticket. Everything else it asserts is covered by the RNTL tests and by the browser pass.
+- [x] `cleaner-detail.e2e.ts` passes — written during the ticket with the simulator held by
+      another run, then verified after merge: the whole suite is 43/43 green across nine specs.
