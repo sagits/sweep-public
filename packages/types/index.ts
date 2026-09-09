@@ -13,13 +13,30 @@ export type Notification = {
 
 /** A cleaning project. Home shows the next few; the Projects tab lays them out on a calendar. */
 export type Project = {
+  /** The digits behind "Project #38261465" — the detail header prints it verbatim. */
   id: string;
   propertyAlias: string;
+  /**
+   * Denormalised from the property so the detail screen's address row needs no second store.
+   * Nothing joins projects back to properties in the PoC.
+   */
+  propertyAddress: string;
   /** null renders as "Unassigned". */
   cleanerName: string | null;
   /** ISO timestamp of the cleaning window's start. */
   startsAt: string;
+  /** ISO timestamp of the cleaning window's end — the detail card's "End time". */
+  endsAt: string;
+  /** Defaults to "Manual Project"; the detail's "Project: …" row prints it. */
+  name: string;
+  /** Manual projects carry the star pill; a synced booking would not. */
+  manual: boolean;
+  /** The form's footer toggle — drives the "Visible to teammates" pill. */
+  visible: boolean;
 };
+
+/** What the New Manual Project form collects. The id is the mock resolver's to assign. */
+export type NewProject = Omit<Project, 'id'>;
 
 /**
  * A completed payment in the Payment History list. Every seeded payment is paid — the PoC has
