@@ -6,7 +6,7 @@ import { Pressable, ScrollView, Text, View } from 'react-native';
 import { Card, Screen, Skeleton, colors } from '@sweep/ui';
 
 import { EmptySearches } from '@/marketplace/EmptySearches';
-import { MarketplaceHeader } from '@/marketplace/MarketplaceHeader';
+import { ScreenHeader } from '@/navigation/ScreenHeader';
 import { SearchCard } from '@/marketplace/SearchCard';
 import { Segmented } from '@/marketplace/Segmented';
 import { useMarketplace } from '@/stores/useMarketplace';
@@ -47,7 +47,7 @@ export default function MarketplaceScreen() {
 
   return (
     <Screen testID="screen.marketplace" insetTop={false}>
-      <MarketplaceHeader
+      <ScreenHeader
         title="Marketplace searches"
         titleTestID="marketplace.title"
         testID="marketplace.header"
@@ -71,7 +71,7 @@ export default function MarketplaceScreen() {
         }
       >
         <Segmented options={TABS} value={tab} onChange={setTab} testID="marketplace.tabs" />
-      </MarketplaceHeader>
+      </ScreenHeader>
 
       <ScrollView
         testID="marketplace.scroll"

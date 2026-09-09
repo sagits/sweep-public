@@ -38,7 +38,11 @@ export default function HomeScreen() {
 
   return (
     <Screen testID="screen.home" insetTop={false} surface>
-      <HomeHeader unreadCount={notifications.length} showCreditPill={!promoDismissed} />
+      <HomeHeader
+        unreadCount={notifications.length}
+        showCreditPill={!promoDismissed}
+        onOpenPayments={() => router.navigate('/payments')}
+      />
       <ScrollView
         testID="home.scroll"
         className="flex-1"

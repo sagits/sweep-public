@@ -7,9 +7,10 @@ const exists = (id: string, timeout = 10000) =>
 const gone = (id: string, timeout = 10000) =>
   waitFor(element(by.id(id))).not.toExist().withTimeout(timeout);
 
+// Payments has no tab: the dollar icon in Home's header is the way in.
 const openPayments = async () => {
-  await waitFor(element(by.id('tabs.payments'))).toBeVisible().withTimeout(30000);
-  await element(by.id('tabs.payments')).tap();
+  await waitFor(element(by.id('home.payments'))).toBeVisible().withTimeout(30000);
+  await element(by.id('home.payments')).tap();
 };
 
 describe('payments', () => {

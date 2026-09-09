@@ -5,7 +5,7 @@ import { ScrollView, Text, TextInput, View } from 'react-native';
 import { Button, Card, Checkbox, colors } from '@sweep/ui';
 
 import { HowItWorksRow } from '@/marketplace/HowItWorksRow';
-import { MarketplaceHeader } from '@/marketplace/MarketplaceHeader';
+import { ScreenHeader } from '@/navigation/ScreenHeader';
 import { Field, ReadOnlyField, SegmentedToggle, SelectField } from '@/properties/fields';
 
 const COUNTS = ['1', '2', '3', '4', '5', '6', '7', '8'];
@@ -113,7 +113,7 @@ export function NewSearchWizard({
 
   return (
     <View className="flex-1">
-      <MarketplaceHeader
+      <ScreenHeader
         title="New Cleaner Search"
         onBack={() => (step === 1 ? onClose() : setStep(1))}
         testID="search-form.header"
@@ -124,7 +124,7 @@ export function NewSearchWizard({
             className={`h-full bg-primary ${step === 1 ? 'w-1/2' : 'w-full'}`}
           />
         </View>
-      </MarketplaceHeader>
+      </ScreenHeader>
 
       <ScrollView
         testID="search-form.scroll"

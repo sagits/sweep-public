@@ -6,7 +6,7 @@ import { Pressable, ScrollView, Text, View } from 'react-native';
 import { Card, Screen, Skeleton, colors } from '@sweep/ui';
 
 import { BidCard } from '@/marketplace/BidCard';
-import { MarketplaceHeader } from '@/marketplace/MarketplaceHeader';
+import { ScreenHeader } from '@/navigation/ScreenHeader';
 import { Segmented } from '@/marketplace/Segmented';
 import { WhileYouWaitCard } from '@/marketplace/WhileYouWaitCard';
 import { useMarketplace } from '@/stores/useMarketplace';
@@ -74,7 +74,7 @@ export default function BidsScreen() {
 
   return (
     <Screen testID="screen.bids" insetTop={false}>
-      <MarketplaceHeader
+      <ScreenHeader
         title={search?.propertyAlias ?? 'Cleaner bids'}
         titleTestID="bids.title"
         testID="bids.header"
@@ -93,7 +93,7 @@ export default function BidsScreen() {
         }
       >
         <Segmented options={TABS} value={tab} onChange={setTab} testID="bids.tabs" />
-      </MarketplaceHeader>
+      </ScreenHeader>
 
       <ScrollView
         testID="bids.scroll"

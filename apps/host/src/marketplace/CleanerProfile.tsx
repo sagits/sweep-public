@@ -8,7 +8,7 @@ import { Button, Card, SectionHeader, colors } from '@sweep/ui';
 
 import { SuperCleanerPill } from './BidCard';
 import { HowItWorksRow } from './HowItWorksRow';
-import { MarketplaceHeader } from './MarketplaceHeader';
+import { ScreenHeader } from '@/navigation/ScreenHeader';
 
 /**
  * How much of the cleaner's message shows before the "Show" expander. All three seeded messages
@@ -180,7 +180,7 @@ export function CleanerProfile({
 
   return (
     <>
-      <MarketplaceHeader
+      <ScreenHeader
         testID="cleaner.header"
         titleTestID="cleaner.title"
         title={propertyAlias}
@@ -203,7 +203,7 @@ export function CleanerProfile({
             </View>
           </>
         ) : null}
-      </MarketplaceHeader>
+      </ScreenHeader>
 
       <ScrollView
         testID="cleaner.scroll"

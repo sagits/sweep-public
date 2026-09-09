@@ -35,6 +35,13 @@ const openTab = async (tab: string) => {
   await element(by.id(tab)).tap();
 };
 
+/** Payments has no tab: the dollar icon in Home's header is the way in. */
+const openPayments = async () => {
+  await openTab('tabs.home');
+  await waitFor(element(by.id('home.payments'))).toBeVisible().withTimeout(30000);
+  await element(by.id('home.payments')).tap();
+};
+
 /** The same key `src/projects/days.ts` builds, so today's section can be addressed by testID. */
 const todayKey = () => {
   const now = new Date();
@@ -141,7 +148,7 @@ describe(`seed toggle (EXPO_PUBLIC_SEED=${SEEDED ? 'on' : 'false'})`, () => {
   });
 
   it('lists paid rows, or screenshot 22 folder empty state', async () => {
-    await openTab('tabs.payments');
+    await openPayments();
     await exists('screen.payments');
     await gone('payments.skeleton', 20000);
 
@@ -158,7 +165,7 @@ describe(`seed toggle (EXPO_PUBLIC_SEED=${SEEDED ? 'on' : 'false'})`, () => {
   });
 
   it('leaves the Payments filter icon inert either way', async () => {
-    await openTab('tabs.payments');
+    await openPayments();
     await exists('payments.filter');
 
     await element(by.id('payments.filter')).tap();

@@ -26,16 +26,12 @@ export default function TabsLayout() {
         options={{ title: 'Marketplace', tabBarIcon: icon('handshake') }}
       />
       <Tabs.Screen
-        name="payments"
-        options={{ title: 'Payments', tabBarIcon: icon('credit-card') }}
-      />
-      <Tabs.Screen
         name="properties"
         options={{ title: 'Properties', tabBarIcon: icon('office-building') }}
       />
       <Tabs.Screen
         name="more"
-        options={{ title: 'More', tabBarIcon: icon('dots-horizontal') }}
+        options={{ title: 'More', tabBarIcon: icon('account-circle') }}
       />
     </Tabs>
   );
