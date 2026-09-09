@@ -123,8 +123,15 @@ export default function BidsScreen() {
               You haven&apos;t accepted a bid for this search yet.
             </Text>
           ) : (
-            // ponytail: no onPress yet. Ticket 06 owns the cleaner detail route and wires it here.
-            bids.map((bid) => <BidCard key={bid.id} bid={bid} />)
+            bids.map((bid) => (
+              <BidCard
+                key={bid.id}
+                bid={bid}
+                onPress={() =>
+                  router.push({ pathname: '/cleaner/[id]', params: { id: bid.id } })
+                }
+              />
+            ))
           )}
 
           {whileYouWait ? <WhileYouWaitCard onDismiss={() => setWhileYouWait(false)} /> : null}

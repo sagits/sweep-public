@@ -1,9 +1,12 @@
 import { seededSearches } from '@sweep/mocks';
+import type { Bid } from '@sweep/types';
 import { fireEvent, render, screen } from '@testing-library/react-native';
+import { SafeAreaInsetsContext } from 'react-native-safe-area-context';
 
 import { CleanerSearchCard } from '@/home/CleanerSearchCard';
 
 import { BidCard } from './BidCard';
+import { CleanerProfile, messagePreview } from './CleanerProfile';
 import { SearchCard, createdLabel } from './SearchCard';
 import { WhileYouWaitCard } from './WhileYouWaitCard';
 
@@ -134,5 +137,121 @@ describe('CleanerSearchCard', () => {
 
     expect(screen.getByTestId('home.cleaner-search-skeleton')).toBeTruthy();
     expect(screen.getByText('Cleaner Search')).toBeTruthy();
+  });
+});
+
+describe('CleanerProfile', () => {
+  /**
+   * The header and the sticky footer both read the safe-area insets. `SafeAreaProvider` renders
+   * nothing under jest-expo — it waits on a layout pass that never comes — so the test feeds the
+   * context directly.
+   */
+  const insets = { top: 59, left: 0, right: 0, bottom: 34 };
+
+  const money = (amount: number) =>
+    amount.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+
+  const profile = (bid: Bid) =>
+    render(
+      <SafeAreaInsetsContext.Provider value={insets}>
+        <CleanerProfile bid={bid} propertyAlias="Beach apartment" onBack={jest.fn()} />
+      </SafeAreaInsetsContext.Provider>
+    );
+
+  /**
+   * One render per cleaner, as separate tests rather than a loop: RNTL 14 wedges when a tree is
+   * unmounted and another rendered in the same test, and every later render comes back empty.
+   */
+  it.each(firstSearch.bids.map((bid) => [bid.cleaner.name, bid] as const))(
+    'renders every section for %s',
+    async (_name, bid) => {
+      const { cleaner } = bid;
+      await profile(bid);
+
+      expect(screen.getByTestId('cleaner.information')).toBeTruthy();
+      expect(screen.getByText('Information')).toBeTruthy();
+      expect(screen.getByText(`${cleaner.completedProjects}`)).toBeTruthy();
+      expect(screen.getByText(cleaner.location)).toBeTruthy();
+      expect(screen.getByText(`${cleaner.distanceMiles} miles away`)).toBeTruthy();
+      expect(screen.getByText(cleaner.memberSince)).toBeTruthy();
+
+      expect(screen.getByText('Message from Cleaner')).toBeTruthy();
+      expect(screen.getByText('Badges')).toBeTruthy();
+      expect(screen.getByText('Background Checked')).toBeTruthy();
+      expect(screen.getByText('Reviews')).toBeTruthy();
+      expect(screen.getByText(`(${cleaner.reviewCount} reviews)`)).toBeTruthy();
+      expect(screen.getByText(`Photos of ${cleaner.name}'s work`)).toBeTruthy();
+      expect(screen.getAllByTestId(/^cleaner\.photo\./)).toHaveLength(cleaner.workPhotos.length);
+
+      // Aurea carries neither the chip nor the Handy Pro rows; the screen renders without them.
+      expect(screen.queryByText('Super Cleaner') !== null).toBe(cleaner.superCleaner);
+      expect(screen.queryByTestId('cleaner.handy-pro') !== null).toBe(cleaner.rentalHandyPro);
+      expect(screen.queryByTestId('cleaner.rental-handy-pro') !== null).toBe(cleaner.rentalHandyPro);
+
+      // Read-only: the three actions render and none of them is wired to anything.
+      expect(screen.getByTestId('cleaner.chat')).toBeTruthy();
+      expect(screen.getByTestId('cleaner.accept')).toBeTruthy();
+      expect(screen.getByTestId('cleaner.reject')).toBeTruthy();
+      expect(screen.getByText('Accept Bid and Add to My Team')).toBeTruthy();
+      expect(screen.getByText('Reject Bid')).toBeTruthy();
+      expect(screen.getByText(money(bid.price))).toBeTruthy();
+    }
+  );
+
+  it('truncates the message on a word boundary, and only when there is more to show', () => {
+    expect(messagePreview('short enough')).toBeNull();
+    // 40 characters, so the cut lands inside "quick" and backs up to the space before it.
+    expect(messagePreview('the quick brown fox jumps over the lazy dog', 8)).toBe('the… ');
+  });
+
+  it('shows and hides the cleaner’s message', async () => {
+    const { cleaner } = firstBid;
+    const preview = messagePreview(cleaner.message);
+    if (!preview) throw new Error('the seeded message is too short to expand');
+
+    await profile(firstBid);
+
+    expect(screen.getByText('Show')).toBeTruthy();
+    expect(screen.queryByText('Hide')).toBeNull();
+
+    fireEvent.press(screen.getByTestId('cleaner.message'));
+    await flush();
+
+    expect(screen.getByText('Hide')).toBeTruthy();
+    expect(screen.queryByText('Show')).toBeNull();
+    // The toggle is a nested `Text`, so the paragraph reads as one node ending in "Hide".
+    expect(screen.getByText(`${cleaner.message} Hide`)).toBeTruthy();
+
+    fireEvent.press(screen.getByTestId('cleaner.message'));
+    await flush();
+
+    expect(screen.getByText('Show')).toBeTruthy();
+  });
+
+  it('expands the price card’s More', async () => {
+    await profile(firstBid);
+
+    expect(screen.getByText('$100.00')).toBeTruthy();
+    expect(screen.getByText('per Project + Fees')).toBeTruthy();
+    expect(screen.getByText('Cleaner Bid')).toBeTruthy();
+    expect(screen.queryByTestId('cleaner.price.breakdown')).toBeNull();
+
+    fireEvent.press(screen.getByTestId('cleaner.price.more'));
+    await flush();
+
+    expect(screen.getByTestId('cleaner.price.breakdown')).toBeTruthy();
+    expect(screen.getByText('Added at checkout')).toBeTruthy();
+    expect(screen.getByText('Less')).toBeTruthy();
+  });
+
+  it('dismisses the "How Adding a Cleaner to My Team Works" row', async () => {
+    await profile(firstBid);
+
+    expect(screen.getByText('How Adding a Cleaner to My Team Works')).toBeTruthy();
+
+    fireEvent.press(screen.getByTestId('cleaner.info-dismiss'));
+    await flush();
+
+    expect(screen.queryByTestId('cleaner.info')).toBeNull();
   });
 });
