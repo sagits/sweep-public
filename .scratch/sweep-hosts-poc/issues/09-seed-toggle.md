@@ -16,7 +16,8 @@ correctness against their screenshots, and locks the behaviour down with a test.
 - [x] With the seed off, every list renders its empty state — Home's Projects and Notifications cards, Properties, Projects, Marketplace and Payments
 - [x] Home's "Search for New Cleaners" card replaces the "Cleaner Search (N)" card when no searches exist
 - [x] Toggling the seed requires no code edit
-- [ ] `seed.e2e.ts` passes both ways — written, **not run**: the Detox suite had the one
-      simulator for the whole of this ticket. Run it as `pnpm e2e:test e2e/seed.e2e.ts` and
-      `EXPO_PUBLIC_SEED=false pnpm e2e:test e2e/seed.e2e.ts`
+- [x] `seed.e2e.ts` passes both ways — verified after merge: 6/6 seeded, 6/6 with the seed off.
+      Run it as `pnpm --filter @sweep/host e2e:test e2e/seed.e2e.ts` and
+      `EXPO_PUBLIC_SEED=false pnpm --filter @sweep/host e2e:test e2e/seed.e2e.ts`
+      (the root `pnpm e2e:test` passes the path to turbo, which reads it as a task name)
 - [x] The toggle is built test-first per ADR-0001: seed on produces the seeded counts, seed off produces empty stores

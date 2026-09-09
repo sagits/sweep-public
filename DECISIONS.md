@@ -504,7 +504,7 @@ merges into a checkout that has a stale `router.d.ts` listing only the old route
   production `expo export` inlines the literal instead and constant-folds the ternary away, so the
   indirection costs nothing shipped.
 - **How it is toggled.** `EXPO_PUBLIC_SEED=false pnpm dev` for the simulator,
-  `EXPO_PUBLIC_SEED=false pnpm e2e:test e2e/seed.e2e.ts` for Detox — `scripts/e2e-test.sh` starts
+  `EXPO_PUBLIC_SEED=false pnpm --filter @sweep/host e2e:test e2e/seed.e2e.ts` for Detox — `scripts/e2e-test.sh` starts
   Metro itself, so the variable reaches both the bundle and the test runner from one shell. No code
   edit, no `.env` file.
 - **`expo export` needs `--clear` when the flag changes; `expo start` does not.** Measured: two
@@ -516,7 +516,7 @@ merges into a checkout that has a stale `router.d.ts` listing only the old route
   `process.env.EXPO_PUBLIC_SEED` in the runner and asserts either the seeded counts or the empty
   states across Home, Properties, Projects, Marketplace and Payments. The rest of the suite asserts
   the seeded app and is expected to fail with the seed off; run the seed-off pass as
-  `EXPO_PUBLIC_SEED=false pnpm e2e:test e2e/seed.e2e.ts`.
+  `EXPO_PUBLIC_SEED=false pnpm --filter @sweep/host e2e:test e2e/seed.e2e.ts`.
 - **Ticket 07's filter-clears-history hack is removed.** The header's filter icon was wired to
   `usePayments().clear()` purely because clearing was the only route to screenshot `22`'s folder
   state. `EXPO_PUBLIC_SEED=false` is that route now, so the icon is inert with an
