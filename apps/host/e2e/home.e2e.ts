@@ -40,10 +40,9 @@ describe('home', () => {
     await exists('home.bell');
     await exists('home.messages');
 
-    await visible('home.search-cleaners-card');
-    await expect(
-      element(by.text('Search on our Marketplace for local, reliable cleaners'))
-    ).toBeVisible();
+    // The seed holds three open searches, so the "Search for New Cleaners" prompt is already
+    // replaced by the Cleaner Search card — its own test is below.
+    await exists('home.cleaner-search-card');
     await visible('home.invite-teammates-card');
     await expect(element(by.text('Invite Current Teammates'))).toBeVisible();
   });
@@ -97,10 +96,33 @@ describe('home', () => {
     await gone('home.credit-pill');
   });
 
-  it('opens the Marketplace from the search card', async () => {
-    await visible('home.search-cleaners-card');
-    await element(by.id('home.search-cleaners-card')).tap();
+  it('shows the seeded Cleaner Search card, with a bid chip per search', async () => {
+    await exists('home.cleaner-search-card');
+    await expect(element(by.text('Cleaner Search (3)'))).toBeVisible();
+
+    // One row per seeded search: house icon, alias, "Created a minute ago", and its bid chip.
+    await exists('home.cleaner-search.search-1');
+    await expect(element(by.text('Beach apartment')).atIndex(0)).toBeVisible();
+    await expect(element(by.text('Created a minute ago')).atIndex(0)).toBeVisible();
+    await exists('home.cleaner-search.search-1.bids');
+    await expect(element(by.text('3 Bids'))).toBeVisible();
+    await exists('home.cleaner-search.search-2.bids');
+    await expect(element(by.text('1 Bid'))).toBeVisible();
+    await visible('home.find-new-cleaners');
+  });
+
+  it('opens the Marketplace from the Cleaner Search card\'s "See all"', async () => {
+    await exists('home.cleaner-search-card');
+    await element(by.id('home.cleaner-search-see-all')).tap();
 
     await exists('screen.marketplace');
+  });
+
+  it("opens a search's bids from its row on Home", async () => {
+    await exists('home.cleaner-search.search-1');
+    await element(by.id('home.cleaner-search.search-1')).tap();
+
+    await exists('screen.bids');
+    await expect(element(by.id('bids.title'))).toHaveText('Beach apartment');
   });
 });
