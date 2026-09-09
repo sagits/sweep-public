@@ -424,3 +424,66 @@ merges into a checkout that has a stale `router.d.ts` listing only the old route
   wizard steps and the Closed empty state render, posting a fourth search lands on its own bids
   and appends to Home's card, and the console is free of errors and react-native-web warnings.
   `marketplace.e2e.ts` is written but was not run.
+
+## 06 — Cleaner detail
+
+- **Screenshot conflict — the references disagree with each other about section order.** `18` and
+  `20` (Jairo) run Information → Message from Cleaner → Badges → Reviews → Rental Handy Pro, and
+  `19` ends on the work photos; that is the order the PRD lists and the one shipped, for every
+  cleaner. The two Ramona shots contradict it and each other: `17` goes Information → **Badges**
+  with no Message section at all, and `19` goes Message → **Photos** with no Badges, Reviews or
+  Rental Handy Pro in between. One order per screen beats reproducing an inconsistency, and
+  Jairo's is the one both the PRD and the ticket name.
+- **The summary row and the Reviews row draw one star, not the bid card's five.** `17`–`20` show a
+  single amber star before the number in both places, where `14`/`15` show a five-star rating on
+  the card. `StarRating` is therefore not reused here — it is a different control, not a smaller
+  one.
+- **The route is `/cleaner/[id]` keyed by the *bid* id, not the cleaner id.** The whole `Cleaner`
+  rides on the `Bid`, so the screen needs no lookup — and the bid is also what carries the price
+  and the expiry the screen prints. The search that owns the bid supplies the header's property
+  alias, so one `searches` selector answers everything and `CleanerProfile` itself touches no
+  store: the route hands it a `Bid` and an alias.
+- **The Show/Hide expander is an inline nested `Text`, and its state lives on the pressable's
+  `accessibilityLabel`.** `19` shows "Hide" flowing at the end of the last line, which only a
+  nested `Text` does — but ticket 05's finding cuts the other way here: Detox reads a nested
+  `Text` as part of its parent, so neither `by.text('Hide')` nor a testID on it is reachable. The
+  whole paragraph is the tap target, and it labels itself `Show message` / `Hide message`, which
+  `toHaveLabel` matches. The section title stays *outside* that pressable so it keeps a node of
+  its own. Collapsing is by character count (150, cut back to a word boundary), not
+  `numberOfLines`, because an ellipsis drawn by the text engine cannot be followed by a link.
+- **Work photos are the emoji stand-ins ticket 05 seeded, banded BEFORE/AFTER across the middle.**
+  The reference tiles are two stacked photographs of real rooms with the words over them; one
+  emoji per tile plus the band reads as the same control without shipping or licensing anything —
+  the same call ticket 03 made for property images.
+- **The price card's "More" is invented — no screenshot shows it open.** It breaks down exactly
+  what the collapsed row names and nothing else: "Cleaner Bid $125.00" over "Fees / Added at
+  checkout". Amounts format through `Intl`, as ticket 07's do.
+- **Two places where the design system wins over the pixel, both already-settled precedents.** The
+  info row's checkbox is `Checkbox` (13px label) where `17` draws a ~19px one, and both footer
+  buttons are `Button` (16px label) where the reference is larger. Editing either shared file for
+  one screen is what ticket 04 declined to do for the same two components.
+- **No new tokens.** Ticket 05's `primaryDeep`, `star` and `badge` cover the chip, the ratings and
+  the shield; the band over a work photo is `bg-ink/70`, an opacity modifier on a token rather
+  than a fifth gray.
+- **`SuperCleanerPill` is exported from `BidCard.tsx` rather than promoted or re-cut.** It is the
+  same chip, and ticket 05 already recorded why it is not `Pill` (a size-and-icon variant on a
+  file every feature imports buys nothing). Two screens in one folder is not yet
+  `packages/ui`.
+- **RNTL: unmounting a tree and rendering another inside one test wedges everything after it.** A
+  loop over the three seeded cleaners passed for Ramona and Jairo and rendered *empty* for Aurea,
+  and every later test in the file then failed too — the same silent-wedge failure mode ticket 03
+  found with two `fireEvent`s. The fix is `it.each`, so each cleaner gets its own test and RNTL's
+  own cleanup. Worth copying: the symptom is "element not found" on a tree `debug()` prints in
+  full.
+- **`SafeAreaProvider` renders nothing under jest-expo** — it waits on a layout pass that never
+  arrives, even with `initialMetrics` — so a component calling `useSafeAreaInsets` is tested by
+  feeding `SafeAreaInsetsContext.Provider` directly. This screen needs it twice: the header clears
+  the status bar and the sticky footer clears the home indicator.
+- **Typed routes were generated before trusting `pnpm typecheck`**, per the integration note:
+  `expo start` was run once and `.expo/types/router.d.ts` lists `/cleaner/[id]`. Navigation uses
+  the `{ pathname: '/cleaner/[id]', params: { id } }` form.
+- **Verified in the browser, not the simulator**, since the accumulated Detox suite was running on
+  the one device. `serve dist` over a clean `build:web`: all 18 routes export, a bid card opens
+  the profile, both expanders work, Ramona renders `17`/`19`/`20` and Aurea renders correctly
+  without the Super Cleaner chip or either Rental Handy Pro row, and the console is free of errors
+  and react-native-web warnings. `cleaner-detail.e2e.ts` is written but was not run.
