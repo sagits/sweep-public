@@ -1,0 +1,29 @@
+{
+  "expo": {
+    "name": "Sweep Hosts",
+    "slug": "sweep-hosts",
+    "scheme": "sweephosts",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "ios": {
+      "bundleIdentifier": "com.renatoprobst.sweephosts",
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.renatoprobst.sweephosts"
+    },
+    "web": {
+      "name": "Sweep Hosts",
+      "bundler": "metro",
+      "output": "static"
+    },
+    "plugins": [
+      "expo-router"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

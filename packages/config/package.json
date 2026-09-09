@@ -1,0 +1,13 @@
+{
+  "name": "@sweep/config",
+  "version": "0.1.0",
+  "private": true,
+  "exports": {
+    "./tsconfig.base.json": "./tsconfig.base.json",
+    "./tailwind-preset": "./tailwind-preset.js",
+    "./eslint": "./eslint.config.js"
+  },
+  "dependencies": {
+    "@sweep/ui": "workspace:*"
+  }
+}
