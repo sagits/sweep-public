@@ -11,7 +11,7 @@ import { StarRating } from './StarRating';
  * carries its own ⓘ, so a size-and-icon variant on a file every other feature imports would buy
  * nothing.
  */
-function SuperCleanerPill() {
+export function SuperCleanerPill() {
   return (
     <View className="flex-row items-center gap-1 rounded-full bg-primaryDeep px-2.5 py-1">
       <Text className="text-[13px] font-bold text-white">Super Cleaner</Text>
