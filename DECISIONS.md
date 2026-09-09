@@ -83,3 +83,85 @@ Choices made while building from `poc/PRD.md` where the PRD left something open.
   `expo prebuild` invoke it — resolves the prebuilt tarball reliably, which is why the script is
   `expo prebuild --no-install && pod install && detox build`. Once downloaded, the tarball is
   cached in `~/Library/Caches/ReactNative`.
+
+## 02 — Home shell
+
+- **Screenshot conflict — Home's page background is white, not the PRD's light gray.** The Design
+  section calls for a `~#F1F2F6` page. Sampling screenshots `01`–`03` between the cards, below the
+  last card and inside a card all return `#FFFEFF`: on Home the cards separate from the page by
+  their shadow alone. The screenshot wins, so Home passes `surface` to `Screen`. The `background`
+  token keeps the PRD's gray for the screens that do show it.
+- **Screenshot conflict — the blue "Get $100 credit" pill is not unconditional.** The PRD lists it
+  as part of the Home header. Screenshot `02` shows the pill *and* the promo card; screenshot `01`
+  is the same screen with the promo card gone, and the pill is gone with it. They are one feature,
+  so dismissing the promo hides both.
+- **The bell badge is the notification count, and disappears at zero.** `01` and `02` have no
+  notifications and no badge; `03` has notifications and a red `3`. The PRD only says "a bell with
+  badge count".
+- **Screenshot simplification — the promo card is flat blue, not a gradient.** The screenshot's card
+  runs `#1E69BE` on the left to `#4790E1` on the right. A gradient needs either
+  `expo-linear-gradient` — a native module, so every parallel ticket inherits a dev-client rebuild —
+  or RN 0.81's `experimental_backgroundImage`, which react-native-web does not implement, so the
+  card would lose its background entirely on the web target. Flat `accent` on both platforms;
+  swap in `expo-linear-gradient` if the gradient ever outweighs that.
+- **Four tokens added to `packages/ui/tokens.js`**, all read off the screenshots: `primaryInk`
+  (`#0E8C85`) because teal *text* on white reads far deeper than the band teal, `accent`
+  (`#1E68BF`) for the credit pill and promo card, `skeleton` (`#E7E9EE`) and `surfaceMuted`
+  (`#F8F8FB`) for panels inside a card, like the Quality center's title strip. The band teal itself
+  stays the PRD's `#22C99C`; the screenshots read `#38D4B1`, which is inside the PRD's "around".
+- **`Skeleton` is deliberately static — no shimmer.** Detox waits for animations to settle, and an
+  endless pulse would force every spec that mounts a list to drop synchronization. Skeletons appear
+  on nearly every screen, so keeping them still is what lets the other tickets' specs stay
+  synchronized.
+- **The Quality center's starburst is still, not spinning.** Detox waits for animations to settle,
+  so a spinner that never stops leaves the app permanently "busy" — measured here, it took out
+  `navigation.e2e.ts` too, not just Home. The alternative is dropping synchronization across the
+  whole suite, which would push flakiness onto every other feature's spec. `Spinner` animates
+  everywhere it is tied to a mock resolver (button and full-screen loads finish on their own and
+  are safe); the one permanent instance passes `animating={false}` and renders exactly the still
+  starburst the reference screenshot shows. If it ever has to rotate, drive that one with
+  Reanimated, whose UI-thread animations Detox does not track.
+- **"See all" targets.** Projects → the Projects tab. Notifications → inert: the PoC has no
+  notifications screen and the PRD does not ask for one.
+- **`Screen` gained `insetTop` and `surface`.** A screen with a teal `HeaderBand` needs the band,
+  not the page, to clear the status bar, so it passes `insetTop={false}`; the band applies the
+  inset itself and paints `extend` more teal below the header row, behind the first cards.
+  Both are booleans rather than a `className` passthrough — two `bg-` classes on one element
+  resolve by stylesheet order, not by the order they appear in the string.
+- **Home's Projects card loads through a real `useProjects` store** over an empty `seededProjects`
+  in `packages/mocks`. The card mounts into a skeleton and resolves into
+  "There are no projects right now." exactly as it will resolve into rows, so the Projects ticket
+  fills the seed and adds the row, and changes nothing else.
+- **The promo card's megaphone is the 📣 emoji**, not an image asset. Nothing is shipped, downloaded
+  or licensed, and it renders identically on both targets.
+- **`autoInstallPeers: false` in `pnpm-workspace.yaml`.** `packages/ui` declares `react` as a peer
+  with range `*`, so pnpm auto-installed React 19.2.3 into `packages/ui/node_modules` beside the
+  app's 19.1.0. Every hook called from inside `packages/ui` then threw
+  `Cannot read properties of null (reading 'useRef')` — `Spinner` was the first component in there
+  to call one, and it took down the whole screen. The peers come from the hoisted root
+  `node_modules`, which is the layout Expo's Metro resolver wants anyway.
+- **`@testing-library/react-native` 14's `render` is async.** It returns a promise, so a test must
+  `await render(...)` before touching `screen`; forgetting the `await` fails with the misleading
+  "`render` function has not been called".
+- **Card shadows are `boxShadow`, not the `shadow*` style props.** Those are deprecated in
+  React Native 0.81 and warn on every render in the web target, which the PRD's web verification
+  step explicitly rules out. Same for `pointerEvents`, which moved into `style`.
+- **Detox's `toBeVisible` does not work on containers**, and this bit every spec. It scores a
+  view's visible area against a 75% threshold, counting everything drawn over it — its own
+  children included — so a container packed with content never passes. `screen.home` failed the
+  moment Home stopped being a placeholder, which took `navigation.e2e.ts` down with it. The rule
+  the specs now follow, and the one the remaining tickets should copy: **containers assert
+  `toExist`, text asserts `toBeVisible`.** `navigation.e2e.ts` moved to `toExist` for its screen
+  ids. Scrolling to something below the fold uses `whileElement(...).scroll()` against a `by.text`
+  matcher, since text nodes are leaves and score cleanly.
+- **A skeleton cannot be observed while Detox is synchronized.** Detox waits out pending JS
+  timers before handing control back, and the PRD's 600–1200ms mock delay is one — so by the time
+  a synchronized `launchApp` returns, every skeleton has already resolved. The one test that
+  watches Home load drives its own launch with
+  `launchArgs: { detoxEnableSynchronization: 0 }` and re-enables synchronization once the
+  skeletons are gone. `device.disableSynchronization()` before `launchApp` does not survive the
+  launch; the launch argument does. Every other test stays synchronized.
+- **The teal band's extension is offset with a negative `bottom`, not `top: '100%'`.** Fabric does
+  not resolve a percentage `top` on an absolutely positioned view — it silently collapses to 0, and
+  the extension covered the header row it was supposed to sit below. It cost a full Detox cycle to
+  find, because the app rendered perfectly except for an empty teal band.

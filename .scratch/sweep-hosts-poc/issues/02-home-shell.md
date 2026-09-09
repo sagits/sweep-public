@@ -18,13 +18,13 @@ spinners for full-screen loads and button actions, and `testID`s named by screen
 
 **Blocked by:** 01
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] Home matches screenshots `01` and `02` in structure, spacing, type scale, colors, icons and copy
-- [ ] Cards mount into skeletons, then resolve into content after the artificial delay
-- [ ] The promo card dismisses and stays dismissed for the session
-- [ ] The "Search for New Cleaners" card navigates to the Marketplace tab
-- [ ] Projects card shows its empty state; Notifications card shows seeded notifications with date and time on the right
-- [ ] The Quality center card renders in a permanent spinner state
-- [ ] `home.e2e.ts` passes for the static cards, the empty states, promo dismissal and mount skeletons
-- [ ] The mock resolver and store pattern is built test-first per ADR-0001: the loading flag is observably true before content resolves
+- [x] Home matches screenshots `01` and `02` in structure, spacing, type scale, colors, icons and copy
+- [x] Cards mount into skeletons, then resolve into content after the artificial delay
+- [x] The promo card dismisses and stays dismissed for the session
+- [x] The "Search for New Cleaners" card navigates to the Marketplace tab
+- [x] Projects card shows its empty state; Notifications card shows seeded notifications with date and time on the right
+- [x] The Quality center card renders in a permanent spinner state
+- [x] `home.e2e.ts` passes for the static cards, the empty states, promo dismissal and mount skeletons
+- [x] The mock resolver and store pattern is built test-first per ADR-0001: the loading flag is observably true before content resolves
