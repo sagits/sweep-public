@@ -28,6 +28,10 @@ const colors = {
   danger: '#E2574C',
   // Flat gray of the empty-state illustrations — measured off screenshot 22's folder
   illustration: '#CDCBCF',
+  // Amber of the "Still Unassigned - Due 24h" warning glyph, sampled off screenshot 09
+  warning: '#F2792A',
+  // The violet star on the "Manual Project" pill, sampled off screenshot 09
+  violet: '#6C4FD8',
 };
 
 const radius = {

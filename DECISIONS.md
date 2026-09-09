@@ -295,3 +295,62 @@ merges into a checkout that has a stale `router.d.ts` listing only the old route
 **If your ticket adds a route**, run the dev server once (`pnpm dev`, or
 `npx expo start --web` and kill it as soon as `.expo/types/router.d.ts` appears) before you trust
 `pnpm typecheck`. A green typecheck with no `.expo/types/` present proves nothing about `Href`.
+
+## 04 — Projects
+
+- **Screenshot conflict — the calendar's day sections are populated, not empty.** Screenshot `04`
+  is the only calendar reference and every day section in it is empty; the PRD's seeding section
+  overrides that ("1 project per property, spread across the next few days"). The layout follows
+  `04` exactly — header, month navigator, weekday row, week strip, drag handle, one section per
+  day — and the rows are the PRD's. Days with nothing still get their section, which is what `04`
+  shows.
+- **Screenshot deviation — project detail and the manual form have no tab bar.** `09` draws the
+  bottom bar with Projects active, so the real app pushes detail *inside* the tab. Here
+  `/project/[id]` and `/project/new` are root stack routes, the shape ticket 03 already set for
+  `/property/new` — and screenshots `06`–`08` show the form full-screen with no bar, so the two
+  references disagree with each other. Putting detail under the tab would mean a nested stack
+  (`app/(tabs)/projects/_layout.tsx` + `index` + `[id]`) for one strip of chrome.
+- **The seed is relative to boot, not fixed ISO dates.** The first two sections are always "Today"
+  and "Tomorrow", so hard-coded dates would drift out of them the day after they were written.
+  `packages/mocks/src/projects.ts` builds `startsAt`/`endsAt` from `new Date()`: today 11:00
+  unassigned, tomorrow 10:00 assigned to Ramona, +4 days 13:00 unassigned.
+- **`Project` grew `propertyAddress`, denormalised off the property.** The detail's address row is
+  the only thing that needs it, and carrying the string means the detail screen — which can be
+  deep-linked — does not have to load and join the properties store. Nothing in the PoC joins
+  projects back to properties.
+- **Project ids are the digits the detail header prints** (`38261465`), not `project-1`. `09`
+  renders "Project #38261465" and inventing a second display number for the same row would be a
+  field that lies about the model.
+- **The header refresh keeps what the host added.** There is no server, so re-fetching the seed
+  would silently drop a project created this session. `reload()` merges: anything the fetch does
+  not know about survives. The filter icon is inert — the PoC has no filter sheet and, unlike
+  Payments, the empty state here is already reachable (any day with no projects).
+- **The `+` dialog is its own component, not `ConfirmDialog`.** Same overlay reasoning as ticket 03
+  (`Alert` is a no-op on react-native-web, `Modal` renders nothing under jest-expo), but the shape
+  in `05` is two link-style rows separated by hairlines plus a checkbox, where `ConfirmDialog` is
+  two stacked buttons. Sharing them would have meant a variant flag per difference.
+- **Two tokens added — `warning` (`#F2792A`) and `violet` (`#6C4FD8`)**, sampled off `09` for the
+  "Still Unassigned - Due 24h" glyph and the "Manual Project" star. `danger` is the red of the
+  fourth pill and was already there.
+- **The mint band behind the "Cleaning" pill is the existing `primaryMuted`.** `09`'s band is the
+  same light teal as `04`'s inactive tab icons, so no third teal was introduced.
+- **Two places where the shared design system wins over the pixel.** `05`'s checkbox has a teal
+  box and a ~19px label, and `06`'s "Project Name" is a bold label over a filled input box; both
+  render here through `Checkbox` and ticket 03's `Field` instead. Editing either shared file for
+  one screen's border colour would fight the Marketplace ticket, which uses the same two.
+- **Date and time pickers are the preset lists the PRD allows** — the next 14 days and an hourly
+  8am–8pm — expanding inline for ticket 03's reasons (a modal inside a ScrollView is clipped, and
+  `Modal` is invisible to jest-expo). The toggles are React Native's own `Switch`, which needs no
+  new primitive and works on both targets.
+- **`ProjectRow` is one component, rendered by both Home's card and the calendar's day sections.**
+  It keeps the date-over-time stamp in the calendar too, where the section header already names
+  the day; the alternative was a variant prop for a duplicated line.
+- **Verified in the browser rather than the simulator**, since two agents share one dev client:
+  `/projects`, `/project/new` and `/project/38261465` all render (deep-linked too), the whole
+  `+` → dialog → form → submit flow runs, lands back on Home with the new row in the Projects card
+  and places it under "Today" on the calendar, and the console is clean apart from the
+  `useNativeDriver` notice ticket 02's `Spinner` already produces on web. `pnpm build:web` exports
+  all 17 routes.
+- **Typed routes: the dev server was run before trusting `pnpm typecheck`**, per the integration
+  note above. `.expo/types/router.d.ts` lists `/project/new` and `/project/[id]`; navigation uses
+  the `{ pathname: '/project/[id]', params: { id } }` form rather than a template literal.
