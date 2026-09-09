@@ -10,9 +10,9 @@ tab.
 
 **Blocked by:** 01
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] The screen matches screenshot `23`
-- [ ] All ten menu rows render with their icons; the version label reads `v1.44.3`
-- [ ] Every row is inert except Properties, which navigates to the Properties tab
+- [x] The screen matches screenshot `23`
+- [x] All ten menu rows render with their icons; the version label reads `v1.44.3`
+- [x] Every row is inert except Properties, which navigates to the Properties tab
 - [ ] `more.e2e.ts` passes

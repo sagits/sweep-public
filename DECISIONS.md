@@ -165,3 +165,29 @@ Choices made while building from `poc/PRD.md` where the PRD left something open.
   not resolve a percentage `top` on an absolutely positioned view — it silently collapses to 0, and
   the extension covered the header row it was supposed to sit below. It cost a full Detox cycle to
   find, because the app rendered perfectly except for an empty teal band.
+
+## 08 — More (profile)
+
+- **Screenshot conflict — the avatar in `23` is a broken image, so it was interpreted, not
+  copied.** What the reference renders is a collapsed gray bar with the edit badge floating at its
+  right end: the classic failed image load. Shipped instead is what it was meant to be — a 64pt
+  circular placeholder with a person glyph and the white pencil badge on its lower right. Nothing
+  else on the screen was reinterpreted.
+- **Icons come from `MaterialCommunityIcons`**, the set already in the app; no second icon font is
+  added for one screen. Two of the ten are approximations of glyphs MDI does not carry exactly:
+  Inventories is `paper-roll` and both Guest rows are `star-half-full` (the reference draws the
+  same notched star for Guest Checkout Feedback and Guest Center).
+- **The footer link is band teal (`primary`), not `primaryInk`.** Home's card titles needed the
+  deeper ink teal to read on white; "Check for updates" in `23` is measurably the lighter band
+  teal, on the gray page. Same token family, different value — the screenshot decides per element.
+- **The header and profile block do not scroll; the menu card and footer do.** In `23` everything
+  fits without scrolling, and the alternative — scrolling the profile over the fixed teal that
+  `HeaderBand`'s `extend` paints — would slide the name out from under its own background. So the
+  teal profile block sits outside the `ScrollView` and carries its own extension, 176pt of teal
+  behind the top of the card, measured off `23`.
+- **Ten rows, one destination.** Every row is a `Pressable` with no `onPress` except Properties,
+  which calls `router.navigate('/properties')` — the tab path, so nothing here imports from the
+  Properties screens.
+- **The screen itself has no unit test; `MoreMenu` does.** ADR-0001 puts screens behind Detox, and
+  the route's only logic is `useRouter`. The part worth a TDD test — ten rows in order, and exactly
+  one of them wired — is in `MoreMenu`, which takes its navigation as a prop and needs no router.
