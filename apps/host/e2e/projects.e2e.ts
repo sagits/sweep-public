@@ -31,10 +31,29 @@ const openProjectsTab = async () => {
   await element(by.id('tabs.projects')).tap();
 };
 
+/** The section key `src/projects/days.ts` builds, for a day `offset` days from today. */
+const dayKey = (offset: number) => {
+  const date = new Date();
+  date.setDate(date.getDate() + offset);
+  const month = `${date.getMonth() + 1}`.padStart(2, '0');
+  const day = `${date.getDate()}`.padStart(2, '0');
+  return `${date.getFullYear()}-${month}-${day}`;
+};
+
 describe('projects', () => {
   beforeEach(async () => {
     await device.launchApp({ delete: true });
     await openProjectsTab();
+  });
+
+  it('rules off a day with nothing scheduled, so a run of empty dates reads apart', async () => {
+    await exists('projects.scroll');
+
+    // The seed fills today, tomorrow and day 4 — days 2 and 3 are empty, and each gets a rule
+    // under its date instead of the heading sitting straight on the next one.
+    await exists(`projects.section.${dayKey(2)}`);
+    await exists(`projects.empty-day.${dayKey(2)}`);
+    await exists(`projects.empty-day.${dayKey(3)}`);
   });
 
   it('opens on the calendar: header icons, month navigator, week strip and day sections', async () => {

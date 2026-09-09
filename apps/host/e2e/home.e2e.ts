@@ -90,6 +90,19 @@ describe('home', () => {
     await exists('home.notification.notification-1.stamp');
   });
 
+  it('pulls to refresh without losing the cards it already had', async () => {
+    await exists('home.projects-card');
+
+    // Swipe down from the top of the scroll view to trip the RefreshControl.
+    await element(by.id(SCROLL)).swipe('down', 'slow', 0.9, NaN, 0.05);
+
+    // The refresh re-fetches the seed and merges it over what is already there, so the cards
+    // come back rather than emptying out.
+    await exists('home.projects-card', 20000);
+    await exists('home.notifications-card', 20000);
+    await exists('home.cleaner-search-card', 20000);
+  });
+
   it('keeps the Quality center card in a spinner', async () => {
     await scrolledToText('Quality center');
     await exists('home.quality-center-card');

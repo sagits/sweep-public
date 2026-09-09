@@ -34,6 +34,13 @@ describe('properties', () => {
     await openPropertiesTab();
   });
 
+  it('shows a photograph on each seeded property card', async () => {
+    await exists('properties.card.property-1');
+    // The emoji thumbnails are gone: each seeded property has a bundled CC0 photo.
+    await exists('properties.card.property-1.photo');
+    await exists('properties.card.property-2.photo');
+  });
+
   it('lists the seeded properties under the search field and the New Property button', async () => {
     // by.id, not by.text: the active tab renders the word "Properties" too.
     await expect(element(by.id('properties.title'))).toHaveText('Properties');
