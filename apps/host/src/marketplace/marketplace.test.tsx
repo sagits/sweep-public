@@ -4,17 +4,12 @@ import { fireEvent, render, screen } from '@testing-library/react-native';
 import { SafeAreaInsetsContext } from 'react-native-safe-area-context';
 
 import { CleanerSearchCard } from '@/home/CleanerSearchCard';
+import { flush } from '@/testing/flush';
 
 import { BidCard } from './BidCard';
 import { CleanerProfile, messagePreview } from './CleanerProfile';
 import { SearchCard, createdLabel } from './SearchCard';
 import { WhileYouWaitCard } from './WhileYouWaitCard';
-
-/**
- * RNTL 14 + React 19: a `fireEvent` state update only lands on the next async flush, and two
- * events fired back to back without one wedge the render loop.
- */
-const flush = () => new Promise((done) => setTimeout(done, 0));
 
 const [firstSearch] = seededSearches;
 if (!firstSearch) throw new Error('the marketplace seed is empty');

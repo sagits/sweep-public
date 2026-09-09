@@ -3,7 +3,7 @@ import type { NewProject, Property } from '@sweep/types';
 import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, Switch, Text, View } from 'react-native';
 
-import { Button, Card, colors } from '@sweep/ui';
+import { Button, Card, colors, timeLabel } from '@sweep/ui';
 
 import { Field } from '@/properties/fields';
 import { addDays, startOfDay } from './days';
@@ -29,7 +29,7 @@ const dateLabel = (date: Date) =>
 const hourLabel = (hour: number) => {
   const date = new Date();
   date.setHours(hour, 0, 0, 0);
-  return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+  return timeLabel(date);
 };
 
 const atHour = (day: Date, hour: number) => {

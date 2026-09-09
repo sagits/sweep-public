@@ -3,14 +3,11 @@ import type { Project } from '@sweep/types';
 import type { ReactNode } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
-import { Card, HeaderBand, Screen, Spinner, colors, shadow } from '@sweep/ui';
+import { Card, HeaderBand, Screen, Spinner, colors, shadow, timeLabel } from '@sweep/ui';
 
 import { longDay } from './days';
 
 type IconName = React.ComponentProps<typeof MaterialCommunityIcons>['name'];
-
-const timeLabel = (iso: string) =>
-  new Date(iso).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
 
 /** The white shadowed chip the screen uses for both the Cleaning band and the status column. */
 function StatusPill({

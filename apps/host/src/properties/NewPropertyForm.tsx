@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { FIXED_ADDRESS } from '@sweep/mocks';
-import type { UnitSizeUnit } from '@sweep/types';
+import type { NewProperty, UnitSizeUnit } from '@sweep/types';
 import { Button, Card, Checkbox, colors } from '@sweep/ui';
 
 import { ConfirmDialog } from './ConfirmDialog';
@@ -36,20 +36,7 @@ export function NewPropertyForm({
   onSave,
   onClose,
 }: {
-  onSave: (input: {
-    alias: string;
-    address: string;
-    unit: string;
-    bedrooms: number;
-    beds: number;
-    bathrooms: number;
-    unitSize: number | null;
-    unitSizeUnit: UnitSizeUnit;
-    currency: string;
-    checkoutTime: string;
-    checkinTime: string;
-    description: string;
-  }) => Promise<void>;
+  onSave: (input: NewProperty) => Promise<void>;
   onClose: () => void;
 }) {
   const [step, setStep] = useState(0);

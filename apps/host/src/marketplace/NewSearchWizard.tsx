@@ -1,10 +1,10 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import type { NewSearch, Property, UnitSizeUnit } from '@sweep/types';
 import { useState } from 'react';
 import { ScrollView, Text, TextInput, View } from 'react-native';
 
 import { Button, Card, Checkbox, colors } from '@sweep/ui';
 
+import { HowItWorksRow } from '@/marketplace/HowItWorksRow';
 import { MarketplaceHeader } from '@/marketplace/MarketplaceHeader';
 import { Field, ReadOnlyField, SegmentedToggle, SelectField } from '@/properties/fields';
 
@@ -45,30 +45,6 @@ const detailsOf = (property: Property): Details => ({
   unitSize: property.unitSize === null ? '' : String(property.unitSize),
   unitSizeUnit: property.unitSizeUnit,
 });
-
-/** The gray strip at the top of step 1 — ⓘ, title, chevron, and its own dismissal checkbox. */
-function HowItWorksRow() {
-  const [dismissed, setDismissed] = useState(false);
-  if (dismissed) return null;
-
-  return (
-    <View testID="search-form.info" className="gap-3 rounded bg-surfaceMuted p-4">
-      <View className="flex-row items-center gap-2">
-        <MaterialCommunityIcons name="information" size={20} color={colors.primary} />
-        <Text className="flex-1 text-[17px] font-bold text-ink">
-          How the Sweep Marketplace works
-        </Text>
-        <MaterialCommunityIcons name="chevron-right" size={24} color={colors.illustration} />
-      </View>
-      <Checkbox
-        label="Don't show this message again"
-        checked={false}
-        onChange={() => setDismissed(true)}
-        testID="search-form.info-dismiss"
-      />
-    </View>
-  );
-}
 
 /** The teal "Congrats!" panel over a scrim, while the search is being posted — screenshot `13`. */
 function CongratsOverlay() {
@@ -158,7 +134,7 @@ export function NewSearchWizard({
       >
         {step === 1 ? (
           <View className="gap-3">
-            <HowItWorksRow />
+            <HowItWorksRow title="How the Sweep Marketplace works" testID="search-form.info" />
             <Card className="px-4 pb-5 pt-4">
               <Text testID="search-form.step-title" className="text-[22px] font-bold text-ink">
                 Confirm the Property Details

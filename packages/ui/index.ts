@@ -10,3 +10,4 @@ export { Screen } from './src/Screen';
 export { SectionHeader } from './src/SectionHeader';
 export { Skeleton } from './src/Skeleton';
 export { Spinner } from './src/Spinner';
+export { timeLabel } from './src/time';

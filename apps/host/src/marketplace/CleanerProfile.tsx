@@ -4,9 +4,10 @@ import { useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Button, Card, Checkbox, SectionHeader, colors } from '@sweep/ui';
+import { Button, Card, SectionHeader, colors } from '@sweep/ui';
 
 import { SuperCleanerPill } from './BidCard';
+import { HowItWorksRow } from './HowItWorksRow';
 import { MarketplaceHeader } from './MarketplaceHeader';
 
 /**
@@ -82,27 +83,6 @@ function SummaryRow({ bid }: { bid: Bid }) {
       >
         <MaterialCommunityIcons name="forum" size={22} color={colors.surface} />
       </Pressable>
-    </View>
-  );
-}
-
-/** "How Adding a Cleaner to My Team Works" — the same info row shape the search wizard uses. */
-function HowItWorks({ onDismiss }: { onDismiss: () => void }) {
-  return (
-    <View testID="cleaner.info" className="gap-3 rounded bg-surfaceMuted p-4">
-      <View className="flex-row items-center gap-2">
-        <MaterialCommunityIcons name="information" size={20} color={colors.primary} />
-        <Text className="flex-1 text-[17px] font-bold text-ink">
-          How Adding a Cleaner to My Team Works
-        </Text>
-        <MaterialCommunityIcons name="chevron-right" size={24} color={colors.primary} />
-      </View>
-      <Checkbox
-        label="Don't show this message again"
-        checked={false}
-        onChange={onDismiss}
-        testID="cleaner.info-dismiss"
-      />
     </View>
   );
 }
@@ -194,7 +174,6 @@ export function CleanerProfile({
 }) {
   const insets = useSafeAreaInsets();
   const { cleaner } = bid;
-  const [howItWorks, setHowItWorks] = useState(true);
   const [expanded, setExpanded] = useState(false);
 
   const preview = messagePreview(cleaner.message);
@@ -231,7 +210,11 @@ export function CleanerProfile({
         className="flex-1"
         contentContainerStyle={{ padding: 12, paddingBottom: 24 }}
       >
-        {howItWorks ? <HowItWorks onDismiss={() => setHowItWorks(false)} /> : null}
+        <HowItWorksRow
+          title="How Adding a Cleaner to My Team Works"
+          testID="cleaner.info"
+          chevronColor={colors.primary}
+        />
 
         <Card className="mt-3">
           <View testID="cleaner.information" className="gap-1 p-4">
