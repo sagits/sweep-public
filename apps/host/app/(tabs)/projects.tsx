@@ -9,6 +9,7 @@ import { CalendarStrip } from '@/projects/CalendarStrip';
 import { ManualProjectDialog } from '@/projects/ManualProjectDialog';
 import { ProjectRow } from '@/projects/ProjectRow';
 import { groupByDay, sectionLabel, shortMonthLabel, startOfDay } from '@/projects/days';
+import { useRefreshControl } from '@/refresh';
 import { useProjects } from '@/stores/useProjects';
 
 function SkeletonSection({ testID }: { testID: string }) {
@@ -95,6 +96,7 @@ export default function ProjectsScreen() {
       <CalendarStrip selected={selected} onSelect={setSelected} onStepMonth={stepMonth} />
 
       <ScrollView
+        refreshControl={useRefreshControl(reload, 'projects.refresh')}
         testID="projects.scroll"
         className="flex-1 bg-background"
         contentContainerStyle={{ paddingBottom: 32 }}

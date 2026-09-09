@@ -9,6 +9,7 @@ import { EmptySearches } from '@/marketplace/EmptySearches';
 import { ScreenHeader } from '@/navigation/ScreenHeader';
 import { SearchCard } from '@/marketplace/SearchCard';
 import { Segmented } from '@/marketplace/Segmented';
+import { useRefreshControl } from '@/refresh';
 import { useMarketplace } from '@/stores/useMarketplace';
 
 const TABS = ['Open', 'Closed'] as const;
@@ -33,6 +34,7 @@ export default function MarketplaceScreen() {
   const searches = useMarketplace((state) => state.searches);
   const loading = useMarketplace((state) => state.loading);
   const load = useMarketplace((state) => state.load);
+  const reload = useMarketplace((state) => state.reload);
   const [tab, setTab] = useState<string>(TABS[0]);
 
   useEffect(() => {
@@ -74,6 +76,7 @@ export default function MarketplaceScreen() {
       </ScreenHeader>
 
       <ScrollView
+        refreshControl={useRefreshControl(reload, 'marketplace.refresh')}
         testID="marketplace.scroll"
         className="flex-1"
         contentContainerStyle={{ padding: 12, paddingBottom: 24 }}

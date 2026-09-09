@@ -7,6 +7,7 @@ import { Button, Card, Checkbox, Screen, Skeleton, colors } from '@sweep/ui';
 
 import { PropertyCard } from '@/properties/PropertyCard';
 import { SelectField } from '@/properties/fields';
+import { useRefreshControl } from '@/refresh';
 import { useProperties } from '@/stores/useProperties';
 
 const PAGE_SIZES = [5, 10, 25];
@@ -33,6 +34,7 @@ export default function PropertiesScreen() {
   const properties = useProperties((state) => state.properties);
   const loading = useProperties((state) => state.loading);
   const load = useProperties((state) => state.load);
+  const reload = useProperties((state) => state.reload);
 
   const [term, setTerm] = useState('');
   const [query, setQuery] = useState('');
@@ -55,6 +57,7 @@ export default function PropertiesScreen() {
   return (
     <Screen testID="screen.properties">
       <ScrollView
+        refreshControl={useRefreshControl(reload, 'properties.refresh')}
         testID="properties.scroll"
         className="flex-1"
         contentContainerStyle={{ padding: 12, paddingBottom: 24 }}

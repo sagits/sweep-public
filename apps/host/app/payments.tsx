@@ -7,6 +7,7 @@ import { Screen, colors } from '@sweep/ui';
 
 import { ScreenHeader } from '@/navigation/ScreenHeader';
 import { PaymentList } from '@/payments/PaymentList';
+import { useRefreshControl } from '@/refresh';
 import { usePayments } from '@/stores/usePayments';
 
 /**
@@ -19,6 +20,7 @@ export default function PaymentsScreen() {
   const payments = usePayments((state) => state.payments);
   const loading = usePayments((state) => state.loading);
   const load = usePayments((state) => state.load);
+  const reload = usePayments((state) => state.reload);
 
   useEffect(() => {
     void load();
@@ -57,6 +59,7 @@ export default function PaymentsScreen() {
         }
       />
       <ScrollView
+        refreshControl={useRefreshControl(reload, 'payments.refresh')}
         testID="payments.scroll"
         className="flex-1"
         contentContainerStyle={{ paddingBottom: 24 }}

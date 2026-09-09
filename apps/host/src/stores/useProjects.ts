@@ -2,6 +2,7 @@ import { createProject, fetchProjects } from '@sweep/mocks';
 import type { NewProject, Project } from '@sweep/types';
 import { create } from 'zustand';
 
+import { mergeFetched } from './merge';
 import { once } from './once';
 
 type ProjectsState = {
@@ -12,7 +13,7 @@ type ProjectsState = {
   /** The "Don't show this message again" tick on the automatic-vs-manual dialog. */
   manualDialogHidden: boolean;
   load: () => Promise<void>;
-  /** The calendar header's refresh icon: re-runs the fetch, skeletons and all. */
+  /** The calendar header's refresh icon and pull-to-refresh: re-runs the fetch, skeletons and all. */
   reload: () => Promise<void>;
   add: (input: NewProject) => Promise<Project>;
   hideManualDialog: () => void;
@@ -27,13 +28,11 @@ export const useProjects = create<ProjectsState>((set, get) => ({
   reload: async () => {
     set({ loading: true });
     const fetched = await fetchProjects();
-    // There is no server to refresh from, so re-fetching the seed must not drop what the host
-    // added this session: anything the fetch does not know about is kept.
-    set((state) => {
-      const fetchedIds = new Set(fetched.map((project) => project.id));
-      const added = state.projects.filter((project) => !fetchedIds.has(project.id));
-      return { projects: [...fetched, ...added], loading: false, loaded: true };
-    });
+    set((state) => ({
+      projects: mergeFetched(fetched, state.projects),
+      loading: false,
+      loaded: true,
+    }));
   },
   add: async (input) => {
     const project = await createProject(input);

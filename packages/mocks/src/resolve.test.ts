@@ -16,6 +16,22 @@ describe('resolve', () => {
     expect(settled).toBe(false);
   });
 
+  it('waits a flat half second, whatever Math.random says, so every skeleton shows for 0.5s', async () => {
+    jest.spyOn(Math, 'random').mockReturnValue(0.999);
+    let settled = false;
+    void resolve('ok').then(() => {
+      settled = true;
+    });
+
+    jest.advanceTimersByTime(499);
+    await Promise.resolve();
+    expect(settled).toBe(false);
+
+    jest.advanceTimersByTime(1);
+    await Promise.resolve();
+    expect(settled).toBe(true);
+  });
+
   it('resolves with the value it was given once the maximum delay has passed', async () => {
     const pending = resolve('ok');
 
