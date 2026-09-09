@@ -1,6 +1,7 @@
 import type { NewProject, Project } from '@sweep/types';
 
 import { resolve } from './resolve';
+import { seeded } from './seed';
 
 /**
  * Seeded days are relative to whenever the app boots, not fixed ISO strings: the calendar's first
@@ -55,15 +56,7 @@ export const seededProjects: Project[] = [
   },
 ];
 
-/**
- * ponytail: the same one-line seed switch `properties.ts` uses, until ticket 09 generalises it.
- * `EXPO_PUBLIC_SEED=false pnpm dev` boots every list on its empty state.
- */
-declare const process: { env: Record<string, string | undefined> };
-
-const seedEnabled = process.env.EXPO_PUBLIC_SEED !== 'false';
-
-export const fetchProjects = (): Promise<Project[]> => resolve(seedEnabled ? seededProjects : []);
+export const fetchProjects = (): Promise<Project[]> => resolve(seeded(seededProjects));
 
 /** Project ids are the digits the detail header prints, so they stay short rather than a uuid. */
 export const createProject = (input: NewProject): Promise<Project> =>

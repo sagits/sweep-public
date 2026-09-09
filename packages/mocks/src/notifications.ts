@@ -1,6 +1,7 @@
 import type { Notification } from '@sweep/types';
 
 import { resolve } from './resolve';
+import { seeded } from './seed';
 
 const minutesAgo = (minutes: number) => new Date(Date.now() - minutes * 60_000).toISOString();
 
@@ -24,4 +25,5 @@ export const seededNotifications: Notification[] = [
   },
 ];
 
-export const fetchNotifications = (): Promise<Notification[]> => resolve(seededNotifications);
+export const fetchNotifications = (): Promise<Notification[]> =>
+  resolve(seeded(seededNotifications));

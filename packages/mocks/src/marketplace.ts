@@ -2,6 +2,7 @@ import type { Bid, Cleaner, CleanerSearch, NewSearch, Property } from '@sweep/ty
 
 import { seededProperties } from './properties';
 import { resolve } from './resolve';
+import { seeded } from './seed';
 
 /**
  * The three cleaners the PRD names. Photos are emoji rather than shipped assets — the same call
@@ -118,13 +119,7 @@ export const seededSearches: CleanerSearch[] = seededProperties.map((property, i
   searchFor(property, index, BIDDERS[index] ?? seededCleaners)
 );
 
-/** Shared with the properties seed: `EXPO_PUBLIC_SEED=false` boots every list empty. */
-declare const process: { env: Record<string, string | undefined> };
-
-const seedEnabled = process.env.EXPO_PUBLIC_SEED !== 'false';
-
-export const fetchSearches = (): Promise<CleanerSearch[]> =>
-  resolve(seedEnabled ? seededSearches : []);
+export const fetchSearches = (): Promise<CleanerSearch[]> => resolve(seeded(seededSearches));
 
 /** A posted search draws bids from all three cleaners, which is what the wizard lands on. */
 export const createSearch = (input: NewSearch): Promise<CleanerSearch> => {
