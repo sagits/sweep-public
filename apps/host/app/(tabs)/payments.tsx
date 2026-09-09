@@ -11,7 +11,6 @@ export default function PaymentsScreen() {
   const payments = usePayments((state) => state.payments);
   const loading = usePayments((state) => state.loading);
   const load = usePayments((state) => state.load);
-  const clear = usePayments((state) => state.clear);
 
   useEffect(() => {
     void load();
@@ -20,7 +19,7 @@ export default function PaymentsScreen() {
   return (
     // The header is white and clears the status bar itself, so the page does not inset again.
     <Screen testID="screen.payments" insetTop={false}>
-      <PaymentsHeader onFilter={clear} />
+      <PaymentsHeader />
       <ScrollView
         testID="payments.scroll"
         className="flex-1"
