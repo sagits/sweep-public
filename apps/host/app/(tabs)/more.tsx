@@ -1,21 +1,28 @@
 import { useRouter } from 'expo-router';
+import { useEffect } from 'react';
 import { Pressable, ScrollView, Text } from 'react-native';
 
-import { currentUser } from '@sweep/mocks';
 import { Screen } from '@sweep/ui';
 
 import { MoreHeader } from '@/more/MoreHeader';
 import { MoreMenu } from '@/more/MoreMenu';
+import { useSession } from '@/stores/useSession';
 
 /** The version in screenshot 23's footer. Nothing in the PoC bumps it. */
 const VERSION = 'v1.44.3';
 
 export default function MoreScreen() {
   const router = useRouter();
+  const user = useSession((state) => state.user);
+  const load = useSession((state) => state.load);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
 
   return (
     <Screen testID="screen.more" insetTop={false}>
-      <MoreHeader name={currentUser.name} email={currentUser.email} />
+      <MoreHeader user={user} />
       <ScrollView
         testID="more.scroll"
         className="flex-1"

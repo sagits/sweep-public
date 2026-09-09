@@ -1,16 +1,20 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import type { User } from '@sweep/types';
 import { Pressable, Text, View } from 'react-native';
 
-import { HeaderBand, colors } from '@sweep/ui';
+import { HeaderBand, Skeleton, colors } from '@sweep/ui';
 
 /** Teal painted behind the top of the menu card, measured off screenshot 23. */
 const TEAL_BEHIND_CARD = 176;
 
 /**
  * More's teal header: help on the left, settings and logout on the right, then the avatar with
- * its edit badge over the hardcoded name and email. Every control here is decorative in the PoC.
+ * its edit badge over the name and email. Every control here is decorative in the PoC.
+ *
+ * The user resolves through the same mock delay as every other screen's data, so until it lands
+ * the two lines are skeleton bars — the loading state the PRD asks every screen for.
  */
-export function MoreHeader({ name, email }: { name: string; email: string }) {
+export function MoreHeader({ user }: { user: User | null }) {
   return (
     <View>
       <HeaderBand testID="more.header">
@@ -44,12 +48,21 @@ export function MoreHeader({ name, email }: { name: string; email: string }) {
             <MaterialCommunityIcons name="pencil" size={14} color={colors.primaryInk} />
           </View>
         </View>
-        <Text testID="more.name" className="mt-2.5 text-[28px] font-bold text-white">
-          {name}
-        </Text>
-        <Text testID="more.email" className="mt-0.5 text-[16px] text-white">
-          {email}
-        </Text>
+        {user ? (
+          <>
+            <Text testID="more.name" className="mt-2.5 text-[28px] font-bold text-white">
+              {user.name}
+            </Text>
+            <Text testID="more.email" className="mt-0.5 text-[16px] text-white">
+              {user.email}
+            </Text>
+          </>
+        ) : (
+          <View testID="more.skeleton" className="items-center">
+            <Skeleton className="mt-4 h-5 w-44" />
+            <Skeleton className="mt-3 h-3 w-56" />
+          </View>
+        )}
       </View>
     </View>
   );

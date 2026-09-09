@@ -21,6 +21,9 @@ const visible = (id: string, timeout = 10000) =>
 const exists = (id: string, timeout = 10000) =>
   waitFor(element(by.id(id))).toExist().withTimeout(timeout);
 
+const gone = (id: string, timeout = 10000) =>
+  waitFor(element(by.id(id))).not.toExist().withTimeout(timeout);
+
 describe('more', () => {
   beforeEach(async () => {
     await device.launchApp({ delete: true });
@@ -38,6 +41,25 @@ describe('more', () => {
     await exists('more.avatar-edit');
     await expect(element(by.id('more.name'))).toHaveText('Renato Probst');
     await expect(element(by.id('more.email'))).toHaveText('renatopprobst@gmail.com');
+  });
+
+  it('holds the profile behind skeleton bars while the user resolves', async () => {
+    // Detox waits out JS timers, and the mock delay is one, so a synchronized launch never sees
+    // a skeleton. This is the one test that watches the profile load, so it drives its own launch.
+    await device.launchApp({
+      delete: true,
+      newInstance: true,
+      launchArgs: { detoxEnableSynchronization: 0 },
+    });
+    await waitFor(element(by.id('tabs.more'))).toBeVisible().withTimeout(30000);
+    await element(by.id('tabs.more')).tap();
+
+    await exists('more.skeleton', 20000);
+    await gone('more.skeleton');
+
+    await device.enableSynchronization();
+
+    await expect(element(by.id('more.name'))).toHaveText('Renato Probst');
   });
 
   it('renders all ten menu rows and the footer', async () => {
