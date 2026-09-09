@@ -701,3 +701,8 @@ left alone. Nothing here changed a layout, a token or a copy string.
 - **`PaymentsHeader` and `MarketplaceHeader` are still two files.** 07 and 05 both recorded why:
   `HeaderBand` is the teal band and centres nothing, and neither header has yet been wanted by a
   third screen.
+
+**Verified on the device, not only in the browser.** `pnpm test` 76 passed across 20 suites;
+`pnpm lint` and `pnpm typecheck` (4/4) green; seeded `pnpm e2e:test` **44 passed across 9 suites**
+— the 43 that were green before, plus More's new loading spec; and the seed-off pass,
+`EXPO_PUBLIC_SEED=false ./scripts/e2e-test.sh e2e/seed.e2e.ts`, still 6/6.
