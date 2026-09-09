@@ -50,6 +50,21 @@ Two seams, per [ADR-0001](docs/adr/0001-testing-seams-tdd-and-detox.md): stores 
 are built test-first under Jest + React Native Testing Library; screens are covered by Detox specs
 in `apps/host/e2e/`. Layout fidelity is checked against `poc/screenshots/` by eye — no snapshot tests.
 
+## The web target
+
+`pnpm build:web` exports 20 prerendered routes into `apps/host/dist`; `npx serve apps/host/dist`
+serves them. Serve it **without** `--single`: the flag rewrites every request to `index.html` and
+the app then client-renders every route out of Home's prerender, which throws away the static
+output the export exists for.
+
+The trade-off is that the three dynamic routes — `/cleaner/[id]`, `/project/[id]`, `/search/[id]` —
+export as literal `[id].html` files and 404 on a plain file server. Reaching them from inside the
+app works; deep-linking one needs a rewrite from the host (on Vercel, a rewrite of `/cleaner/:id`
+to `/cleaner/[id].html`, and the same for the other two). Every static route, `/projects` included,
+deep-links as it stands.
+
 ## Platform-specific files
 
-`.web.tsx` files are used only where a native module has no web equivalent. None exist yet.
+`.web.tsx` files are used only where a native module has no web equivalent. **None exist** — the
+web verification pass in ticket 10 drove every screen and every flow in a browser and did not need
+one.

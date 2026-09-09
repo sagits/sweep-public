@@ -566,3 +566,68 @@ of it, on top of ticket 02's "containers assert `toExist`, text asserts `toBeVis
   `keyboardShouldPersistTaps="handled"` scroll view closes it. And an element that grows when
   tapped (the cleaner's message paragraph) is tapped at an explicit `{ x, y }` near its top-left:
   `tap()` aims at the centre, which leaves the fold as soon as the paragraph expands.
+
+## 10 — Web verification
+
+- **The one app defect the browser found: every icon prerendered empty, and React threw a
+  hydration error on load.** `@expo/vector-icons` renders a bare `<Text />` until
+  `Font.isLoaded(family)` is true. Nothing loads the font during a static export, so all 20
+  exported HTML files carried `<div class="css-146c3p1"></div>` where each icon should be, while
+  the browser — which gets the `@font-face` from the export's own stylesheet — drew the glyph on
+  its first client render. Every screen with an icon therefore mismatched, and React logged
+  *"Hydration failed because the server rendered HTML didn't match the client"* (minified as
+  #418) and re-rendered the tree. The fix is one call in `app/_layout.tsx`, above every screen:
+  `useFonts(MaterialCommunityIcons.font)`. `expo-font` swaps `useFonts` for a synchronous
+  `useStaticFonts` when `typeof window === 'undefined'`, so the font registers during the server
+  render and the icons ship in the HTML. On native it changes nothing the icons were not already
+  doing for themselves. Icons now also paint before hydration instead of popping in.
+- **`expo-font` is imported without being declared in `apps/host/package.json`.** It is a peer of
+  `@expo/vector-icons` and hoisted at the root, so it resolves; declaring it is what should happen,
+  but pnpm 12 refuses (`Broken lockfile: missing snapshot for expo-font@14.0.12` — the lockfile
+  only holds peer-suffixed keys for it) and the only way through is a full re-resolve of the
+  lockfile, which is not a thing to do to a working install on the last ticket. Add it with
+  `expo install expo-font` the next time the lockfile is regenerated for another reason.
+- **How the mismatch was found, since the production error is minified to a number.**
+  `npx expo export --platform web --dev --output-dir dist-dev` builds the same static export with
+  readable React errors and LogBox; the dev build names the mismatching element and prints the
+  server/client diff. Worth remembering — the minified #418 says nothing about which element.
+- **Two console warnings are left, both from react-navigation and neither ours.**
+  `@react-navigation/elements`'s `ResourceSavingView` passes `pointerEvents` as a prop on web
+  (`props.pointerEvents is deprecated`), and its `Screen` sets `aria-hidden={!focused}` on the
+  outgoing screen while the button that was just pressed still holds focus, which Chrome reports
+  as *"Blocked aria-hidden on an element because its descendant retained focus"*. The
+  `pointerEvents` one is `__DEV__`-only and does not appear in the production export at all; the
+  `aria-hidden` one does, and fixing it means the library moving to `inert`. The app's own code
+  has neither — ticket 02 already moved `pointerEvents` into `style`.
+- **Chrome's Issues panel reports "a form field element should have an id or name attribute"** for
+  every `TextInput`. react-native-web does not emit `name`, and it is an autofill hint, not an
+  error or an unsupported-prop warning. Left alone rather than threading an `id` through the
+  shared field primitives on the last ticket.
+- **Static export, `serve`, and dynamic routes.** `npx serve apps/host/dist` serves each route's
+  own prerender, which is the point of `web.output: "static"`. `serve --single` must not be used:
+  it rewrites everything to `index.html`, so every route client-renders out of Home's prerender.
+  The cost of not using it is that `/cleaner/[id]`, `/project/[id]` and `/search/[id]` export as
+  literal `[id].html` and 404 on a plain file server — no `_expo/routes.json` is emitted for a
+  host to read. In-app navigation reaches all three; deep-linking one needs a host rewrite.
+  Recorded in the README.
+- **No `.web.tsx` file was needed.** The whole app — six tabs, both wizards, both detail screens,
+  every dialog and dropdown — runs on the shared source. The earlier tickets had already paid for
+  this: `boxShadow` over `shadow*`, `style.pointerEvents` over the prop, absolutely positioned
+  overlays over `Alert`/`Modal`, `md:` breakpoint classes over `useWindowDimensions`, and no
+  gesture handler anywhere.
+- **Verified by hand in Chrome over `expo export --platform web` on port 8123.** All six tabs at
+  420px and at 1280px; `/projects`, `/properties`, `/marketplace`, `/payments`, `/more`,
+  `/property/new`, `/project/new` and `/search/new` all deep-linked directly; the sidebar flips on
+  a live resize with no reload; the property form and the cleaner-search wizard both drive with
+  mouse and keyboard (Tab moves field to field, typing lands, dropdowns expand and select); and
+  the full demo flow runs — a fourth property registered through the form, a manual project
+  created against it that lands back on Home in the Projects card, a search posted for it that
+  opens on three bids, and a bid card that opens Ramona's profile.
+- **One Detox flake seen, and it is a race in the spec, not in the app.**
+  `projects › loads the day sections behind skeleton rows` failed once out of three full runs
+  (`Timed out while waiting for expectation: TOEXIST WITH MATCHER(id == "projects.skeleton")`).
+  It is the one test that launches unsynchronized to watch a skeleton, and Home has already called
+  `useProjects.load()` by the time it taps the Projects tab — so whether a skeleton is still on
+  screen is a race between the tab tap and the 600–1200ms mock delay, decided by how fast the
+  simulator boots that run. Re-ran the file (5/5) and the whole suite (43/43) green. If it bites
+  again, the durable fix is for the spec to reach Projects by deep link rather than through Home.
