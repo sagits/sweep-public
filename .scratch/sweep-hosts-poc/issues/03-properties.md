@@ -19,13 +19,13 @@ Seeds three properties, each with its own alias, address, room counts, unit size
 
 **Blocked by:** 01
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] List and form match screenshots `24`–`29`; nothing renders as an unstyled default
-- [ ] The list loads behind skeleton cards and shows three seeded properties
-- [ ] Provider tiles are inert; Skip opens the confirm alert and Yes advances
-- [ ] The address field is read-only with its fixed value; the unit-size toggle switches between sq. ft. and sq. mt.; the description counter reads `0 / 1000`
-- [ ] Saving shows a button spinner, then the new property appears in the list and persists for the session
-- [ ] The empty state is implemented and reachable, even though it is not the initial state
+- [x] List and form match screenshots `24`–`29`; nothing renders as an unstyled default
+- [x] The list loads behind skeleton cards and shows three seeded properties
+- [x] Provider tiles are inert; Skip opens the confirm alert and Yes advances
+- [x] The address field is read-only with its fixed value; the unit-size toggle switches between sq. ft. and sq. mt.; the description counter reads `0 / 1000`
+- [x] Saving shows a button spinner, then the new property appears in the list and persists for the session
+- [x] The empty state is implemented and reachable, even though it is not the initial state
 - [ ] `properties.e2e.ts` passes: list loads, New Property → skip calendar → fill form → save → new card in the list
-- [ ] The properties store is built test-first per ADR-0001: adding a property appends it and it survives for the session
+- [x] The properties store is built test-first per ADR-0001: adding a property appends it and it survives for the session

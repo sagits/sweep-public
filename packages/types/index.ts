@@ -20,3 +20,31 @@ export type Project = {
   /** ISO timestamp of the cleaning window's start. */
   startsAt: string;
 };
+
+/** The unit-size toggle on the property form; the value is also what the card prints. */
+export type UnitSizeUnit = 'sq. ft.' | 'sq. mt.';
+
+/** A registered property. The Properties tab lists these; projects and searches point at one. */
+export type Property = {
+  id: string;
+  alias: string;
+  /** Street address without the unit — the card appends `#unit` itself. */
+  address: string;
+  /** "Unit #, Building Name, etc". Empty when the host left it blank. */
+  unit: string;
+  bedrooms: number;
+  beds: number;
+  bathrooms: number;
+  /** null when the host ticked "I don't know the Unit Size". */
+  unitSize: number | null;
+  unitSizeUnit: UnitSizeUnit;
+  /** Stands in for the property photo; the card falls back to a house outline without one. */
+  image?: string;
+  currency: string;
+  checkoutTime: string;
+  checkinTime: string;
+  description: string;
+};
+
+/** What the New Property form collects. The id is the mock resolver's to assign. */
+export type NewProperty = Omit<Property, 'id'>;

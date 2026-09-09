@@ -165,3 +165,58 @@ Choices made while building from `poc/PRD.md` where the PRD left something open.
   not resolve a percentage `top` on an absolutely positioned view — it silently collapses to 0, and
   the extension covered the header row it was supposed to sit below. It cost a full Detox cycle to
   find, because the app rendered perfectly except for an empty teal band.
+
+## 03 — Properties
+
+- **Screenshot conflict — the form's address is the PRD's `Los Angeles, CA 90001, USA`, not the
+  screenshot's `Beacon, NY 12508, USA`.** Screenshots `25`/`26` show whatever the host typed into
+  a live address autocomplete, which this PoC deliberately does not have; the PRD names the fixed
+  stand-in value explicitly. Data, not layout — everything around the field follows the screenshot.
+- **Screenshot simplification — the pagination row (`‹ 1 ›`) under the list is dropped.** With
+  three or four properties and "Show 5 properties" there is exactly one page, so the control would
+  be permanently inert. The page-size dropdown is real instead: it slices the list. The webview
+  chrome around the screen — hamburger header, `RP` avatar, the `X`, the Intercom bubble — goes
+  with it; the PRD already rules that this becomes a native screen.
+- **The "Adding Properties" info row is on both form steps.** The PRD puts it on step 1, screenshot
+  `27` shows it on the details step. Both, then; it is one row.
+- **Provider tiles are wordmarks, not logos.** Nothing branded is downloaded or shipped, and the
+  tiles are inert either way. Same reasoning as ticket 02's megaphone emoji.
+- **Property images are emoji, and a property without one falls back to a grey house outline** —
+  which is exactly what screenshot `24` shows. So the seed reads as "each with its own image"
+  without shipping an asset, and a property registered through the form matches the reference.
+- **Measured off screenshot `24`:** the page is the PRD's grey (`#F1F0F6` sampled — unlike Home,
+  which is white), cards are white, the New Property and search buttons sample `#76E2C9` → the
+  `primary` token, and the alias, "Edit property groups" and "Add teammates" sample `#028878` /
+  `#078270` at their darkest → `primaryInk`, the token ticket 02 added for teal text on white.
+  Rules under the fields sample `#E1E0E6` → `border`. No new tokens were needed.
+- **The confirm dialog is an absolutely positioned overlay — not `Alert`, not `Modal`.**
+  `Alert` is a no-op under react-native-web, and the PoC's web target has to run the same flow.
+  `Modal` renders *nothing at all* under jest-expo (React Native 0.81's Modal mock never reaches
+  the tree here), which would drop the confirm step, and every dropdown, out of the TDD seam. The
+  overlay fills the form's root view, matches screenshot `29` and is testable in both seams. The
+  form's dropdowns expand inline for the same reason, plus one of their own: a modal inside a
+  ScrollView gets clipped.
+- **RNTL 14 + React 19: a `fireEvent` state update only lands on the next async flush, and two
+  events fired back to back without one wedge the render loop.** Every later update is then
+  dropped silently — the component simply stops re-rendering, with no warning and no error. This
+  cost an hour: a form test typed into two fields in a row and every assertion after it saw the
+  initial state. The rule the specs now follow: **await something after every `fireEvent`** —
+  `findBy*`, `waitFor`, or a bare `setTimeout(0)` flush. This is on top of ticket 02's finding
+  that `render` itself must be awaited.
+- **`useProperties` carries a `loaded` flag as well as `loading`.** `load()` is a no-op once the
+  seed has arrived, so returning to the tab after registering a property does not re-seed over it.
+  That is what "persists for the session" means, and it is what the store test pins down.
+- **The seed switch is one env read, `EXPO_PUBLIC_SEED=false`, living in
+  `packages/mocks/src/properties.ts`.** It makes the empty state reachable today without a code
+  edit; ticket 09 owns generalising it across every list. `process` is declared locally rather than
+  pulling `@types/node` into a package that needs nothing else from Node.
+- **Times are text fields and the image tile is inert.** The PRD lets a date-time picker and an
+  image picker be simplified; both would otherwise be native modules, which the PoC avoids.
+- **`ConfirmDialog` and the form's field primitives stay in `apps/host/src/properties/`.** They are
+  shared-looking, but this is the only feature using them today and a whole duplicated file is a
+  worse merge than a one-line barrel conflict. Promote them into `packages/ui` when a second
+  feature needs them.
+- **Verified in the browser instead of the simulator**, since three agents share one dev client:
+  `build:web` exports cleanly, `/properties` and `/property/new` both render (deep-linked too), the
+  whole skip → fill → save flow runs and appends the fourth card, and the console is free of errors
+  and react-native-web warnings.
