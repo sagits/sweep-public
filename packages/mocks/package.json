@@ -1,0 +1,19 @@
+{
+  "name": "@sweep/mocks",
+  "version": "0.1.0",
+  "private": true,
+  "main": "index.ts",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@sweep/types": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/jest": "29.5.14",
+    "typescript": "~5.9.3"
+  }
+}
