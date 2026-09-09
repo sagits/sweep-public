@@ -28,6 +28,14 @@ const colors = {
   danger: '#E2574C',
   // Flat gray of the empty-state illustrations — measured off screenshot 22's folder
   illustration: '#CDCBCF',
+  // The deeper teal of the "Super Cleaner" chip and the completed "While you wait" circles
+  primaryDeep: '#2DA4A8',
+  // Review stars
+  star: '#F5BA5C',
+  // The purple "Background Checked" shield
+  badge: '#6510CC',
+  // The slate warning block under the cleaning-needs textarea
+  slate: '#6F7C8B',
 };
 
 const radius = {
