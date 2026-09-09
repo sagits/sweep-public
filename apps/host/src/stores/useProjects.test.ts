@@ -2,15 +2,18 @@ import { MAX_DELAY_MS, seededProjects } from '@sweep/mocks';
 import type { NewProject } from '@sweep/types';
 
 import { addDays, dayKey, groupByDay, sectionLabel } from '@/projects/days';
+import { resetLoads } from './once';
 import { useProjects } from './useProjects';
 
-const reset = () =>
+const reset = () => {
+  resetLoads();
   useProjects.setState({
     projects: [],
     loading: false,
     loaded: false,
     manualDialogHidden: false,
   });
+};
 
 /** What the New Manual Project form hands the store, against a real seeded property. */
 const manualProject = (startsAt: Date): NewProject => ({

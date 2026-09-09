@@ -2,6 +2,8 @@ import { createProperty, fetchProperties } from '@sweep/mocks';
 import type { NewProperty, Property } from '@sweep/types';
 import { create } from 'zustand';
 
+import { once } from './once';
+
 type PropertiesState = {
   properties: Property[];
   loading: boolean;
@@ -11,16 +13,15 @@ type PropertiesState = {
   add: (input: NewProperty) => Promise<Property>;
 };
 
-export const useProperties = create<PropertiesState>((set, get) => ({
+export const useProperties = create<PropertiesState>((set) => ({
   properties: [],
   loading: false,
   loaded: false,
-  load: async () => {
-    if (get().loaded || get().loading) return;
+  load: once(async () => {
     set({ loading: true });
     const properties = await fetchProperties();
     set({ properties, loading: false, loaded: true });
-  },
+  }),
   add: async (input) => {
     const property = await createProperty(input);
     set((state) => ({ properties: [...state.properties, property] }));

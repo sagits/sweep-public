@@ -1,10 +1,13 @@
 import { MAX_DELAY_MS, seededNotifications } from '@sweep/mocks';
 
+import { resetLoads } from './once';
+
 import { useNotifications } from './useNotifications';
 
 describe('useNotifications', () => {
   beforeEach(() => {
     jest.useFakeTimers();
+    resetLoads();
     useNotifications.setState({ notifications: [], loading: false });
   });
   afterEach(() => jest.useRealTimers());

@@ -2,6 +2,8 @@ import { currentUser, resolve } from '@sweep/mocks';
 import type { User } from '@sweep/types';
 import { create } from 'zustand';
 
+import { once } from './once';
+
 type SessionState = {
   user: User | null;
   loading: boolean;
@@ -12,9 +14,9 @@ type SessionState = {
 export const useSession = create<SessionState>((set) => ({
   user: null,
   loading: false,
-  load: async () => {
+  load: once(async () => {
     set({ loading: true });
     const user = await resolve(currentUser);
     set({ user, loading: false });
-  },
+  }),
 }));

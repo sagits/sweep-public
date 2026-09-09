@@ -1,10 +1,13 @@
 import { MAX_DELAY_MS, seededPayments } from '@sweep/mocks';
 
+import { resetLoads } from './once';
+
 import { usePayments } from './usePayments';
 
 describe('usePayments', () => {
   beforeEach(() => {
     jest.useFakeTimers();
+    resetLoads();
     usePayments.setState({ payments: [], loading: false });
   });
   afterEach(() => jest.useRealTimers());

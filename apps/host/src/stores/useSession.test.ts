@@ -1,10 +1,13 @@
 import { MAX_DELAY_MS, currentUser } from '@sweep/mocks';
 
+import { resetLoads } from './once';
+
 import { useSession } from './useSession';
 
 describe('useSession', () => {
   beforeEach(() => {
     jest.useFakeTimers();
+    resetLoads();
     useSession.setState({ user: null, loading: false });
   });
   afterEach(() => jest.useRealTimers());

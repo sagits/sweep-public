@@ -2,6 +2,8 @@ import { fetchPayments } from '@sweep/mocks';
 import type { Payment } from '@sweep/types';
 import { create } from 'zustand';
 
+import { once } from './once';
+
 type PaymentsState = {
   payments: Payment[];
   loading: boolean;
@@ -11,9 +13,9 @@ type PaymentsState = {
 export const usePayments = create<PaymentsState>((set) => ({
   payments: [],
   loading: false,
-  load: async () => {
+  load: once(async () => {
     set({ loading: true });
     const payments = await fetchPayments();
     set({ payments, loading: false });
-  },
+  }),
 }));

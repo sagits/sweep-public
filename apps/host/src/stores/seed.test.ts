@@ -1,6 +1,7 @@
 import { MAX_DELAY_MS } from '@sweep/mocks';
 
-import { useMarketplace, resetSeeding } from './useMarketplace';
+import { resetLoads } from './once';
+import { useMarketplace } from './useMarketplace';
 import { useNotifications } from './useNotifications';
 import { usePayments } from './usePayments';
 import { useProjects } from './useProjects';
@@ -20,9 +21,9 @@ const setSeed = (value: string | undefined) => {
 
 const original = process.env.EXPO_PUBLIC_SEED;
 
-/** Every store back to its initial state, including the marketplace's module-level request. */
+/** Every store back to its initial state, including each one's in-flight load. */
 const resetStores = () => {
-  resetSeeding();
+  resetLoads();
   useProperties.setState({ properties: [], loading: false, loaded: false });
   useProjects.setState({ projects: [], loading: false, loaded: false });
   useMarketplace.setState({ searches: [], loading: false, loaded: false });

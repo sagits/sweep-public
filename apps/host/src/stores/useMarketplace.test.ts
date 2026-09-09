@@ -1,6 +1,7 @@
 import { MAX_DELAY_MS, seededSearches } from '@sweep/mocks';
 
-import { resetSeeding, useMarketplace } from './useMarketplace';
+import { resetLoads } from './once';
+import { useMarketplace } from './useMarketplace';
 
 const NEW_SEARCH = {
   propertyId: 'property-2',
@@ -23,7 +24,7 @@ const settle = async <T,>(pending: Promise<T>) => {
 describe('useMarketplace', () => {
   beforeEach(() => {
     jest.useFakeTimers();
-    resetSeeding();
+    resetLoads();
     useMarketplace.setState({ searches: [], loading: false, loaded: false });
   });
   afterEach(() => jest.useRealTimers());

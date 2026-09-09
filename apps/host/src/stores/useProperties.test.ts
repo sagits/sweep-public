@@ -1,5 +1,7 @@
 import { MAX_DELAY_MS, seededProperties } from '@sweep/mocks';
 
+import { resetLoads } from './once';
+
 import { useProperties } from './useProperties';
 
 const NEW_PROPERTY = {
@@ -20,6 +22,7 @@ const NEW_PROPERTY = {
 describe('useProperties', () => {
   beforeEach(() => {
     jest.useFakeTimers();
+    resetLoads();
     useProperties.setState({ properties: [], loading: false, loaded: false });
   });
   afterEach(() => jest.useRealTimers());

@@ -2,6 +2,8 @@ import { createProject, fetchProjects } from '@sweep/mocks';
 import type { NewProject, Project } from '@sweep/types';
 import { create } from 'zustand';
 
+import { once } from './once';
+
 type ProjectsState = {
   projects: Project[];
   loading: boolean;
@@ -21,10 +23,7 @@ export const useProjects = create<ProjectsState>((set, get) => ({
   loading: false,
   loaded: false,
   manualDialogHidden: false,
-  load: async () => {
-    if (get().loaded || get().loading) return;
-    await get().reload();
-  },
+  load: once(() => get().reload()),
   reload: async () => {
     set({ loading: true });
     const fetched = await fetchProjects();
