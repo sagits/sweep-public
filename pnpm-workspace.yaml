@@ -6,6 +6,11 @@ packages:
 # https://docs.expo.dev/guides/monorepo/
 nodeLinker: hoisted
 
+# packages/* declare react and react-native as peers. Auto-installing those peers gives each
+# package its own copy — a second React, and every hook in packages/ui throws. The app provides
+# them through the hoisted root node_modules.
+autoInstallPeers: false
+
 allowBuilds:
   detox: true
   dtrace-provider: true
