@@ -59,7 +59,9 @@ function SummaryRow({ bid }: { bid: Bid }) {
 
         <View className="flex-row items-center gap-1.5">
           <MaterialCommunityIcons name="star" size={18} color={colors.star} />
-          <Text className="text-[15px] font-bold text-ink">{cleaner.rating.toFixed(1)}</Text>
+          <Text testID="cleaner.rating" className="text-[15px] font-bold text-ink">
+            {cleaner.rating.toFixed(1)}
+          </Text>
           {/* One template literal: React Native splits `({n} reviews)` into separate text nodes
               and no `by.text` matcher can reach those. */}
           <Text className="text-[15px] text-ink">{`(${cleaner.reviewCount} reviews)`}</Text>

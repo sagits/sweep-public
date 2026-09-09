@@ -487,3 +487,31 @@ merges into a checkout that has a stale `router.d.ts` listing only the old route
   the profile, both expanders work, Ramona renders `17`/`19`/`20` and Aurea renders correctly
   without the Super Cleaner chip or either Rental Handy Pro row, and the console is free of errors
   and react-native-web warnings. `cleaner-detail.e2e.ts` is written but was not run.
+
+## 10 — The Detox specs against the real simulator
+
+Tickets 03–06 wrote their specs and verified in the browser, so ten tests met the device for the
+first time here. Every failure was spec-side; none of them was an app defect. Four rules came out
+of it, on top of ticket 02's "containers assert `toExist`, text asserts `toBeVisible`":
+
+- **Anything below the fold has to be scrolled to, even when the ticket only lists it.** Home's
+  Projects card, the third property card, the "While you wait" checklist row and the promo card's
+  headline all render fine and all fail `toBeVisible` — clipped, at 0% of the 75% threshold. A spec
+  that writes them as flat assertions is asserting something no human can see either.
+- **Scroll to the *lowest* line of a row, not the first one that matches.**
+  `whileElement(...).scroll()` stops the instant its target passes the threshold, so the target
+  ends up at the bottom edge and whatever sits under it is still clipped. Home's project row is
+  the cleaner name over the alias: scrolling to `Unassigned` left `Beach apartment` off-screen,
+  and scrolling to the alias brings both.
+- **A repeated string is scoped, not indexed at random.** Three seeded searches all say "Created a
+  minute ago"; Home names a property in the Cleaner Search card *and* in the Projects card; the
+  cleaner profile prints the rating in the summary row and again in the Reviews row. The order of
+  preference is a `by.id` on the element that is actually meant (`cleaner.rating` was added for
+  exactly this), then `by.text(...).withAncestor(by.id(card))`, then `.atIndex(n)` where the index
+  itself carries the meaning — `Downtown loft` `.atIndex(1)` inside the Projects card *is* the
+  assertion that the manual project this test created was appended next to the seeded one.
+- **Two taps that need help.** A multiline `TextInput` swallows the return key, so the keyboard
+  stays up and covers a sticky footer button — tapping a non-touchable view inside the
+  `keyboardShouldPersistTaps="handled"` scroll view closes it. And an element that grows when
+  tapped (the cleaner's message paragraph) is tapped at an explicit `{ x, y }` near its top-left:
+  `tap()` aims at the centre, which leaves the fold as soon as the paragraph expands.

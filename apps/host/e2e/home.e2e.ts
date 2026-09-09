@@ -20,6 +20,13 @@ const exists = (id: string, timeout = 10000) =>
 const gone = (id: string, timeout = 10000) =>
   waitFor(element(by.id(id))).not.toExist().withTimeout(timeout);
 
+/**
+ * Home shows a property alias in the Cleaner Search card as well as in the Projects card, so a
+ * row assertion has to say which card it means.
+ */
+const inProjectsCard = (value: string) =>
+  by.text(value).withAncestor(by.id('home.projects-card'));
+
 const scrolledToText = (text: string) =>
   waitFor(element(by.text(text)))
     .toBeVisible()
@@ -67,8 +74,13 @@ describe('home', () => {
 
     // The three seeded projects, from `packages/mocks/src/projects.ts`.
     await exists('home.project.38261465');
-    await expect(element(by.text('Unassigned')).atIndex(0)).toBeVisible();
-    await expect(element(by.text('Beach apartment')).atIndex(0)).toBeVisible();
+    // The Projects card sits below the Cleaner Search card, off the fold on a phone. The alias
+    // is the lower of the row's two lines, so scrolling to it brings the cleaner name with it.
+    await waitFor(element(inProjectsCard('Beach apartment')))
+      .toBeVisible()
+      .whileElement(by.id(SCROLL))
+      .scroll(300, 'down');
+    await expect(element(inProjectsCard('Unassigned')).atIndex(0)).toBeVisible();
     await exists('home.project.38261465.stamp');
     await exists('home.project.38261466');
     await exists('home.project.38261467');
@@ -86,7 +98,7 @@ describe('home', () => {
 
   it('dismisses the promo card, and its header pill, for the session', async () => {
     await exists('home.promo-card');
-    await expect(element(by.text('Invite a Host and get $100 in Credits'))).toBeVisible();
+    await scrolledToText('Invite a Host and get $100 in Credits');
 
     await scrolledToText("Don't show this anymore");
     await element(by.id('home.promo-dismiss')).tap();

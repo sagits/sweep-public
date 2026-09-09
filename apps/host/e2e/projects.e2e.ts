@@ -105,7 +105,16 @@ describe('projects', () => {
     // Back on Home, with the new project in the Projects card.
     await exists('screen.home', 20000);
     await exists('home.projects-card');
-    await scrolledToText('Downtown loft', 'home.scroll');
+    // The seed already holds a Downtown loft project, and the card is appended to, so the row
+    // this test created is the *second* one — and it only exists if the form worked. The card is
+    // below the fold, and the Cleaner Search card above it names the property too, hence the
+    // ancestor.
+    await waitFor(
+      element(by.text('Downtown loft').withAncestor(by.id('home.projects-card'))).atIndex(1)
+    )
+      .toBeVisible()
+      .whileElement(by.id('home.scroll'))
+      .scroll(300, 'down');
   });
 
   it('opens project detail from a row, with its pills and detail rows', async () => {

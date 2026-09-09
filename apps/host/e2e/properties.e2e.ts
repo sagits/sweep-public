@@ -17,6 +17,12 @@ const exists = (id: string, timeout = 10000) =>
 const gone = (id: string, timeout = 10000) =>
   waitFor(element(by.id(id))).not.toExist().withTimeout(timeout);
 
+const scrolledToText = (text: string) =>
+  waitFor(element(by.text(text)))
+    .toBeVisible()
+    .whileElement(by.id('properties.scroll'))
+    .scroll(300, 'down');
+
 const openPropertiesTab = async () => {
   await waitFor(element(by.id('tabs.properties'))).toBeVisible().withTimeout(30000);
   await element(by.id('tabs.properties')).tap();
@@ -40,11 +46,14 @@ describe('properties', () => {
     await exists('properties.group-checkbox');
 
     await exists('properties.card.property-1');
-    for (const alias of SEEDED) {
-      await expect(element(by.text(alias))).toBeVisible();
-    }
     await exists('properties.card.property-1.overflow');
-    await expect(element(by.text('Add teammates')).atIndex(0)).toBeVisible();
+    // "Add teammates" is a nested `Text`, which Detox reads as part of its parent paragraph.
+    await expect(element(by.text('Teammate: Add teammates')).atIndex(0)).toBeVisible();
+
+    // The third card is below the fold on a phone.
+    for (const alias of SEEDED) {
+      await scrolledToText(alias);
+    }
   });
 
   it('loads the list behind skeleton cards', async () => {

@@ -46,7 +46,8 @@ describe('cleaner detail', () => {
     await text('is also a Rental Handy Pro');
     await text('Ramona');
     await text('Super Cleaner');
-    await text('4.8');
+    // The rating is printed twice — the summary row and the Reviews row — so it is matched by id.
+    await expect(element(by.id('cleaner.rating'))).toHaveText('4.8');
     await text('(22 reviews)');
     await text('Expires in 2 days');
     await text('How Adding a Cleaner to My Team Works');
@@ -76,7 +77,7 @@ describe('cleaner detail', () => {
     await openCleaner('aurea');
 
     await text('Aurea');
-    await text('5.0');
+    await expect(element(by.id('cleaner.rating'))).toHaveText('5.0');
     await text('(11 reviews)');
     await gone('cleaner.handy-pro');
     await gone('cleaner.rental-handy-pro');
@@ -89,13 +90,15 @@ describe('cleaner detail', () => {
   it('shows and hides the cleaner’s message', async () => {
     await openCleaner('jairo');
 
-    await text('Message from Cleaner');
+    await scrolledTo('Message from Cleaner');
     // The "Show"/"Hide" word is a nested `Text`, which Detox reads as part of the paragraph, so
     // the state is asserted on the pressable's label instead.
     await expect(element(by.id('cleaner.message'))).toHaveLabel('Show message');
-    await element(by.id('cleaner.message')).tap();
+    // Tapped near its top-left rather than at its centre: the paragraph is the tap target, and
+    // it grows past the fold the moment it expands.
+    await element(by.id('cleaner.message')).tap({ x: 30, y: 12 });
     await expect(element(by.id('cleaner.message'))).toHaveLabel('Hide message');
-    await element(by.id('cleaner.message')).tap();
+    await element(by.id('cleaner.message')).tap({ x: 30, y: 12 });
     await expect(element(by.id('cleaner.message'))).toHaveLabel('Show message');
   });
 

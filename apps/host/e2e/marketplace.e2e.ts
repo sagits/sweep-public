@@ -50,7 +50,8 @@ describe('marketplace', () => {
     await exists('marketplace.search.search-2');
     await exists('marketplace.search.search-3');
     await text(FIRST_ALIAS);
-    await text('Created a minute ago');
+    // One per seeded search, all created at boot.
+    await expect(element(by.text('Created a minute ago')).atIndex(0)).toBeVisible();
   });
 
   it('loads the list behind skeleton cards', async () => {
@@ -114,7 +115,7 @@ describe('marketplace', () => {
 
     await scrolledTo('While you wait', 'bids.scroll');
     await text('Take a tour');
-    await text('Add a checklist to your property');
+    await scrolledTo('Add a checklist to your property', 'bids.scroll');
   });
 
   it('dismisses a bid-list banner and the While you wait card', async () => {
@@ -171,6 +172,10 @@ describe('marketplace', () => {
     await exists('search-form.save-notes');
     await exists('search-form.warning');
     await element(by.id('search-form.notes')).typeText('Please pay attention to the balcony.');
+    // The notes field is multiline, so the return key adds a newline rather than dismissing the
+    // keyboard — and the keyboard covers the footer button. Tapping a non-touchable view inside
+    // the scroll view (`keyboardShouldPersistTaps="handled"`) closes it.
+    await element(by.id('search-form.warning')).tap();
 
     // The overlay and the button spinner are both up while the mock resolver is in flight, so
     // this leg runs unsynchronized — a synchronized tap would only hand back once it is over.
