@@ -19,6 +19,7 @@ export default function HomeScreen() {
   const notifications = useNotifications((state) => state.notifications);
   const notificationsLoading = useNotifications((state) => state.loading);
   const loadNotifications = useNotifications((state) => state.load);
+  const projects = useProjects((state) => state.projects);
   const projectsLoading = useProjects((state) => state.loading);
   const loadProjects = useProjects((state) => state.load);
   const promoDismissed = usePromo((state) => state.dismissed);
@@ -53,7 +54,14 @@ export default function HomeScreen() {
         </View>
         <View className="gap-[14px] px-2 pt-[14px]">
           {promoDismissed ? null : <PromoCard onDismiss={dismissPromo} />}
-          <ProjectsCard loading={projectsLoading} onSeeAll={() => router.navigate('/projects')} />
+          <ProjectsCard
+            projects={projects}
+            loading={projectsLoading}
+            onSeeAll={() => router.navigate('/projects')}
+            onOpen={(project) =>
+              router.navigate({ pathname: '/project/[id]', params: { id: project.id } })
+            }
+          />
           <NotificationsCard notifications={notifications} loading={notificationsLoading} />
           <QualityCenterCard />
         </View>

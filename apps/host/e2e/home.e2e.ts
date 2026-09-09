@@ -66,8 +66,13 @@ describe('home', () => {
 
     await device.enableSynchronization();
 
-    await visible('home.projects-empty');
-    await expect(element(by.text('There are no projects right now.'))).toBeVisible();
+    // The three seeded projects, from `packages/mocks/src/projects.ts`.
+    await exists('home.project.38261465');
+    await expect(element(by.text('Unassigned')).atIndex(0)).toBeVisible();
+    await expect(element(by.text('Beach apartment')).atIndex(0)).toBeVisible();
+    await exists('home.project.38261465.stamp');
+    await exists('home.project.38261466');
+    await exists('home.project.38261467');
     await exists('home.notification.notification-1');
     await scrolledToText(FIRST_NOTIFICATION);
     // The date-over-time stamp on the right of the row.

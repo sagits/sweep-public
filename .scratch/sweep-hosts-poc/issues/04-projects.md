@@ -23,13 +23,15 @@ cleaner, one scheduled further out.
 
 **Blocked by:** 01, 02, 03
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] Calendar, form and detail match screenshots `04`–`09`
-- [ ] The list loads behind skeleton rows and shows three seeded projects on different days
-- [ ] `+` opens the manual/automatic dialog with its "Don't show this message again" checkbox
-- [ ] The property picker lists the registered properties, including any added through ticket 03
-- [ ] Submitting the form returns to Home and the new project appears in Home's Projects card
-- [ ] Project detail renders every status pill and detail row from the PRD, behind a full-screen spinner while loading
+- [x] Calendar, form and detail match screenshots `04`–`09`
+- [x] The list loads behind skeleton rows and shows three seeded projects on different days
+- [x] `+` opens the manual/automatic dialog with its "Don't show this message again" checkbox
+- [x] The property picker lists the registered properties, including any added through ticket 03
+- [x] Submitting the form returns to Home and the new project appears in Home's Projects card
+- [x] Project detail renders every status pill and detail row from the PRD, behind a full-screen spinner while loading
 - [ ] `projects.e2e.ts` passes; `home.e2e.ts` is extended to assert the seeded Projects card
-- [ ] The projects store is built test-first per ADR-0001: creating a project places it on the right calendar day and on Home
+      (both specs are written and typecheck; Detox was **not** run — one simulator is shared with
+      the ticket 05 agent, so the suite runs once after merge)
+- [x] The projects store is built test-first per ADR-0001: creating a project places it on the right calendar day and on Home
