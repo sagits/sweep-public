@@ -123,7 +123,14 @@ export default function ProjectsScreen() {
                     />
                   ))}
                 </Card>
-              ) : null}
+              ) : (
+                // A day with nothing scheduled still needs to end somewhere, or a run of empty
+                // dates reads as one stack of headings. Same horizontal extent as the card.
+                <View
+                  testID={`projects.empty-day.${section.key}`}
+                  className="mt-4 h-px bg-border"
+                />
+              )}
             </View>
           ))
         )}

@@ -2,7 +2,7 @@ import type { NewSearch, Property, UnitSizeUnit } from '@sweep/types';
 import { useState } from 'react';
 import { ScrollView, Text, TextInput, View } from 'react-native';
 
-import { Button, Card, Checkbox, colors } from '@sweep/ui';
+import { Button, Card, Checkbox, Spinner, colors } from '@sweep/ui';
 
 import { HowItWorksRow } from '@/marketplace/HowItWorksRow';
 import { ScreenHeader } from '@/navigation/ScreenHeader';
@@ -46,17 +46,25 @@ const detailsOf = (property: Property): Details => ({
   unitSizeUnit: property.unitSizeUnit,
 });
 
-/** The teal "Congrats!" panel over a scrim, while the search is being posted — screenshot `13`. */
-function CongratsOverlay() {
+/** How long the dialog stays up before the bids screen, even if the post lands sooner. */
+export const SEARCHING_MS = 1000;
+
+/**
+ * Shown while the search is posted, in place of screenshot `13`'s teal "Congrats!" panel: a
+ * centred white card over a dimmed scrim, the app's teal spinner where an alert would put its
+ * icon, and no button — nothing here is dismissible, it leads straight to the bids.
+ */
+function SearchingDialog() {
   return (
     <View
-      testID="search-form.congrats"
-      className="absolute inset-0 items-center justify-center bg-black/30"
+      testID="search-form.searching"
+      className="absolute inset-0 items-center justify-center bg-black/40 px-10"
     >
-      <View className="h-1/2 w-1/2 items-center justify-center bg-primary">
-        <Text className="text-[44px]">🎉</Text>
-        <Text className="pt-2 text-[17px] font-bold text-white">Congrats!</Text>
-      </View>
+      <Card className="w-full items-center px-6 py-8">
+        <Spinner size={48} />
+        <Text className="pt-5 text-[20px] font-bold text-ink">Loading</Text>
+        <Text className="pt-1 text-[15px] text-inkMuted">Searching for cleaners</Text>
+      </Card>
     </View>
   );
 }
@@ -98,6 +106,9 @@ export function NewSearchWizard({
   const submit = async () => {
     if (!property || submitting) return;
     setSubmitting(true);
+    // The dialog is the point of this wait, so it is held for its full second even when the
+    // mock resolver comes back sooner.
+    const shown = new Promise((done) => setTimeout(done, SEARCHING_MS));
     await onSubmit({
       propertyId: property.id,
       propertyAlias: property.alias,
@@ -109,6 +120,7 @@ export function NewSearchWizard({
       unitSizeUnit: details.unitSizeUnit,
       notes: notes.trim(),
     });
+    await shown;
   };
 
   return (
@@ -268,7 +280,7 @@ export function NewSearchWizard({
         )}
       </View>
 
-      {submitting ? <CongratsOverlay /> : null}
+      {submitting ? <SearchingDialog /> : null}
     </View>
   );
 }

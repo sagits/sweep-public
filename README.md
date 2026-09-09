@@ -74,3 +74,19 @@ deep-links as it stands.
 `.web.tsx` files are used only where a native module has no web equivalent. **None exist** — the
 web verification pass in ticket 10 drove every screen and every flow in a browser and did not need
 one.
+
+## Image credits
+
+The three seeded properties use real photographs, downloaded into
+`apps/host/assets/properties/` rather than hotlinked, and scaled to 480px wide. All three are
+**CC0** (public domain dedication), taken from Wikimedia Commons' mirror of Unsplash:
+
+| File | Source | Photographer | Licence |
+|---|---|---|---|
+| `beach-house.jpg` | [Beach hut on stilts](https://commons.wikimedia.org/wiki/File:Beach_hut_on_stilts_(Unsplash).jpg) | Bjørn Tore Økland | CC0 |
+| `rural-home.jpg` | [Basic rural home](https://commons.wikimedia.org/wiki/File:Basic_rural_home_(Unsplash).jpg) | Andrik Langfield Petrides | CC0 |
+| `city-apartment.jpg` | [Brown apartment building](https://commons.wikimedia.org/wiki/File:Brown_apartment_building_(Unsplash).jpg) | Rene Bieder | CC0 |
+
+CC0 waives the attribution requirement, so this table is courtesy rather than obligation.
+`Property.image` holds a key, not a path — `apps/host/src/properties/images.ts` maps it to the
+bundled asset, which keeps `packages/mocks` free of anything the bundler has to resolve.

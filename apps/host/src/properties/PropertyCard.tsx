@@ -1,8 +1,10 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Pressable, Text, View } from 'react-native';
+import { Image, Pressable, Text, View } from 'react-native';
 
 import type { Property } from '@sweep/types';
 import { Card, colors } from '@sweep/ui';
+
+import { propertyImage } from '@/properties/images';
 
 type IconName = React.ComponentProps<typeof MaterialCommunityIcons>['name'];
 
@@ -21,6 +23,7 @@ function Count({ icon, value }: { icon: IconName; value: string }) {
  */
 export function PropertyCard({ property }: { property: Property }) {
   const testID = `properties.card.${property.id}`;
+  const photo = propertyImage(property.image);
   const address = property.unit ? `${property.address} #${property.unit}` : property.address;
 
   return (
@@ -41,9 +44,14 @@ export function PropertyCard({ property }: { property: Property }) {
       </View>
 
       <View className="flex-row items-center gap-3 pt-2">
-        <View className="h-[68px] w-[76px] items-center justify-center">
-          {property.image ? (
-            <Text className="text-[40px]">{property.image}</Text>
+        <View className="h-[68px] w-[76px] items-center justify-center overflow-hidden rounded">
+          {photo ? (
+            <Image
+              testID={`${testID}.photo`}
+              source={photo}
+              resizeMode="cover"
+              className="h-full w-full"
+            />
           ) : (
             <MaterialCommunityIcons name="home-outline" size={56} color={colors.inkMuted} />
           )}

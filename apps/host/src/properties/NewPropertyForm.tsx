@@ -11,7 +11,11 @@ import { Field, InfoRow, ReadOnlyField, SegmentedToggle, SelectField } from './f
 
 const STEPS = ['Reservations Calendar', 'Name, address and details', 'Details and times'];
 
-/** Visible but inert: only the manual path — Skip → Yes — is implemented. */
+/**
+ * No provider is actually wired to a calendar, so all four lead where Skip leads: manual
+ * registration. They go straight there rather than through Skip's "Are you sure?" — that
+ * dialog warns about *not* syncing a calendar, which is not what picking a provider says.
+ */
 const PROVIDERS = [
   { id: 'airbnb', label: 'Airbnb' },
   { id: 'vrbo', label: 'HomeAway / Vrbo' },
@@ -116,13 +120,16 @@ export function NewPropertyForm({
               <View className="gap-4">
                 <InfoRow label="Reservations Calendar" testID={`${ID}.calendar-info`} />
                 {PROVIDERS.map((provider) => (
-                  <View
+                  <Pressable
                     key={provider.id}
                     testID={`${ID}.provider.${provider.id}`}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Register manually with ${provider.label}`}
+                    onPress={() => setStep(1)}
                     className="items-center justify-center rounded border border-border py-5"
                   >
                     <Text className="text-[19px] text-inkMuted">{provider.label}</Text>
-                  </View>
+                  </Pressable>
                 ))}
               </View>
             ) : null}

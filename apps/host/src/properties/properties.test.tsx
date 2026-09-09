@@ -29,7 +29,7 @@ describe('New Property form', () => {
     await screen.findByTestId('property-form.description');
   };
 
-  it('opens on the calendar step, where Skip → Yes is the only way forward', async () => {
+  it('opens on the calendar step, where Skip → Yes is a way forward', async () => {
     await render(<NewPropertyForm onSave={jest.fn()} onClose={jest.fn()} />);
 
     expect(screen.getByTestId('property-form.step-title')).toHaveTextContent(
@@ -38,7 +38,7 @@ describe('New Property form', () => {
     for (const provider of ['airbnb', 'vrbo', 'booking', 'tripadvisor']) {
       expect(screen.getByTestId(`property-form.provider.${provider}`)).toBeTruthy();
     }
-    // The provider tiles are inert and Next never opens: Skip is the way through.
+    // Next never opens — a provider tile or Skip is the way through.
     expect(screen.getByTestId('property-form.next')).toBeDisabled();
 
     await skipTheCalendar();
@@ -47,6 +47,22 @@ describe('New Property form', () => {
       'Name, address and details'
     );
   });
+
+  it.each(['airbnb', 'vrbo', 'booking', 'tripadvisor'])(
+    'sends the %s tile to manual registration, where Skip leads',
+    async (provider) => {
+      await render(<NewPropertyForm onSave={jest.fn()} onClose={jest.fn()} />);
+
+      fireEvent.press(screen.getByTestId(`property-form.provider.${provider}`));
+      await screen.findByTestId('property-form.alias');
+
+      expect(screen.getByTestId('property-form.step-title')).toHaveTextContent(
+        'Name, address and details'
+      );
+      // Straight there: no calendar to lose, so Skip's "Are you sure?" would be a non-sequitur.
+      expect(screen.queryByTestId('property-form.skip-confirm.confirm')).toBeNull();
+    }
+  );
 
   it('keeps the address fixed and read-only', async () => {
     await render(<NewPropertyForm onSave={jest.fn()} onClose={jest.fn()} />);
