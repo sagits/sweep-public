@@ -7,9 +7,9 @@ folder empty state stays implemented for when the list is cleared.
 
 **Blocked by:** 01
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] Header and rows match the design system; the list loads behind skeletons
-- [ ] Rows show cleaner, property, date, amount and a Paid pill
-- [ ] The empty state from screenshot `22` is implemented and reachable when the list is cleared
+- [x] Header and rows match the design system; the list loads behind skeletons
+- [x] Rows show cleaner, property, date, amount and a Paid pill
+- [x] The empty state from screenshot `22` is implemented and reachable when the list is cleared
 - [ ] `payments.e2e.ts` passes

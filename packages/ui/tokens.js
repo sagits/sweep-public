@@ -26,6 +26,8 @@ const colors = {
   skeleton: '#E7E9EE',
   // Destructive actions ("Reject Bid") are a red outline
   danger: '#E2574C',
+  // Flat gray of the empty-state illustrations — measured off screenshot 22's folder
+  illustration: '#CDCBCF',
 };
 
 const radius = {

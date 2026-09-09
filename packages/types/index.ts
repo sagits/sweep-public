@@ -20,3 +20,17 @@ export type Project = {
   /** ISO timestamp of the cleaning window's start. */
   startsAt: string;
 };
+
+/**
+ * A completed payment in the Payment History list. Every seeded payment is paid — the PoC has
+ * no other state — so the "Paid" pill is a constant, not a field.
+ */
+export type Payment = {
+  id: string;
+  cleanerName: string;
+  propertyAlias: string;
+  /** ISO timestamp of when the payment settled. */
+  paidAt: string;
+  /** Whole USD amount, formatted at the row. */
+  amount: number;
+};
