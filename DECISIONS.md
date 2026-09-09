@@ -166,6 +166,38 @@ Choices made while building from `poc/PRD.md` where the PRD left something open.
   the extension covered the header row it was supposed to sit below. It cost a full Detox cycle to
   find, because the app rendered perfectly except for an empty teal band.
 
+## 07 — Payments
+
+- **Screenshot conflict — the empty state is not the screen.** Screenshot `22` is the only Payments
+  reference and it is empty; the PRD overrides it and ships the tab populated. Both are built: the
+  list is the default and the screenshot's folder state renders whenever the store holds nothing.
+- **The filter icon clears the history.** The empty state has to be *reachable*, and the PoC has no
+  filter sheet to build it out of. The header's filter icon is wired to `usePayments().clear()`,
+  which is the only path to the screenshot's state, and it is what `payments.e2e.ts` taps. Leaving
+  the tab and coming back reloads the seed, so nothing is lost. Swap the handler the day a real
+  filter sheet exists.
+- **The type on this screen is the largest in the app, and that is measured, not a guess.** Ink
+  heights off screenshot `22`, scaled against ticket 02's `Sweep` wordmark (26px of ink at 28px):
+  "Payment History" is 31px of ink → **30px**, and the empty-state sentence is 38px → **36px** over
+  a 44px line, which is what makes it wrap after "any" exactly as the screenshot does. Rows fall
+  back to the established scale (17px name, 15px property, 19px amount).
+- **`PaymentsHeader` is local to the screen, not a shared primitive.** `HeaderBand` is the teal
+  band and centers nothing; this header is white, clears the status bar itself and centers its
+  title with the icons pinned right. Two screens would have to want it before it earns a spot in
+  `packages/ui`.
+- **No divider under the header.** Sampled down the left edge of `22`: white runs to y=179 and the
+  page gray starts at 180, with no border line between them.
+- **One token added — `illustration` (`#CDCBCF`)**, the flat gray of the folder, sampled off the
+  screenshot. `skeleton` and `border` are both too light for an illustration and `inkMuted` is far
+  too dark. The folder itself is `MaterialCommunityIcons` `folder` at 128, which measures 133×103
+  in the screenshot.
+- **`Payment` has no `status` field.** Every payment in the PoC is paid, so the pill's label is a
+  constant. A field with one possible value is a field that lies about the model.
+- **The row layout is invented.** No screenshot shows a populated payment. It follows the shape the
+  rest of the app already uses for list rows — name and property on the left with the "Paid" `Pill`
+  under them, amount over a `DateTimeStamp` on the right, hairline dividers, inside one `Card`.
+- **Amounts format through `Intl`** (`toLocaleString('en-US', { style: 'currency' })`), the same
+  API `DateTimeStamp` already relies on, so no formatting helper was added.
 ## 08 — More (profile)
 
 - **Screenshot conflict — the avatar in `23` is a broken image, so it was interpreted, not
