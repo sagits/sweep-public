@@ -7,13 +7,14 @@ describe('PaymentList', () => {
   it('shows cleaner, property, amount and a Paid pill on every row', async () => {
     await render(<PaymentList payments={seededPayments} loading={false} />);
 
-    const [first] = seededPayments;
-    expect(screen.getByTestId(`payments.row.${first.id}`)).toBeTruthy();
-    expect(screen.getAllByText(first.cleanerName).length).toBeGreaterThan(0);
-    expect(screen.getAllByText(first.propertyAlias).length).toBeGreaterThan(0);
+    for (const payment of seededPayments) {
+      expect(screen.getByTestId(`payments.row.${payment.id}`)).toBeTruthy();
+      expect(screen.getAllByText(payment.cleanerName).length).toBeGreaterThan(0);
+      expect(screen.getAllByText(payment.propertyAlias).length).toBeGreaterThan(0);
+      // The date-over-time stamp on the right of the row.
+      expect(screen.getByTestId(`payments.row.${payment.id}.stamp`)).toBeTruthy();
+    }
     expect(screen.getAllByText('$100.00').length).toBeGreaterThan(0);
-    // The date-over-time stamp on the right of the row.
-    expect(screen.getByTestId(`payments.row.${first.id}.stamp`)).toBeTruthy();
     expect(screen.getAllByText('Paid')).toHaveLength(seededPayments.length);
   });
 
