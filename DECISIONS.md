@@ -631,3 +631,73 @@ of it, on top of ticket 02's "containers assert `toExist`, text asserts `toBeVis
   screen is a race between the tab tap and the 600–1200ms mock delay, decided by how fast the
   simulator boots that run. Re-ran the file (5/5) and the whole suite (43/43) green. If it bites
   again, the durable fix is for the spec to reach Projects by deep link rather than through Home.
+
+## Review — fixes applied
+
+A two-axis review (standards + spec) of the whole PoC. Five findings acted on; three deliberately
+left alone. Nothing here changed a layout, a token or a copy string.
+
+- **The Jest seam had grown to cover screens, and ADR-0001 puts screens behind Detox.**
+  `properties.test.tsx` imported `app/(tabs)/properties`; `projects.test.tsx` imported
+  `app/(tabs)/projects`, `app/project/[id]` and `app/project/new`. The duplicated
+  `jest.mock('expo-router')` and safe-area mocks in both files are the tell: a test that has to
+  fake the router is testing a route, and ticket 08 had already written the convention down — "the
+  screen itself has no unit test; `MoreMenu` does". Several of the assertions were also
+  one-for-one copies of the Detox spec beside them, which the ADR forbids at either seam.
+  **Eleven tests deleted**, each covered by a spec that runs on the device: the skeleton-then-content
+  pair by `properties.e2e.ts` "loads the list behind skeleton cards" and `projects.e2e.ts` "loads
+  the day sections behind skeleton rows", the empty state by `seed.e2e.ts`, the New Property entry
+  by `properties.e2e.ts` "registers a fourth property", the calendar chrome by `projects.e2e.ts`
+  "opens on the calendar", the row tap and both project-detail tests by "opens project detail from
+  a row", the `+` dialog and its Cancel by "opens the automatic-vs-manual dialog from `+`", and the
+  New Manual Project route by "creates a manual project against a registered property". The suite
+  went 86 → 76, which is the point.
+  What stayed is what the ADR names: the wizards, the expanders, the dismissible cards, `MoreMenu`,
+  and every store and mock-resolver test. Two tests moved rather than died — the picker test now
+  drives `useProperties` directly, keeping the ADR's own example ("adding a property … becomes
+  available to the project form's picker") at the store seam where it belongs, and
+  `ManualProjectDialog` got the one test its "don't show this again" tick deserves, since no Detox
+  spec ticks it and a checkbox gating a dismissal is the ADR's own example of an in-seam component.
+- **More had no loading state, and `useSession` had no consumer.** The tab read `currentUser`
+  synchronously out of `@sweep/mocks` while the store that resolves the same user through the
+  600–1200ms delay sat unused. More consumes the store now and skeletons the name and email, like
+  every other screen.
+  **`load()` moved out of `app/_layout.tsx` into the screen.** Firing it at boot is what let the
+  store go unnoticed, and it also makes the loading state unobservable: the user is resolved long
+  before the tab bar can be tapped, so the skeleton would never be on screen for a human or for
+  Detox. Every other screen loads its own data on mount, and `once()` keeps it to one fetch per
+  session either way. `more.e2e.ts` gained the unsynchronized-launch spec the other screens use.
+- **One load guard, not three.** Five stores repeated `set({loading:true}) → await fetch → set(...)`
+  behind three different answers — `loaded || loading`, a delegation to `reload`, and the
+  module-level in-flight promise. Only the third is documented (05 above) and only the third
+  survives the bug that produced it: a `loading` flag lets the second caller return *before* the
+  first has settled, so a seed landing after a `post()` wipes the just-appended row.
+  `src/stores/once.ts` is that guard, factored once and applied to properties, projects,
+  marketplace, payments and notifications — **and to `useSession`**, which is the same shape and
+  would otherwise have been the one store left answering differently.
+  Two things stay outside it, deliberately: `useProjects.reload()`, which exists to re-fetch and is
+  what the calendar's refresh icon calls, and the `loaded` flags, which are not guards — screens
+  read them to tell "empty" from "not loaded yet", and `/project/[id]` and `/search/[id]` redirect
+  on them. `resetSeeding()` became `resetLoads()`: one call clears every store's in-flight request,
+  and the store test that pinned the original bug is untouched.
+- **Four duplications closed.** The "how this works" info row was written twice, in
+  `NewSearchWizard` and in `CleanerProfile`, where the comment admitted it — now one
+  `HowItWorksRow`, taking the title and the chevron colour each reference sampled for itself, and
+  owning its own dismissal so the profile loses a piece of state too. The clock format
+  `toLocaleTimeString('en-US', …)` was in three files — now `timeLabel` in `@sweep/ui`, beside
+  `DateTimeStamp`, its main caller. `NewPropertyForm`'s `onSave` re-declared twelve fields that are
+  already `NewProperty`. And `flush` was copied into three test files; it is `@/testing/flush`.
+- **`expo-font` is filed, not fixed** — `.scratch/sweep-hosts-poc/issues/11-declare-expo-font.md`.
+  It is imported by `app/_layout.tsx` and resolves as a hoisted peer of `@expo/vector-icons`, but
+  adding it needs a full lockfile re-resolve (10 above), which is not a thing to do to a working
+  install for one line. It rides the next regeneration.
+
+**Left alone, on purpose:**
+
+- **gluestack-ui v2 is still absent from the app.** It is a real gap against the PRD's stack, but
+  retrofitting a component library through every screen is a decision, not a review fix.
+- **The "Get $100 credit" pill still hides with the promo card.** Evidenced off screenshots `01`
+  and `02` (02 above); the reviewer's finding is answered by the screenshot.
+- **`PaymentsHeader` and `MarketplaceHeader` are still two files.** 07 and 05 both recorded why:
+  `HeaderBand` is the teal band and centres nothing, and neither header has yet been wanted by a
+  third screen.
