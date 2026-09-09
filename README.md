@@ -13,6 +13,12 @@ none of its name, logo or branding.
 Expo (SDK 54) + Expo Router · TypeScript · NativeWind · Zustand · React Native Web · Turborepo +
 pnpm · Detox.
 
+The UI is a hand-rolled design system in `packages/ui` on top of NativeWind — one component per
+file, drawing from the tokens in `packages/ui/tokens.js`. The original PRD named gluestack-ui v2 as
+part of the stack; it is deliberately not used here. gluestack v2 is copy-in, so its components
+would have been rewritten into `packages/ui` regardless, and the primitives this PoC needs are
+small enough that owning them outright is the simpler answer. See `DECISIONS.md`.
+
 ```
 apps/
   host/        the Sweep Hosts app

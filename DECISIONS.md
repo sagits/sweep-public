@@ -4,10 +4,20 @@ Choices made while building from `poc/PRD.md` where the PRD left something open.
 
 ## 01 — Monorepo foundation and 6-tab shell
 
-- **gluestack-ui is not installed yet.** The PRD's stack names gluestack-ui v2, but v2 is a
-  copy-in component library: you pull in only the components you use. The tab shell needs none of
-  them, so installing it now would add unused code. NativeWind and the shared tokens carry this
-  ticket; gluestack components get added as the screens that need them land.
+- **gluestack-ui is not installed, and never will be on this branch.** The PRD's stack names
+  gluestack-ui v2, but v2 is a copy-in component library: you pull in only the components you use,
+  and they land in your repo as your own source. The tab shell needed none of them, so ticket 01
+  deferred it — "gluestack components get added as the screens that need them land" — and no later
+  ticket picked it up. The code review caught that at the end of the build: every primitive in
+  `packages/ui/src/` is hand-rolled, and `grep -r gluestack` over `apps/` and `packages/` finds
+  nothing.
+
+  Reviewed and **kept as-is, deliberately**. The eleven primitives are all in use, covered by the
+  Jest and Detox suites, and verified in a browser; because v2 is copy-in, its components would have
+  been rewritten into `packages/ui` anyway, so the retrofit would have bought a dependency rather
+  than a different architecture. The honest statement is that this app runs on **NativeWind plus a
+  hand-rolled design system**, not on gluestack-ui — the README says so, and the PRD's Tech Stack
+  line is out of date on this point.
 - **Design tokens live in `packages/ui/tokens.js` as CommonJS.** `tailwind.config.js` has to
   `require()` them without a build step, so the single source is plain JS, re-exported from
   `@sweep/ui`. No hand-written `.d.ts` sits beside it: `allowJs` infers the shape from the source,
