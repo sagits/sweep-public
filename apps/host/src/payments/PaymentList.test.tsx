@@ -25,7 +25,7 @@ describe('PaymentList', () => {
     expect(screen.queryByTestId('payments.list')).toBeNull();
   });
 
-  it('falls back to screenshot 22 folder empty state once the list is cleared', async () => {
+  it('renders screenshot 22 folder empty state when there is no history', async () => {
     await render(<PaymentList payments={[]} loading={false} />);
 
     expect(screen.getByTestId('payments.empty-folder')).toBeTruthy();

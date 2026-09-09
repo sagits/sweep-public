@@ -20,15 +20,4 @@ describe('usePayments', () => {
     expect(usePayments.getState().loading).toBe(false);
     expect(usePayments.getState().payments).toEqual(seededPayments);
   });
-
-  it('clears the history, which is what the empty state renders for', async () => {
-    const pending = usePayments.getState().load();
-    jest.advanceTimersByTime(MAX_DELAY_MS);
-    await pending;
-
-    usePayments.getState().clear();
-
-    expect(usePayments.getState().payments).toEqual([]);
-    expect(usePayments.getState().loading).toBe(false);
-  });
 });

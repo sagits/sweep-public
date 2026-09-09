@@ -4,9 +4,6 @@ import { by, device, element, expect, waitFor } from 'detox';
 const exists = (id: string, timeout = 10000) =>
   waitFor(element(by.id(id))).toExist().withTimeout(timeout);
 
-const visible = (id: string, timeout = 10000) =>
-  waitFor(element(by.id(id))).toBeVisible().withTimeout(timeout);
-
 const gone = (id: string, timeout = 10000) =>
   waitFor(element(by.id(id))).not.toExist().withTimeout(timeout);
 
@@ -53,16 +50,5 @@ describe('payments', () => {
     await expect(element(by.text('Paid')).atIndex(0)).toBeVisible();
     // The date-over-time stamp on the right of the row.
     await exists('payments.row.payment-1.stamp');
-  });
-
-  it('falls back to the folder empty state once the history is cleared', async () => {
-    await exists('payments.list', 20000);
-
-    await element(by.id('payments.filter')).tap();
-
-    await gone('payments.list');
-    await visible('payments.empty');
-    await exists('payments.empty-folder');
-    await expect(element(by.text("You don't have any payment history yet."))).toBeVisible();
   });
 });

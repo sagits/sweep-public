@@ -6,8 +6,6 @@ type PaymentsState = {
   payments: Payment[];
   loading: boolean;
   load: () => Promise<void>;
-  /** Empties the history, which is what puts the screenshot's empty state on screen. */
-  clear: () => void;
 };
 
 export const usePayments = create<PaymentsState>((set) => ({
@@ -18,5 +16,4 @@ export const usePayments = create<PaymentsState>((set) => ({
     const payments = await fetchPayments();
     set({ payments, loading: false });
   },
-  clear: () => set({ payments: [] }),
 }));

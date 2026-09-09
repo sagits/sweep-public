@@ -1,6 +1,7 @@
 import type { NewProperty, Property } from '@sweep/types';
 
 import { resolve } from './resolve';
+import { seeded } from './seed';
 
 /**
  * The address the New Property form shows read-only. There is no address API in the PoC, so
@@ -65,18 +66,7 @@ export const seededProperties: Property[] = [
   },
 ];
 
-/**
- * ponytail: the seed switch is one env read until ticket 09 generalises it across every list.
- * `EXPO_PUBLIC_SEED=false pnpm dev` boots the app on the empty state. Expo inlines
- * `EXPO_PUBLIC_*` at bundle time; declared here rather than pulling `@types/node` into a package
- * that otherwise needs nothing from Node.
- */
-declare const process: { env: Record<string, string | undefined> };
-
-const seedEnabled = process.env.EXPO_PUBLIC_SEED !== 'false';
-
-export const fetchProperties = (): Promise<Property[]> =>
-  resolve(seedEnabled ? seededProperties : []);
+export const fetchProperties = (): Promise<Property[]> => resolve(seeded(seededProperties));
 
 export const createProperty = (input: NewProperty): Promise<Property> =>
   resolve({ ...input, id: `property-${Date.now()}` });

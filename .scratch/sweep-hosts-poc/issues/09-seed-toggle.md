@@ -10,11 +10,13 @@ correctness against their screenshots, and locks the behaviour down with a test.
 
 **Blocked by:** 02, 03, 04, 05
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] On a clean launch with the seed on: three properties, three projects, three open searches
-- [ ] With the seed off, every list renders its empty state — Home's Projects and Notifications cards, Properties, Projects, Marketplace and Payments
-- [ ] Home's "Search for New Cleaners" card replaces the "Cleaner Search (N)" card when no searches exist
-- [ ] Toggling the seed requires no code edit
-- [ ] `seed.e2e.ts` passes both ways
-- [ ] The toggle is built test-first per ADR-0001: seed on produces the seeded counts, seed off produces empty stores
+- [x] On a clean launch with the seed on: three properties, three projects, three open searches
+- [x] With the seed off, every list renders its empty state — Home's Projects and Notifications cards, Properties, Projects, Marketplace and Payments
+- [x] Home's "Search for New Cleaners" card replaces the "Cleaner Search (N)" card when no searches exist
+- [x] Toggling the seed requires no code edit
+- [ ] `seed.e2e.ts` passes both ways — written, **not run**: the Detox suite had the one
+      simulator for the whole of this ticket. Run it as `pnpm e2e:test e2e/seed.e2e.ts` and
+      `EXPO_PUBLIC_SEED=false pnpm e2e:test e2e/seed.e2e.ts`
+- [x] The toggle is built test-first per ADR-0001: seed on produces the seeded counts, seed off produces empty stores

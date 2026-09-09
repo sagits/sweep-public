@@ -488,7 +488,58 @@ merges into a checkout that has a stale `router.d.ts` listing only the old route
   without the Super Cleaner chip or either Rental Handy Pro row, and the console is free of errors
   and react-native-web warnings. `cleaner-detail.e2e.ts` is written but was not run.
 
-## 10 — The Detox specs against the real simulator
+## 09 — Seed toggle and empty states
+
+- **One switch, `packages/mocks/src/seed.ts`, read by every `fetch*`.** Tickets 03, 04 and 05 had
+  each copied the same `declare const process` / `EXPO_PUBLIC_SEED !== 'false'` pair into their own
+  mock module, and Payments and Notifications had none at all — so `SEED=false` left the bell badge
+  and the payment history seeded. `seeded(rows)` replaces all three copies and covers all five
+  lists. Nothing is exported from the package barrel: no screen needs to know.
+- **The env var is read per call, not once at module load.** In a *dev* bundle babel-preset-expo
+  does not inline `process.env.EXPO_PUBLIC_*` — it rewrites the read into a reference to
+  `expo/virtual/env`, which is literally `process.env`, and `@expo/metro-config`'s
+  `environmentVariableSerializerPlugin` injects the values into the bundle prelude at serialize
+  time from the dev server's own environment. A per-call read is therefore a live read, which is
+  what lets `seed.test.ts` drive both branches in one process without `jest.resetModules()`. A
+  production `expo export` inlines the literal instead and constant-folds the ternary away, so the
+  indirection costs nothing shipped.
+- **How it is toggled.** `EXPO_PUBLIC_SEED=false pnpm dev` for the simulator,
+  `EXPO_PUBLIC_SEED=false pnpm e2e:test e2e/seed.e2e.ts` for Detox — `scripts/e2e-test.sh` starts
+  Metro itself, so the variable reaches both the bundle and the test runner from one shell. No code
+  edit, no `.env` file.
+- **`expo export` needs `--clear` when the flag changes; `expo start` does not.** Measured: two
+  back-to-back `expo export --platform web` runs with different `EXPO_PUBLIC_SEED` values produced
+  a byte-identical entry bundle (same content hash), because Metro's transform cache does not key
+  on the value babel inlines. `--clear` produces a different hash and the right build. The dev path
+  is immune — the value is injected by the serializer, not baked into a transform.
+- **`seed.e2e.ts` is the only spec that passes both ways, by design.** It branches on
+  `process.env.EXPO_PUBLIC_SEED` in the runner and asserts either the seeded counts or the empty
+  states across Home, Properties, Projects, Marketplace and Payments. The rest of the suite asserts
+  the seeded app and is expected to fail with the seed off; run the seed-off pass as
+  `EXPO_PUBLIC_SEED=false pnpm e2e:test e2e/seed.e2e.ts`.
+- **Ticket 07's filter-clears-history hack is removed.** The header's filter icon was wired to
+  `usePayments().clear()` purely because clearing was the only route to screenshot `22`'s folder
+  state. `EXPO_PUBLIC_SEED=false` is that route now, so the icon is inert with an
+  `accessibilityLabel`, exactly like the Projects filter and the Marketplace magnifier, and
+  `clear()` is gone from the store — a control that wipes history is a lie about what "filter"
+  does. `payments.e2e.ts` loses its clear-then-empty test; `seed.e2e.ts` asserts the folder state
+  instead, and also taps the filter to prove it changes nothing.
+- **No new empty states were built.** Every screen ticket had already shipped one, and the sweep
+  found no screen without a reachable one: Home's Projects and Notifications cards, the "Search for
+  New Cleaners" prompt that replaces the Cleaner Search card, `properties.empty`,
+  `marketplace.empty`, `payments.empty`, and the Projects calendar's day sections — which stay
+  rendered and empty, which *is* screenshot `04`.
+- **No screenshot conflicts found.** The seed-off states each match the reference their own ticket
+  measured; this ticket changed no layout, copy, token or component.
+- **Verified in the browser, not the simulator**, since the Detox suite is on the one device.
+  `expo export --platform web` served on port 8123 (deliberately not 8081, which Metro owns):
+  with `EXPO_PUBLIC_SEED=false` Home shows the prompt card, no bell badge and both "There are no…"
+  cards, Properties shows "You have 0 properties" over its empty card, Marketplace shows the
+  handshake, Payments shows the folder, and the calendar shows fourteen empty day sections. Rebuilt
+  seeded (`--clear`): Cleaner Search (3), three project rows, three notifications, badge `3`, three
+  property cards and four payment rows, and the filter icon leaves the history alone. Console clean
+  both ways. `seed.e2e.ts` is written but was not run.
+## Integration — the Detox specs against the real simulator
 
 Tickets 03–06 wrote their specs and verified in the browser, so ten tests met the device for the
 first time here. Every failure was spec-side; none of them was an app defect. Four rules came out
