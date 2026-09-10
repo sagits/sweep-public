@@ -16,13 +16,13 @@ describe('resolve', () => {
     expect(settled).toBe(false);
   });
 
-  it('waits a flat half second, so every skeleton shows for the same 0.5s', async () => {
+  it('waits a flat second, so every skeleton shows for the same 1s', async () => {
     let settled = false;
     void resolve('ok').then(() => {
       settled = true;
     });
 
-    jest.advanceTimersByTime(499);
+    jest.advanceTimersByTime(999);
     await Promise.resolve();
     expect(settled).toBe(false);
 

@@ -10,7 +10,6 @@ import { NotificationsCard } from '@/home/NotificationsCard';
 import { ProjectsCard } from '@/home/ProjectsCard';
 import { PromoCard } from '@/home/PromoCard';
 import { PromptCard } from '@/home/PromptCard';
-import { QualityCenterCard } from '@/home/QualityCenterCard';
 import { useRefreshControl } from '@/refresh';
 import { useMarketplace } from '@/stores/useMarketplace';
 import { useNotifications } from '@/stores/useNotifications';
@@ -51,7 +50,7 @@ export default function HomeScreen() {
   const refreshControl = useRefreshControl(refresh, 'home.refresh');
 
   return (
-    <Screen testID="screen.home" insetTop={false} surface>
+    <Screen testID="screen.home" insetTop={false}>
       <HomeHeader
         unreadCount={notifications.length}
         showCreditPill={!promoDismissed}
@@ -63,8 +62,7 @@ export default function HomeScreen() {
         className="flex-1"
         contentContainerStyle={{ paddingBottom: 24 }}
       >
-        {/* The teal band runs behind these two, so they stay tight together. */}
-        <View className="gap-2 px-2">
+        <View className="gap-[14px] px-4 pt-4">
           {searchesLoaded && searches.length === 0 ? (
             <PromptCard
               title="Search for New Cleaners"
@@ -87,7 +85,7 @@ export default function HomeScreen() {
             testID="home.invite-teammates-card"
           />
         </View>
-        <View className="gap-[14px] px-2 pt-[14px]">
+        <View className="gap-[14px] px-4 pt-[14px]">
           {promoDismissed ? null : <PromoCard onDismiss={dismissPromo} />}
           <ProjectsCard
             projects={projects}
@@ -98,7 +96,6 @@ export default function HomeScreen() {
             }
           />
           <NotificationsCard notifications={notifications} loading={notificationsLoading} />
-          <QualityCenterCard />
         </View>
       </ScrollView>
     </Screen>

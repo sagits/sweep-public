@@ -96,7 +96,9 @@ Choices made while building from `poc/PRD.md` where the PRD left something open.
 
 ## 02 — Home shell
 
-- **Screenshot conflict — Home's page background is white, not the PRD's light gray.** The Design
+- **Screenshot conflict — Home's page background is white, not the PRD's light gray.**
+  *(Superseded by polish round two: a white card on a white page has no visible shadow, which is
+  what the reference screenshot showed us missing. Home is grey again.)* The Design
   section calls for a `~#F1F2F6` page. Sampling screenshots `01`–`03` between the cards, below the
   last card and inside a card all return `#FFFEFF`: on Home the cards separate from the page by
   their shadow alone. The screenshot wins, so Home passes `surface` to `Screen`. The `background`
@@ -777,3 +779,33 @@ The two-axis review of this branch found one real bug and several tidy-ups:
 - `projects.refresh` was on both the header button and the `RefreshControl`; the gesture is now
   `projects.pull-refresh`.
 - `openPayments` and `dayKey` were copied across specs; they live in `e2e/support.ts` now.
+
+## Polish round two — photo upload, Home layout, slower skeletons
+
+Worked from `.scratch/sweep-hosts-polish/issues/02-polish-round-two.md`.
+
+- **An uploaded photo travels inside the property as a `data:` URI.** `expo-image-picker` returns
+  base64 directly (`base64: true`), which is what the request asked for and also the only thing
+  that works on both targets: there is no server and no file store, and on web the picker's asset
+  URI is a blob that dies with the page. `Property.image` therefore holds one of two things now — a
+  key into the bundled seed photographs, or a `data:` URI — and `propertyImage()` branches on the
+  prefix. The picker downscales hard (`quality: 0.4`) because the whole image is held as text.
+- **`expo-image-picker` is a native module, so the dev client needed rebuilding.** The running
+  build failed with `Cannot find native module 'ExponentImagePicker'` until `pnpm e2e:build` ran
+  again. Its config plugin is in `app.json` with a `photosPermission` string: iOS crashes on the
+  permission request without one. Anything that adds native code from here needs the same rebuild
+  before the simulator sees it.
+- **Skeletons run for a second, once per store per session.** `MIN_DELAY_MS`/`MAX_DELAY_MS` are
+  both 1000 now. The "only the first time a tab opens" half needed no code: `once()` already holds
+  the first load's promise, so a second visit to a tab has its data. Pull-to-refresh is the
+  deliberate exception.
+- **Home is a grey page again, and its cards sit 16px in.** Ticket 02 sampled screenshot `01` and
+  recorded Home's background as white, with cards separating "by shadow alone" — but a white card
+  on a white page has no visible shadow, which is what the reference screenshot showed us missing.
+  Home now uses the `background` grey every other screen uses, so the one card shadow in
+  `packages/ui/src/Card.tsx` reads, and the 8px horizontal inset became 16px with 14px between
+  cards. This supersedes the "Home's page background is white" note in §02.
+- **The Quality center card is gone from Home.** Its unit test was doing a second job — guarding
+  the `@sweep/ui` hook surface, because a duplicate React under `packages/ui` gives it its own
+  copy of the hooks and every one of them throws. That guard now renders `Spinner` directly rather
+  than going through a card that no longer exists.

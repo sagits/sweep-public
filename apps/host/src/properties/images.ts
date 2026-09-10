@@ -13,7 +13,15 @@ const IMAGES: Record<string, ImageSourcePropType> = {
   'city-apartment': require('../../assets/properties/city-apartment.jpg'),
 };
 
-/** Undefined for a property with no photo — the card draws its house outline instead. */
+/**
+ * `Property.image` holds one of two things: a key into the bundled seed photographs above, or a
+ * `data:` URI for a photo the host picked on the New Property form (there is no server, so an
+ * uploaded picture travels inside the property as base64).
+ *
+ * Undefined for a property with no photo — the card draws its house outline instead.
+ */
 export function propertyImage(key: string | undefined): ImageSourcePropType | undefined {
-  return key ? IMAGES[key] : undefined;
+  if (!key) return undefined;
+  if (key.startsWith('data:')) return { uri: key };
+  return IMAGES[key];
 }

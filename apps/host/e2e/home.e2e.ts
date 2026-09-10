@@ -103,12 +103,6 @@ describe('home', () => {
     await exists('home.cleaner-search-card', 20000);
   });
 
-  it('keeps the Quality center card in a spinner', async () => {
-    await scrolledToText('Quality center');
-    await exists('home.quality-center-card');
-    await exists('home.quality-center-spinner');
-  });
-
   it('dismisses the promo card, and its header pill, for the session', async () => {
     await exists('home.promo-card');
     await scrolledToText('Invite a Host and get $100 in Credits');

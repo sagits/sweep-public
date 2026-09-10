@@ -1,10 +1,18 @@
 import { fireEvent, render, screen } from '@testing-library/react-native';
+import * as ImagePicker from 'expo-image-picker';
 
 import { FIXED_ADDRESS } from '@sweep/mocks';
 
 import { flush } from '@/testing/flush';
 
 import { NewPropertyForm } from './NewPropertyForm';
+
+jest.mock('expo-image-picker', () => ({
+  requestMediaLibraryPermissionsAsync: jest.fn(),
+  launchImageLibraryAsync: jest.fn(),
+}));
+
+const picker = jest.mocked(ImagePicker);
 
 describe('New Property form', () => {
   const skipTheCalendar = async () => {
@@ -130,5 +138,70 @@ describe('New Property form', () => {
 
     release?.();
     await flush();
+  });
+  describe('the property photo', () => {
+    beforeEach(() => {
+      // The refused-permission test asserts the library was never opened, so the previous
+      // tests' calls have to go.
+      jest.clearAllMocks();
+      picker.requestMediaLibraryPermissionsAsync.mockResolvedValue({ granted: true } as never);
+    });
+
+    const pickPhoto = async (base64: string) => {
+      picker.launchImageLibraryAsync.mockResolvedValue({
+        canceled: false,
+        assets: [{ base64, mimeType: 'image/png' }],
+      } as never);
+
+      fireEvent.press(screen.getByTestId('property-form.image'));
+      await screen.findByTestId('property-form.image-preview');
+    };
+
+    it('previews the picked photo in place of the upload prompt', async () => {
+      await render(<NewPropertyForm onSave={jest.fn()} onClose={jest.fn()} />);
+      await skipTheCalendar();
+
+      expect(screen.queryByTestId('property-form.image-preview')).toBeNull();
+      await pickPhoto('AAAA');
+
+      expect(screen.queryByText('Tap to upload an image')).toBeNull();
+    });
+
+    it('saves the photo as a base64 data uri on the property', async () => {
+      const onSave = jest.fn().mockResolvedValue(undefined);
+      await render(<NewPropertyForm onSave={onSave} onClose={jest.fn()} />);
+      await skipTheCalendar();
+      await pickPhoto('AAAA');
+      await fillTheAddressStep('Photo house');
+
+      fireEvent.press(screen.getByTestId('property-form.save'));
+      await flush();
+
+      expect(onSave).toHaveBeenCalledWith(
+        expect.objectContaining({ image: 'data:image/png;base64,AAAA' })
+      );
+    });
+
+    it('leaves the property without a photo when the picker is cancelled', async () => {
+      picker.launchImageLibraryAsync.mockResolvedValue({ canceled: true, assets: null } as never);
+      await render(<NewPropertyForm onSave={jest.fn()} onClose={jest.fn()} />);
+      await skipTheCalendar();
+
+      fireEvent.press(screen.getByTestId('property-form.image'));
+      await flush();
+
+      expect(screen.getByText('Tap to upload an image')).toBeTruthy();
+    });
+
+    it('does not open the library when photo permission is refused', async () => {
+      picker.requestMediaLibraryPermissionsAsync.mockResolvedValue({ granted: false } as never);
+      await render(<NewPropertyForm onSave={jest.fn()} onClose={jest.fn()} />);
+      await skipTheCalendar();
+
+      fireEvent.press(screen.getByTestId('property-form.image'));
+      await flush();
+
+      expect(picker.launchImageLibraryAsync).not.toHaveBeenCalled();
+    });
   });
 });

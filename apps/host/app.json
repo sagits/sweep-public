@@ -20,7 +20,13 @@
       "output": "static"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Sweep uses your photos so you can add a picture of a property."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
