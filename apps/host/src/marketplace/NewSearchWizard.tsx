@@ -47,7 +47,7 @@ const detailsOf = (property: Property): Details => ({
 });
 
 /**
- * How long the dialog stays up before the bids screen, even if the post lands sooner.
+ * How long the dialog stays up before the Congrats screen, even if the post lands sooner.
  *
  * The wait has to happen where the navigation does — `onSubmit` replaces this screen, so anything
  * awaited after it delays nothing anybody sees.

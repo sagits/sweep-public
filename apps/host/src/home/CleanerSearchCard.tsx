@@ -12,32 +12,36 @@ function SearchRow({ search, onOpen }: { search: CleanerSearch; onOpen: () => vo
 
   return (
     <View className="overflow-hidden rounded bg-surfaceMuted">
-      <Pressable
-        testID={testID}
-        accessibilityRole="button"
-        onPress={onOpen}
-        className="flex-row items-center gap-3 p-3"
-      >
-        <MaterialCommunityIcons name="home-outline" size={44} color={colors.illustration} />
-        <View className="flex-1">
-          <Text className="text-[17px] font-bold text-ink">{search.propertyAlias}</Text>
-          <View className="flex-row items-center gap-2 pt-2">
-            <MaterialCommunityIcons name="clock-outline" size={16} color={colors.inkMuted} />
-            <Text className="text-[15px] text-ink">{createdLabel(search.createdAt)}</Text>
-          </View>
+      <Pressable testID={testID} accessibilityRole="button" onPress={onOpen} className="p-3">
+        <View className="flex-row items-center gap-3">
+          <MaterialCommunityIcons name="home-outline" size={44} color={colors.illustration} />
+          <Text className="flex-1 text-[17px] font-bold text-ink">{search.propertyAlias}</Text>
+          <MaterialCommunityIcons name="chevron-right" size={26} color={colors.illustration} />
         </View>
-        <MaterialCommunityIcons name="chevron-right" size={26} color={colors.illustration} />
+        {/* The reference runs the timestamp the full width beneath the row, not indented to
+            the alias. */}
+        <View className="flex-row items-center gap-2 pt-2">
+          <MaterialCommunityIcons name="clock-outline" size={16} color={colors.inkMuted} />
+          <Text className="text-[15px] text-ink">{createdLabel(search.createdAt)}</Text>
+        </View>
       </Pressable>
 
       <View className="h-px bg-border" />
 
       <View className="flex-row justify-end p-3">
-        {/* A rounded rectangle, not `Pill`: the reference chip is not a full-radius pill. */}
-        <View testID={`${testID}.bids`} className="rounded bg-primary px-4 py-2">
-          <Text className="text-[15px] font-bold text-white">
-            {`${search.bids.length} ${search.bids.length === 1 ? 'Bid' : 'Bids'}`}
+        {search.bids.length === 0 ? (
+          // No chip until a cleaner bids — the reference says so in plain bold text.
+          <Text testID={`${testID}.waiting`} className="text-[17px] font-bold text-ink">
+            Waiting for Bids
           </Text>
-        </View>
+        ) : (
+          /* A rounded rectangle, not `Pill`: the reference chip is not a full-radius pill. */
+          <View testID={`${testID}.bids`} className="rounded bg-primary px-4 py-2">
+            <Text className="text-[15px] font-bold text-white">
+              {`${search.bids.length} ${search.bids.length === 1 ? 'Bid' : 'Bids'}`}
+            </Text>
+          </View>
+        )}
       </View>
     </View>
   );

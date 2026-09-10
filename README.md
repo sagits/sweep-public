@@ -87,6 +87,11 @@ The three seeded properties use real photographs, downloaded into
 | `rural-home.jpg` | [Basic rural home](https://commons.wikimedia.org/wiki/File:Basic_rural_home_(Unsplash).jpg) | Andrik Langfield Petrides | CC0 |
 | `city-apartment.jpg` | [Brown apartment building](https://commons.wikimedia.org/wiki/File:Brown_apartment_building_(Unsplash).jpg) | Rene Bieder | CC0 |
 
-CC0 waives the attribution requirement, so this table is courtesy rather than obligation.
+The cleaner profiles' work gallery uses six interiors, same store, same licence, in
+`apps/host/assets/work-photos/` — `living-room`, `kitchen`, `bedroom`, `dining`, `hallway` and
+`dining-view`, by Jarosław Ceborski, NeONBRAND, Viktoria Hall-Waldhauser, Nirzar Pangarkar,
+Erick Lee Hodge and Rik van der Kroon respectively. One shared set serves every cleaner.
+
+CC0 waives the attribution requirement, so these credits are courtesy rather than obligation.
 `Property.image` holds a key, not a path — `apps/host/src/properties/images.ts` maps it to the
 bundled asset, which keeps `packages/mocks` free of anything the bundler has to resolve.

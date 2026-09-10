@@ -34,7 +34,9 @@ export default function NewSearchScreen() {
               post(input),
               new Promise((done) => setTimeout(done, SEARCHING_MS)),
             ]);
-            router.replace(`/search/${search.id}`);
+            // The dialog hands over to the Congrats screen; its "Got it!" is what reaches the
+            // bids list.
+            router.replace({ pathname: '/search/congrats', params: { id: search.id } });
           }}
           onClose={close}
         />

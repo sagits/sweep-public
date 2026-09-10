@@ -134,4 +134,22 @@ describe('cleaner detail', () => {
     await element(by.id('cleaner.header.back')).tap();
     await expect(element(by.id('bids.title'))).toHaveText(ALIAS);
   });
+  it('opens the work photos in a gallery, steps through it and closes', async () => {
+    await openCleaner('ramona');
+    await element(by.id('cleaner.scroll')).scrollTo('bottom');
+
+    await element(by.id('cleaner.photo.1')).tap();
+
+    await exists('cleaner.gallery');
+    await expect(element(by.id('cleaner.gallery.counter'))).toHaveText('2 / 6');
+
+    await element(by.id('cleaner.gallery.next')).tap();
+    await expect(element(by.id('cleaner.gallery.counter'))).toHaveText('3 / 6');
+
+    await element(by.id('cleaner.gallery.prev')).tap();
+    await expect(element(by.id('cleaner.gallery.counter'))).toHaveText('2 / 6');
+
+    await element(by.id('cleaner.gallery.close')).tap();
+    await gone('cleaner.gallery');
+  });
 });

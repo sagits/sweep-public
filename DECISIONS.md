@@ -96,9 +96,7 @@ Choices made while building from `poc/PRD.md` where the PRD left something open.
 
 ## 02 — Home shell
 
-- **Screenshot conflict — Home's page background is white, not the PRD's light gray.**
-  *(Superseded by polish round two: a white card on a white page has no visible shadow, which is
-  what the reference screenshot showed us missing. Home is grey again.)* The Design
+- **Screenshot conflict — Home's page background is white, not the PRD's light gray.** The Design
   section calls for a `~#F1F2F6` page. Sampling screenshots `01`–`03` between the cards, below the
   last card and inside a card all return `#FFFEFF`: on Home the cards separate from the page by
   their shadow alone. The screenshot wins, so Home passes `surface` to `Screen`. The `background`
@@ -799,13 +797,32 @@ Worked from `.scratch/sweep-hosts-polish/issues/02-polish-round-two.md`.
   both 1000 now. The "only the first time a tab opens" half needed no code: `once()` already holds
   the first load's promise, so a second visit to a tab has its data. Pull-to-refresh is the
   deliberate exception.
-- **Home is a grey page again, and its cards sit 16px in.** Ticket 02 sampled screenshot `01` and
-  recorded Home's background as white, with cards separating "by shadow alone" — but a white card
-  on a white page has no visible shadow, which is what the reference screenshot showed us missing.
-  Home now uses the `background` grey every other screen uses, so the one card shadow in
-  `packages/ui/src/Card.tsx` reads, and the 8px horizontal inset became 16px with 14px between
-  cards. This supersedes the "Home's page background is white" note in §02.
+- **The card shadow was too faint, and that is what "no shadow" meant — the page was never
+  wrong.** First attempt greyed Home's page and widened its insets to 16px. Both were wrong, and
+  decoding the reference screenshot said so: between the cards it samples `#FFFFFF`, and a card's
+  left edge sits ~8pt in. Ticket 02's original sampling stands. What is actually different is the
+  shadow: straight down from a card's bottom edge the reference darkens to ~205/255 and fades out
+  over ~8.5pt, where ours was `0.10` alpha over an 8px blur — invisible against white. The token
+  is now `0px 2px 10px rgba(43, 52, 80, 0.20)`, and Home is white with 8px insets again. The
+  14px between cards is measured too (~13.6pt) and stays.
+
+  Worth remembering: the screenshot is 924px wide for a 393pt screen, so **2.35 px per point**.
+  Every measurement above is a decode of the PNG, not an eyeball.
 - **The Quality center card is gone from Home.** Its unit test was doing a second job — guarding
   the `@sweep/ui` hook surface, because a duplicate React under `packages/ui` gives it its own
   copy of the hooks and every one of them throws. That guard now renders `Spinner` directly rather
   than going through a card that no longer exists.
+
+### The cleaner work gallery
+
+- **One shared set of six interiors for every cleaner.** The request allowed it and the alternative
+  is eighteen photographs to make the same point. `workPhoto(index)` wraps, so a cleaner with more
+  tiles than there are photographs still fills its grid. `cleaner.workPhotos` keeps its emoji: it
+  is what sets each grid's *length*, and changing the seed would have rippled into ticket 05's
+  tests for no visible gain.
+- **The gallery is an overlay, not a `Modal`.** DECISIONS 03 recorded that `Modal` renders nothing
+  under jest-expo; a modal here would be untestable at the component seam, which is where swipe,
+  arrows and close actually live. Same call `ConfirmDialog` made.
+- **The arrows disappear at each end** rather than sitting inert — an inert arrow reads as a bug.
+  The counter (`2 / 6`) is what the Detox spec asserts, since it is the one piece of the gallery's
+  state that is visible as text.

@@ -187,6 +187,12 @@ describe('marketplace', () => {
     await exists('search-form.submit.spinner');
     await device.enableSynchronization();
 
+    // The dialog hands over to Congrats; "Got it!" is what reaches the bids.
+    await exists('screen.search-congrats');
+    await text('Congrats!');
+    await exists('congrats.step.chat');
+    await element(by.id('congrats.got-it')).tap();
+
     // Landed on the new search's bids, with all three cleaners bidding.
     await expect(element(by.id('bids.title'))).toHaveText(SECOND_ALIAS);
     await exists('bid-card.ramona');

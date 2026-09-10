@@ -48,9 +48,14 @@ const radius = {
 
 // White cards with soft shadows. `boxShadow` rather than the `shadow*` props: those are
 // deprecated in React Native 0.81 and warn on every render in the web target.
+//
+// Measured off the reference rather than guessed: Home's page is white, so the shadow is the
+// only thing separating a card from it. Sampling straight down from a card's bottom edge, the
+// reference darkens to ~205/255 and fades out over ~8.5pt, which is this blur and alpha. The
+// original 0.10/8px was invisible on white.
 const shadow = {
   card: {
-    boxShadow: '0px 2px 8px rgba(43, 52, 80, 0.10)',
+    boxShadow: '0px 2px 10px rgba(43, 52, 80, 0.20)',
   },
 };
 

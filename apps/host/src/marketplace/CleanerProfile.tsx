@@ -1,13 +1,15 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import type { Bid } from '@sweep/types';
 import { useState } from 'react';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { Image, Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Button, Card, SectionHeader, colors } from '@sweep/ui';
 
 import { SuperCleanerPill } from './BidCard';
 import { HowItWorksRow } from './HowItWorksRow';
+import { PhotoGallery } from './PhotoGallery';
+import { workPhoto } from './workPhotos';
 import { ScreenHeader } from '@/navigation/ScreenHeader';
 
 /**
@@ -88,25 +90,42 @@ function SummaryRow({ bid }: { bid: Bid }) {
 }
 
 /**
- * One before/after thumbnail. The work photos are emoji stand-ins, so the reference's stacked
- * BEFORE/AFTER photo pair becomes one tile banded across the middle.
+ * One before/after thumbnail, opening the gallery at its own photo. The reference stacks a
+ * BEFORE/AFTER pair; this is one photograph banded across the middle.
  */
-function WorkPhoto({ photo, testID }: { photo: string; testID: string }) {
+function WorkPhoto({
+  index,
+  testID,
+  onOpen,
+}: {
+  index: number;
+  testID: string;
+  onOpen: () => void;
+}) {
   return (
     <View className="w-1/3 p-1">
       {/* The band sits between two flex spacers rather than at `top: '50%'`: Fabric silently
           collapses a percentage `top` on an absolutely positioned view to 0. */}
-      <View testID={testID} className="aspect-square overflow-hidden rounded bg-surfaceMuted">
-        <View className="absolute inset-0 items-center justify-center">
-          <Text className="text-[34px]">{photo}</Text>
-        </View>
+      <Pressable
+        testID={testID}
+        accessibilityRole="button"
+        accessibilityLabel={`Open photo ${index + 1}`}
+        onPress={onOpen}
+        className="aspect-square overflow-hidden rounded bg-surfaceMuted"
+      >
+        <Image
+          testID={`${testID}.image`}
+          source={workPhoto(index)}
+          resizeMode="cover"
+          className="absolute inset-0 h-full w-full"
+        />
         <View className="flex-1" />
         <View className="flex-row justify-center gap-2 bg-ink/70 py-0.5">
           <Text className="text-[9px] font-bold text-white">BEFORE</Text>
           <Text className="text-[9px] font-bold text-primaryMuted">AFTER</Text>
         </View>
         <View className="flex-1" />
-      </View>
+      </Pressable>
     </View>
   );
 }
@@ -175,8 +194,10 @@ export function CleanerProfile({
   const insets = useSafeAreaInsets();
   const { cleaner } = bid;
   const [expanded, setExpanded] = useState(false);
+  const [galleryAt, setGalleryAt] = useState<number | null>(null);
 
   const preview = messagePreview(cleaner.message);
+  const galleryPhotos = cleaner.workPhotos.map((_, index) => workPhoto(index));
 
   return (
     <>
@@ -313,8 +334,9 @@ export function CleanerProfile({
               {cleaner.workPhotos.map((photo, index) => (
                 <WorkPhoto
                   key={`${photo}-${index}`}
-                  photo={photo}
+                  index={index}
                   testID={`cleaner.photo.${index}`}
+                  onOpen={() => setGalleryAt(index)}
                 />
               ))}
             </View>
@@ -332,6 +354,15 @@ export function CleanerProfile({
         <Button testID="cleaner.accept" label="Accept Bid and Add to My Team" />
         <Button testID="cleaner.reject" label="Reject Bid" variant="danger" />
       </View>
+
+      {galleryAt === null ? null : (
+        <PhotoGallery
+          testID="cleaner.gallery"
+          photos={galleryPhotos}
+          initialIndex={galleryAt}
+          onClose={() => setGalleryAt(null)}
+        />
+      )}
     </>
   );
 }

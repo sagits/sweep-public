@@ -50,7 +50,7 @@ export default function HomeScreen() {
   const refreshControl = useRefreshControl(refresh, 'home.refresh');
 
   return (
-    <Screen testID="screen.home" insetTop={false}>
+    <Screen testID="screen.home" insetTop={false} surface>
       <HomeHeader
         unreadCount={notifications.length}
         showCreditPill={!promoDismissed}
@@ -62,7 +62,7 @@ export default function HomeScreen() {
         className="flex-1"
         contentContainerStyle={{ paddingBottom: 24 }}
       >
-        <View className="gap-[14px] px-4 pt-4">
+        <View className="gap-[14px] px-2 pt-4">
           {searchesLoaded && searches.length === 0 ? (
             <PromptCard
               title="Search for New Cleaners"
@@ -85,7 +85,7 @@ export default function HomeScreen() {
             testID="home.invite-teammates-card"
           />
         </View>
-        <View className="gap-[14px] px-4 pt-[14px]">
+        <View className="gap-[14px] px-2 pt-[14px]">
           {promoDismissed ? null : <PromoCard onDismiss={dismissPromo} />}
           <ProjectsCard
             projects={projects}
