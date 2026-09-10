@@ -15,11 +15,12 @@ const VARIANTS = {
 export type ButtonVariant = keyof typeof VARIANTS;
 
 /**
- * Measured off the references: a primary button is 45pt tall there, but the promo card's white
- * CTA is 39.4pt. They really are two sizes, so this is a prop rather than one compromise.
+ * Measured off the references: a primary button is 45pt tall there ("Find new cleaners" in
+ * screenshot `03`), and the promo card's white CTA is 39.4pt. They really are two sizes, so this
+ * is a prop rather than one compromise. Both were 52pt until they were measured.
  */
 const SIZES = {
-  regular: 'h-[52px]',
+  regular: 'h-[45px]',
   small: 'h-[40px]',
 } as const;
 
