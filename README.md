@@ -37,13 +37,40 @@ small enough that owning them outright is the simpler answer. See `DECISIONS.md`
 
 ```
 apps/
-  host/        the Sweep Hosts app
+  host/                  the Sweep Hosts app
 packages/
-  ui/          design tokens and shared components
-  mocks/       mock data and delayed async resolvers
-  types/       shared domain types
-  config/      shared tsconfig, eslint, NativeWind preset
+  ui/                    design tokens and shared components
+  mocks/                 mock data and delayed async resolvers
+  types/                 shared domain types
+  config/                shared tsconfig, eslint, NativeWind preset
 ```
+
+Inside `apps/host`:
+
+```
+app/                     the routes — Expo Router is file-based, so this tree is the navigation
+  (tabs)/                the five tabs: index (Home), projects, marketplace, properties, more
+  payments.tsx           pushed from Home's $ icon, not a tab
+  property/new.tsx       the New Property form
+  project/new.tsx        project/[id].tsx
+  search/new.tsx         search/[id].tsx (the bids), search/congrats.tsx
+  cleaner/[id].tsx       a cleaner's full profile
+  _layout.tsx            the root stack; +html.tsx is the web shell
+src/                     everything the routes are built from, by feature
+  home/ projects/ marketplace/ properties/ payments/ more/
+  navigation/            TabBar and the shared white ScreenHeader
+  stores/                Zustand stores, plus once.ts (the shared load guard) and merge.ts
+  testing/               test-only helpers, e.g. flush()
+  **/*.test.tsx          Jest + RNTL, beside the code they cover
+assets/                  bundled photographs (properties, work-photos) and icons
+e2e/                     Detox specs, one per feature, plus support.ts and their own tsconfig
+scripts/e2e-test.sh      starts Metro, waits for it, runs Detox, shuts it down
+```
+
+The two test seams live in different places on purpose: **Jest specs sit next to the code**
+(`src/stores/useProperties.test.ts` beside `useProperties.ts`), because they are written first and
+drive its design. **Detox specs live apart in `e2e/`**, because they exercise whole screens through
+the running app and belong to no single file. See [ADR-0001](docs/adr/0001-testing-seams-tdd-and-detox.md).
 
 ## Running it
 
