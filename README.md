@@ -129,9 +129,13 @@ output the export exists for.
 
 The trade-off is that the three dynamic routes — `/cleaner/[id]`, `/project/[id]`, `/search/[id]` —
 export as literal `[id].html` files and 404 on a plain file server. Reaching them from inside the
-app works; deep-linking one needs a rewrite from the host (on Vercel, a rewrite of `/cleaner/:id`
-to `/cleaner/[id].html`, and the same for the other two). Every static route, `/projects` included,
-deep-links as it stands.
+app works; deep-linking one needs a rewrite from the host. `vercel.json` in the repo root does
+exactly that, with `cleanUrls` and one rewrite per dynamic route. Every static route, `/projects`
+included, deep-links as it stands.
+
+Those rewrites are safe next to the static siblings that share their prefix — `/search/new` and
+`/search/congrats` both exist as exported files, and Vercel checks the filesystem before it
+applies a rewrite, so neither is swallowed by `/search/:id`.
 
 ## Platform-specific files
 
