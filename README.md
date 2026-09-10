@@ -1,5 +1,15 @@
 # Sweep Hosts
 
+<div>
+    <a href="https://www.loom.com/share/1bafd79c084a4b11ad9ff99f044bb0f1">
+      <p>Sweep app - Watch Video</p>
+    </a>
+    <a href="https://www.loom.com/share/1bafd79c084a4b11ad9ff99f044bb0f1">
+      <img style="max-width:300px;" src="https://www.loom.com/v1/videos/1bafd79c084a4b11ad9ff99f044bb0f1/thumbnail">
+    </a>
+  </div>
+
+
 An app to find cleaners and schedule cleanings for short-term rental properties, running from one
 codebase on iOS and in the browser. It is a portfolio piece and an architecture study: mock data
 only, no backend, no API, no auth, and every async operation is a timer.
