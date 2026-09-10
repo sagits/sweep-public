@@ -996,3 +996,22 @@ large, type that was measured against a reference is right.**
 
 **Not swept:** the cleaner-search wizard, the Congrats screen, the property forms and the
 marketplace empty state. They were not in the report and were left rather than adjusted blind.
+
+### The spinner
+
+Replaced with the eight-spoke starburst of `poc/screenshots/4/33-spinner.png`, decoded rather
+than eyeballed: at a 120px render a spoke measures 17px wide by 43px long with the ring's inner
+edge 17.5px out, which is `size * 0.142` by `size * 0.358` centred `size * 0.32` from the middle.
+The old twelve-blade version already used that formula — only the count, the length and the ramp
+were wrong.
+
+The opacity ramp is the reference's own, read off the green channel against its background:
+four spokes sit flat at 0.28 and the last four climb 0.46 → 0.56 → 0.83 → 1. It does not fade
+evenly the whole way round, which is what gives it a distinct head.
+
+One turn is 2000ms, half the previous 1000ms — "50% slower" read as half speed.
+
+**The colour is still ours.** The reference's darkest spoke samples #5BAFAA, a muted teal that is
+not in this palette and does not solve as any opacity of `primary` over that background. The
+spinner keeps its `color` prop (defaulting to `primary`, and white inside a teal `Button`), so it
+stays on-brand; the shape is what was asked for and the shape is what changed.
