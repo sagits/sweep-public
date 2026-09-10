@@ -50,8 +50,10 @@ describe('home', () => {
     // The seed holds three open searches, so the "Search for New Cleaners" prompt is already
     // replaced by the Cleaner Search card — its own test is below.
     await exists('home.cleaner-search-card');
-    await visible('home.invite-teammates-card');
-    await expect(element(by.text('Invite Current Teammates'))).toBeVisible();
+    // A container, so existence — and its text needs scrolling to now that Home carries 16px
+    // more above the first card.
+    await exists('home.invite-teammates-card');
+    await scrolledToText('Invite Current Teammates');
   });
 
   it('mounts the data cards as skeletons, then resolves them', async () => {
