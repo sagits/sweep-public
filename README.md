@@ -1,12 +1,24 @@
 # Sweep Hosts
 
-A universal (iOS + web) host app for short-term-rental cleaning: register a property, create a
-cleaning project, post a search to the marketplace, review bids from cleaners. Mock data only —
-no backend, no API, no auth.
+A universal host app — one codebase running on iOS and in the browser — for the turnover
+cleaning that sits between short-term-rental guests. It is a portfolio piece and an architecture
+study: mock data only, no backend, no API, no auth, and every async operation is a timer.
 
-This is an architecture and UI study inspired by a commercial turnover-cleaning app, built as a portfolio
-piece. It is not affiliated with, endorsed by, or connected to that product in any way, and it carries
-none of its name, logo or branding.
+**What a host does in it**
+
+- **Registers a property**: address, unit, bedroom/bed/bathroom counts, unit size, check-in and
+  check-out times, and a photo from the camera roll. Three come seeded.
+- **Schedules a cleaning project** against one of those properties, on a calendar that lays the
+  next few days out and shows what is unassigned.
+- **Posts a search to the marketplace** when a property needs a cleaner, through a two-step
+  wizard that confirms the property and describes the work.
+- **Reviews the bids** that come back: each cleaner's profile, rating, badges, message, price,
+  and a gallery of their previous work.
+- **Looks over payment history**, and their own profile.
+
+Every screen loads behind a skeleton, every list has a designed empty state reachable with a seed
+toggle, and every tab pulls to refresh — the loading and empty states are the point of the study
+as much as the populated ones are.
 
 ## Stack
 
