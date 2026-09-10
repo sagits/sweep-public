@@ -335,4 +335,23 @@ describe('PhotoGallery', () => {
 
     expect(onClose).toHaveBeenCalled();
   });
+
+  it('sizes each page from its own measured width, not the window', async () => {
+    await render(
+      <PhotoGallery photos={photos} initialIndex={0} onClose={jest.fn()} testID="g" />
+    );
+
+    // Unmeasured, there is no page size to lay a pager out with, so it holds off.
+    expect(screen.queryByTestId('g.pager')).toBeNull();
+
+    fireEvent(screen.getByTestId('g'), 'layout', {
+      nativeEvent: { layout: { x: 0, y: 0, width: 500, height: 900 } },
+    });
+    await flush();
+
+    // The photo fills the box the gallery was actually given. Reading the window instead is what
+    // pushed the image outside the pager's bounds on web and left the viewer black.
+    expect(screen.getByTestId('g.pager')).toBeTruthy();
+    expect(screen.getByTestId('g.photo.0')).toHaveStyle({ width: 500, height: 900 });
+  });
 });

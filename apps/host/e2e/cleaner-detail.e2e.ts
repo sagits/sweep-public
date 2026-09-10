@@ -50,7 +50,6 @@ describe('cleaner detail', () => {
     await expect(element(by.id('cleaner.rating'))).toHaveText('4.8');
     await text('(22 reviews)');
     await text('Expires in 2 days');
-    await text('How Adding a Cleaner to My Team Works');
   });
 
   it('shows Ramona’s information, badges, reviews and work photos', async () => {
@@ -124,11 +123,10 @@ describe('cleaner detail', () => {
     await expect(element(by.id('cleaner.title'))).toHaveText(ALIAS);
   });
 
-  it('dismisses the "How Adding a Cleaner to My Team Works" row and goes back to the bids', async () => {
+  it('does not carry the "How Adding a Cleaner to My Team Works" row, and goes back to the bids', async () => {
     await openCleaner('ramona');
 
-    await exists('cleaner.info');
-    await element(by.id('cleaner.info-dismiss')).tap();
+    // Removed from this screen on request: that card belongs to the search wizard.
     await gone('cleaner.info');
 
     await element(by.id('cleaner.header.back')).tap();
