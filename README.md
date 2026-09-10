@@ -17,12 +17,12 @@ only, no backend, no API, no auth, and every async operation is a timer.
 Sweep has two sides, the host who owns the property and the cleaner who turns it over, so the
 repo is a monorepo built to hold both apps. Only the host app exists so far. The cleaner app has
 not been written yet; when it is, it lands beside this one in `apps/` and draws on the same
-shared packages.
+shared packages (can reuse UI and logic).
 
 ## What a host does
 
 - Registers a property, with address, unit, bedroom, bed and bathroom counts, unit size, check-in
-  and check-out times, and a photo from the camera roll. Three come seeded.
+  and check-out times, and a photo from the camera roll.
 - Schedules a cleaning project against one of those properties, on a calendar that lays the next
   few days out and shows what is unassigned.
 - Posts a search to the marketplace when a property needs a cleaner, through a wizard that
@@ -36,7 +36,7 @@ shared packages.
 - A Turborepo monorepo holding a universal Expo app (the host), running as React Native on iOS
   and as React on the web.
 - End-to-end tests with Detox, one spec per feature, driven against the iOS simulator.
-- Integration tests with Jest and React Native Testing Library, covering the Zustand stores, the
+- Integration and Unit tests with Jest and React Native Testing Library, covering the Zustand stores, the
   mock resolvers and the components that carry real interaction.
 - A shared `packages/` folder, so UI, domain types and mock data are written once and used by
   every app in the repo.
