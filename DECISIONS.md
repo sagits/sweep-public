@@ -1015,3 +1015,27 @@ One turn is 2000ms, half the previous 1000ms — "50% slower" read as half speed
 not in this palette and does not solve as any opacity of `primary` over that background. The
 spinner keeps its `color` prop (defaulting to `primary`, and white inside a teal `Button`), so it
 stays on-brand; the shape is what was asked for and the shape is what changed.
+
+### Flow and control changes
+
+- **"I can't find my address" is gone** from the property form and the search wizard. The PoC
+  ships one fixed address (`FIXED_ADDRESS`), so the escape hatch never had anywhere to go; the
+  "Can't find your address? Contact us" line beneath it stays.
+- **The cleaner profile no longer carries "How Adding a Cleaner to My Team Works."** That card
+  belongs to the search wizard, where the reference still shows it. `HowItWorksRow` keeps its
+  other caller.
+- **The search wizard is three steps, not two**: property details → cleaning needs → note, with
+  the progress bar at a third, two thirds, then full. The middle step is
+  `poc/screenshots/4/34-search-cleaning-needs.png` — two estimate dropdowns and the three
+  "The cleaner needs to" boxes with a checklist select that appears only while its box is ticked.
+  Nothing consumes those values: `NewSearch` has no field for them and the PoC has no checklists,
+  so they are wizard state, exactly as `saveNotes` already was. Extending the type to carry values
+  no screen reads would have been shape without behaviour.
+- **`Dropdown` is local to that step.** `SelectField` is the underlined form row; the reference's
+  boxed grey select with a teal chevron is a different control, and only this step draws it.
+- **`Checkbox` grew a `large` variant.** On one screenshot the wizard's "Provide Cleaning
+  Supplies" measures 16px while "Don't show this message again" two cards above measures 13px —
+  two sizes in the reference, not one drifting, so it is a variant rather than a new default.
+- **The wizard's footer is a `PinnedFooter`**, so its button clears the home indicator like every
+  other pushed screen's.
+- **The property card's overflow button lost its teal circle** and its icon is ink, per request.

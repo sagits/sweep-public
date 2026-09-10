@@ -142,7 +142,7 @@ describe('marketplace', () => {
     await gone('bid-card.ramona');
   });
 
-  it('posts a fourth search through the two-step wizard and lands on its bids', async () => {
+  it('posts a fourth search through the three-step wizard and lands on its bids', async () => {
     await element(by.id('marketplace.new')).tap();
 
     await exists('screen.new-search');
@@ -151,7 +151,6 @@ describe('marketplace', () => {
     );
     await exists('search-form.info');
     await text('How the Sweep Marketplace works');
-    await text("I can't find my address");
     await exists('search-form.progress');
 
     // Point the search at the second seeded property, so the fourth search is a new alias.
@@ -165,9 +164,22 @@ describe('marketplace', () => {
 
     await element(by.id('search-form.next')).tap();
 
+    // Step 2: the cleaning-needs estimates and the three "cleaner needs to" boxes.
     await expect(element(by.id('search-form.step-title'))).toHaveText(
       'Describe your cleaning needs'
     );
+    await text('How many guest turnovers per month?');
+    await exists('search-form.turnovers');
+    await element(by.id('search-form.turnovers')).tap();
+    await element(by.id('search-form.turnovers.option.4')).tap();
+    await exists('search-form.clean-hours');
+    await exists('search-form.needs.supplies');
+    await exists('search-form.checklist');
+
+    await element(by.id('search-form.next-note')).tap();
+
+    // Step 3: the note.
+    await expect(element(by.id('search-form.step-title'))).toHaveText('Add a note');
     await exists('search-form.notes');
     await exists('search-form.save-notes');
     await exists('search-form.warning');

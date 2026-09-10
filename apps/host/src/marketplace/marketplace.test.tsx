@@ -280,14 +280,11 @@ describe('CleanerProfile', () => {
     expect(screen.getByText('Less')).toBeTruthy();
   });
 
-  it('dismisses the "How Adding a Cleaner to My Team Works" row', async () => {
+  it('does not carry the "How Adding a Cleaner to My Team Works" row', async () => {
+    // Removed on request: that card belongs to the search wizard, not the cleaner's profile.
     await profile(firstBid);
 
-    expect(screen.getByText('How Adding a Cleaner to My Team Works')).toBeTruthy();
-
-    fireEvent.press(screen.getByTestId('cleaner.info-dismiss'));
-    await flush();
-
+    expect(screen.queryByText('How Adding a Cleaner to My Team Works')).toBeNull();
     expect(screen.queryByTestId('cleaner.info')).toBeNull();
   });
 });

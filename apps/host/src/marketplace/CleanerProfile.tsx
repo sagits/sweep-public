@@ -7,7 +7,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Button, Card, SectionHeader, colors, usd } from '@sweep/ui';
 
 import { SuperCleanerPill } from './BidCard';
-import { HowItWorksRow } from './HowItWorksRow';
 import { PhotoGallery } from './PhotoGallery';
 import { workPhoto } from './workPhotos';
 import { ScreenHeader } from '@/navigation/ScreenHeader';
@@ -228,11 +227,6 @@ export function CleanerProfile({
         className="flex-1"
         contentContainerStyle={{ padding: 12, paddingBottom: 24 }}
       >
-        <HowItWorksRow
-          title="How Adding a Cleaner to My Team Works"
-          testID="cleaner.info"
-          chevronColor={colors.primary}
-        />
 
         <Card className="mt-3">
           <View testID="cleaner.information" className="gap-1 p-4">
