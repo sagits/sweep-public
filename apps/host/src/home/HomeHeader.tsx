@@ -8,17 +8,21 @@ const BAND_EXTEND = 152;
 
 /**
  * Home's teal header: the Sweep wordmark, the dollar icon that opens Payment History, the bell
- * with its unread badge and the messages icon. Payments has no tab of its own; this icon is the
- * way in. The bell and messages icons stay decorative.
+ * with its unread badge and the messages icon. None of the three has a tab of its own; these
+ * icons are the way in.
  *
  * The reference also carries a blue "Get $100 credit" pill here; it was removed on request.
  */
 export function HomeHeader({
   unreadCount,
   onOpenPayments,
+  onOpenNotifications,
+  onOpenMessages,
 }: {
   unreadCount: number;
   onOpenPayments: () => void;
+  onOpenNotifications: () => void;
+  onOpenMessages: () => void;
 }) {
   return (
     <HeaderBand extend={BAND_EXTEND} testID="home.header">
@@ -36,13 +40,26 @@ export function HomeHeader({
       >
         <MaterialCommunityIcons name="currency-usd" size={28} color={colors.surface} />
       </Pressable>
-      <Pressable testID="home.bell" className="mr-5" hitSlop={8}>
+      <Pressable
+        testID="home.bell"
+        accessibilityRole="button"
+        accessibilityLabel="Notifications"
+        className="mr-5"
+        hitSlop={8}
+        onPress={onOpenNotifications}
+      >
         <MaterialCommunityIcons name="bell" size={28} color={colors.surface} />
         <View className="absolute -right-2.5 -top-1.5">
           <CountBadge count={unreadCount} testID="home.bell-badge" />
         </View>
       </Pressable>
-      <Pressable testID="home.messages" hitSlop={8}>
+      <Pressable
+        testID="home.messages"
+        accessibilityRole="button"
+        accessibilityLabel="Messages"
+        hitSlop={8}
+        onPress={onOpenMessages}
+      >
         <MaterialCommunityIcons name="forum" size={28} color={colors.surface} />
       </Pressable>
     </HeaderBand>

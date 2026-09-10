@@ -830,3 +830,82 @@ Worked from `.scratch/sweep-hosts-polish/issues/02-polish-round-two.md`.
 - **The arrows disappear at each end** rather than sitting inert — an inert arrow reads as a bug.
   The counter (`2 / 6`) is what the Detox spec asserts, since it is the one piece of the gallery's
   state that is visible as text.
+
+## Notifications and Messages
+
+- **`read` and `kind` are fields on `Notification`, not a second store.** Unread is what Home's
+  bell badges, so it has to be state the list can change; a parallel set of read ids would have
+  been a second source of truth for one boolean. `unreadCount(notifications)` is exported beside
+  the store rather than derived in Home, so the badge and the row tint agree by construction.
+- **A refresh does not un-read the list.** The mock always resolves the seed unread, so
+  `reload` carries the read ids over the fetch. Without it, marking all read and then pulling to
+  refresh on Home brought the badge straight back — a bug the store test now pins.
+- **The invitation notification is a `handshake`, not an `alert`.** The ticket left the third
+  row's icon open. A team joining up reads like a bid being agreed, and the alert triangle is
+  worth keeping for the one row that is actually a warning: the unassigned project.
+- **The notification rows are inert, chevron and all.** The reference draws a chevron on every
+  row, but there is nowhere in the PoC for any of them to go. They render as shown and do
+  nothing — the same call `BidCard`'s chat button and the Payments filter made.
+- **Messages reads `useMarketplace`; a conversation *is* a bid.** No message store exists,
+  nothing ever sends, and every reference state is "No messages yet." — so a store for it would
+  hold nothing. The chat is addressed by **bid id**, like `/cleaner/[id]`, because the whole
+  `Cleaner` rides on the `Bid` and the search supplies the property alias.
+- **With no bids, Messages shows the Marketplace's own empty state.** The ticket asked for its
+  wording; `EmptySearches` *is* that wording, so it is rendered rather than transcribed. Its
+  "Find Your Next Cleaner" button sits above the two pinned ones, which reads fine because both
+  routes go to the same place.
+- **"Bid Details" pushes the cleaner detail rather than sitting inert.** The ticket allowed
+  either. That screen is the bid's details, it is addressed by the same id, and the route
+  already exists — inert would have been more code to do less.
+- **The bid strip's price and expiry are two points down from the reference.** The reference
+  sets that row in a narrower typeface than the system one; at matching sizes "$100.00 per
+  project" and "Bid expires in: 2 days" do not both fit across 390pt — the price wrapped, which
+  pushed the rules card below the fold, and forcing one line clipped the expiry instead. 17px
+  and 15px fit. This is the same reference-vs-system-font gap DECISIONS records elsewhere.
+- **`$100.00` has cents here, and now so does everywhere else.** The ticket allowed matching the
+  reference "if it is free". It was cheaper than free: `PaymentList` and `CleanerProfile` had
+  each written the same `toLocaleString` line, so the third caller became `usd` in `@sweep/ui`
+  and the other two now import it. `relativeLabel` came out of `SearchCard`'s `createdLabel` the
+  same way — the notifications stamp needed "3 hours ago" without the "Created " in front.
+- **`PinnedFooter` clears the home indicator.** Messages' two buttons, the chat's "I agree" and
+  its composer are all pinned to the bottom of a **pushed** screen, which has no tab bar to hold
+  the indicator off. First render put "Invite Teammates" underneath it. One component now does
+  what `TabBar` was already doing, in the three places that need it.
+- **The chat agreement is component state, deliberately.** Per-conversation and in-memory is
+  what the ticket asked for, so `ChatBody`'s `useState` *is* the feature: leaving the screen and
+  coming back may show the rules again, and nothing persists.
+- **Messages pushes outside `(tabs)`, so its tab bar does not show.** The reference keeps it.
+  Following the `/payments` precedent, as the ticket directed; on the simulator it looks right.
+
+### Review fixes
+
+The two-axis review caught one real bug and five smaller things:
+
+- **Messages showed the Marketplace empty state while the searches were still loading.** The
+  screen read `searches` but not `loaded`, so a cold open rendered the full "Find a New Cleaner"
+  illustration for the mock's 600–1200ms and then swapped to the bid rows. An empty store is
+  "not yet", not "no bids". `MessageList` now takes `loading` and renders skeleton rows, and the
+  Detox spec asserts the skeleton *and* that the empty state is absent behind it — which is the
+  assertion that would have caught this in the first place.
+- **The borrowed empty state no longer ships its own CTA.** Rendering `EmptySearches` whole put a
+  live "Find Your Next Cleaner" → `/search/new` on Messages, a third navigation the ticket did
+  not ask for next to its two pinned buttons. `onFindCleaner` is now optional; Messages passes
+  none and gets the wording without the button.
+- **The Detox scroll matcher went back to `by.text`.** Two call sites scrolled `whileElement`
+  toward `by.id('home.notifications-card')` — a container packed with content, which never
+  reaches the 75% threshold. It passed, but it is the exact shape DECISIONS 02 recorded as a
+  flake, so it scrolls to a notification's text instead.
+- **The empty `<View testID="…unread" />` is gone.** It existed only so a test could assert the
+  mint tint, and ADR-0001 keeps layout out of both seams. The behaviour worth pinning is that
+  the badge empties, which the store test and the Detox round trip already cover.
+- **`await flush()` after every `fireEvent`**, per DECISIONS 03 — the rule is written blanket,
+  and four presses were relying on asserting a spy rather than a re-render.
+- Smaller: `RULES[].body` is a `ReactNode` rather than a string-or-tuple union, which deletes the
+  branch in `Rule`; `CleanerAvatar` is exported from `MessageList` rather than written twice
+  byte-for-byte; `PinnedFooter` lost a `testID` prop no call site passed; the composer assertions
+  use RNTL's `toHaveProp` rather than reaching into `.props`.
+
+Not changed, deliberately: the `usd`/`relativeLabel` extractions touch `PaymentList`,
+`CleanerProfile` and `SearchCard`, which the spec axis flagged as reach. They replace three and
+two existing copies of the same line rather than adding a fourth, and the alternative was a
+private formatter on a screen whose sibling already had one.

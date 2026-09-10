@@ -13,6 +13,20 @@ describe('fetchNotifications', () => {
     expect(seededNotifications.every((item) => item.message.length > 0)).toBe(true);
   });
 
+  it('seeds every notification unread, so the bell badge opens at three', () => {
+    expect(seededNotifications.map((item) => item.read)).toEqual([false, false, false]);
+  });
+
+  it('tags the unassigned project as an alert and the two team rows as handshakes', () => {
+    const kindOf = (fragment: string) =>
+      seededNotifications.find((item) => item.message.includes(fragment))?.kind;
+
+    expect(kindOf('is still unassigned')).toBe('alert');
+    expect(kindOf('New bid to clean')).toBe('bid');
+    // The invitation row could read either way; it is a handshake, like the bid.
+    expect(kindOf('accepted your invitation')).toBe('bid');
+  });
+
   it('holds the list back until the mock delay has passed, so the skeleton is observable', async () => {
     let settled = false;
     void fetchNotifications().then(() => {

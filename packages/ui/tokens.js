@@ -23,6 +23,8 @@ const colors = {
   inkMuted: '#8A90A2',
   // Light gray page background
   background: '#F1F2F6',
+  // The mint an unread notification row sits on — sampled off `poc/screenshots/3/IMG_0030.PNG`
+  mint: '#E1F3EE',
   surface: '#FFFFFF',
   // Off-white panels inside a card: the Quality center's title strip, the search row on Home
   surfaceMuted: '#F8F8FB',

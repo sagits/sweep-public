@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Image, Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Button, Card, SectionHeader, colors } from '@sweep/ui';
+import { Button, Card, SectionHeader, colors, usd } from '@sweep/ui';
 
 import { SuperCleanerPill } from './BidCard';
 import { HowItWorksRow } from './HowItWorksRow';
@@ -26,9 +26,6 @@ export function messagePreview(message: string, limit = MESSAGE_PREVIEW) {
   const space = cut.lastIndexOf(' ');
   return `${(space > 0 ? cut.slice(0, space) : cut).trimEnd()}… `;
 }
-
-const money = (amount: number) =>
-  amount.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
 
 /** A hairline between the white card's sections — screenshots `17`/`20` draw one per boundary. */
 function Divider() {
@@ -139,7 +136,7 @@ function PriceCard({ bid }: { bid: Bid }) {
       <View className="flex-row items-center">
         <View className="flex-1 items-center">
           <Text testID="cleaner.price.amount" className="text-[26px] font-bold text-ink">
-            {money(bid.price)}
+            {usd(bid.price)}
           </Text>
           <Text className="text-[15px] text-ink">per Project + Fees</Text>
         </View>
@@ -167,7 +164,7 @@ function PriceCard({ bid }: { bid: Bid }) {
       {open ? (
         <View testID="cleaner.price.breakdown" className="gap-1.5 pt-3">
           <Divider />
-          <InfoRow label="Cleaner Bid" value={money(bid.price)} />
+          <InfoRow label="Cleaner Bid" value={usd(bid.price)} />
           <InfoRow label="Fees" value="Added at checkout" />
         </View>
       ) : null}

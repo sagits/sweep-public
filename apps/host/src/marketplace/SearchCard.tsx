@@ -3,23 +3,10 @@ import type { CleanerSearch } from '@sweep/types';
 import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
-import { Card, colors } from '@sweep/ui';
+import { Card, colors, relativeLabel } from '@sweep/ui';
 
-const MINUTE = 60_000;
-
-/**
- * "Created a minute ago" under every search row. The seed is created when the bundle loads, so
- * a fresh launch reads exactly like the reference; it stays honest after that.
- */
-export function createdLabel(iso: string): string {
-  const minutes = Math.floor((Date.now() - Date.parse(iso)) / MINUTE);
-  if (minutes < 2) return 'Created a minute ago';
-  if (minutes < 60) return `Created ${minutes} minutes ago`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `Created ${hours} ${hours === 1 ? 'hour' : 'hours'} ago`;
-  const days = Math.floor(hours / 24);
-  return `Created ${days} ${days === 1 ? 'day' : 'days'} ago`;
-}
+/** "Created a minute ago" under every search row. */
+export const createdLabel = (iso: string) => `Created ${relativeLabel(iso)}`;
 
 function SummaryRow({ label, value }: { label: string; value: string }) {
   return (
