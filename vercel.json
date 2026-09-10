@@ -1,0 +1,17 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "build": {
+    "env": {
+      "ENABLE_EXPERIMENTAL_COREPACK": "1"
+    }
+  },
+  "buildCommand": "pnpm build:web",
+  "outputDirectory": "apps/host/dist",
+  "framework": null,
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/cleaner/:id", "destination": "/cleaner/[id]" },
+    { "source": "/project/:id", "destination": "/project/[id]" },
+    { "source": "/search/:id", "destination": "/search/[id]" }
+  ]
+}
