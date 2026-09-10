@@ -13,6 +13,10 @@ none of its name, logo or branding.
 Expo (SDK 54) + Expo Router · TypeScript · NativeWind · Zustand · React Native Web · Turborepo +
 pnpm · Detox.
 
+`expo-image-picker` is the one native module here, used by the New Property form's photo upload.
+Adding or changing a native module means rebuilding the Detox dev client (`pnpm e2e:build`) before
+the simulator can see it — a JS reload is not enough.
+
 The UI is a hand-rolled design system in `packages/ui` on top of NativeWind — one component per
 file, drawing from the tokens in `packages/ui/tokens.js`. The original PRD named gluestack-ui v2 as
 part of the stack; it is deliberately not used here. gluestack v2 is copy-in, so its components
@@ -40,6 +44,21 @@ packages/
 | Detox suites | `pnpm e2e:test` |
 | Unit tests | `pnpm test` |
 | Types | `pnpm typecheck` |
+| One Detox spec | `pnpm --filter @sweep/host e2e:test e2e/<name>.e2e.ts` |
+
+### The seed toggle
+
+The app boots with three properties, three projects and three open searches. `EXPO_PUBLIC_SEED=false`
+boots it empty instead, which is the only way to reach the empty state every list implements:
+
+```
+EXPO_PUBLIC_SEED=false pnpm dev
+EXPO_PUBLIC_SEED=false pnpm build:web          # needs --clear if the flag changed, see DECISIONS
+EXPO_PUBLIC_SEED=false pnpm --filter @sweep/host e2e:test e2e/seed.e2e.ts
+```
+
+The spec path has to go through `--filter`: the root `pnpm e2e:test` hands its argument to turbo,
+which reads it as a task name.
 
 Everything runs locally — no EAS, no Expo/Apple/Google account. `ios/` and `android/` are generated
 on demand by `pnpm e2e:build` (Continuous Native Generation) and are not committed.
@@ -54,7 +73,13 @@ podspec requires it). `pnpm test`, `pnpm typecheck` and `pnpm build:web` need no
 
 Two seams, per [ADR-0001](docs/adr/0001-testing-seams-tdd-and-detox.md): stores and mock resolvers
 are built test-first under Jest + React Native Testing Library; screens are covered by Detox specs
-in `apps/host/e2e/`. Layout fidelity is checked against `poc/screenshots/` by eye — no snapshot tests.
+in `apps/host/e2e/`. There are no snapshot tests.
+
+Layout fidelity is not eyeballed. Colours and sizes are settled by decoding a reference screenshot
+and a screenshot of the app and comparing pixel values — a screenshot is px-per-point scaled
+(`width / 393`), so ink heights and insets convert straight to points. Every colour and size
+argument recorded in `DECISIONS.md` was settled that way, and several of them overturned what the
+PRD's prose said. Where the PRD and a screenshot disagree, the screenshot wins.
 
 ## The web target
 
@@ -93,5 +118,7 @@ The cleaner profiles' work gallery uses six interiors, same store, same licence,
 Erick Lee Hodge and Rik van der Kroon respectively. One shared set serves every cleaner.
 
 CC0 waives the attribution requirement, so these credits are courtesy rather than obligation.
-`Property.image` holds a key, not a path — `apps/host/src/properties/images.ts` maps it to the
-bundled asset, which keeps `packages/mocks` free of anything the bundler has to resolve.
+`Property.image` holds a key or a `data:` URI, never a path — `apps/host/src/properties/images.ts`
+resolves a seed key to its bundled asset and wraps an uploaded base64 photo as a `uri` source. That
+keeps `packages/mocks` free of anything the bundler has to resolve, and means a photo a host adds
+travels inside the property itself, since there is no server and no file store.
