@@ -64,9 +64,13 @@ describe('projects', () => {
     await exists('projects.drag-handle');
 
     // The first two sections are always Today and Tomorrow — the seed is relative to boot.
+    // The calendar's card carries the alias and the status chips, not the cleaner's name —
+    // that is Home's row. See `poc/screenshots/4/30-projects-calendar.png`.
     await exists(`projects.row.${SEEDED[0]!.id}`);
     await expect(element(by.text(SEEDED[0]!.alias)).atIndex(0)).toBeVisible();
-    await scrolledToText(SEEDED[1]!.cleaner);
+    await exists(`projects.row.${SEEDED[0]!.id}.chip.cleaning`);
+    await exists(`projects.row.${SEEDED[0]!.id}.chip.no-teammates`);
+    await scrolledToText(SEEDED[1]!.alias);
     await exists(`projects.row.${SEEDED[1]!.id}`);
   });
 

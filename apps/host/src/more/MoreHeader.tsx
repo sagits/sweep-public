@@ -50,7 +50,7 @@ export function MoreHeader({ user }: { user: User | null }) {
         </View>
         {user ? (
           <>
-            <Text testID="more.name" className="mt-2.5 text-[28px] font-bold text-white">
+            <Text testID="more.name" className="mt-2.5 text-[24px] font-bold text-white">
               {user.name}
             </Text>
             <Text testID="more.email" className="mt-0.5 text-[16px] text-white">

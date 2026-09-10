@@ -67,7 +67,7 @@ function Options({
           onPress={() => onChange(option)}
           className="px-4 py-3"
         >
-          <Text className={`text-[17px] ${option === value ? 'text-primaryInk' : 'text-ink'}`}>
+          <Text className={`text-[15px] ${option === value ? 'text-primaryInk' : 'text-ink'}`}>
             {option}
           </Text>
         </Pressable>
@@ -100,9 +100,9 @@ function PickerRow({
         onPress={() => setOpen((was) => !was)}
         className="flex-row items-center justify-between py-4"
       >
-        <Text className="text-[19px] text-ink">{label}</Text>
+        <Text className="text-[16px] text-ink">{label}</Text>
         <View className="flex-row items-center">
-          <Text numberOfLines={1} className="max-w-[180px] text-[19px] text-inkMuted">
+          <Text numberOfLines={1} className="max-w-[180px] text-[16px] text-inkMuted">
             {value}
           </Text>
           <MaterialCommunityIcons name="chevron-right" size={24} color={colors.inkMuted} />
@@ -145,7 +145,7 @@ function PresetChip({
         onPress={() => setOpen((was) => !was)}
         className="rounded bg-surfaceMuted px-4 py-3"
       >
-        <Text className="text-[19px] text-ink">{value}</Text>
+        <Text className="text-[16px] text-ink">{value}</Text>
       </Pressable>
       {open ? (
         <View className="absolute left-0 top-[52px] z-10 w-[220px] rounded bg-surfaceMuted">
@@ -192,7 +192,7 @@ function RadioRow({
       >
         {selected ? <View className="h-[18px] w-[18px] rounded-full bg-primary" /> : null}
       </View>
-      <Text className="text-[19px] text-ink">{label}</Text>
+      <Text className="text-[16px] text-ink">{label}</Text>
     </Pressable>
   );
 }
@@ -210,7 +210,7 @@ function ToggleRow({
 }) {
   return (
     <View className="flex-row items-center justify-between py-3">
-      <Text className="text-[19px] text-ink">{label}</Text>
+      <Text className="text-[16px] text-ink">{label}</Text>
       <Switch
         testID={testID}
         value={value}
@@ -222,7 +222,7 @@ function ToggleRow({
 }
 
 function SectionLabel({ label }: { label: string }) {
-  return <Text className="px-4 pb-2 pt-6 text-[17px] text-inkMuted">{label}</Text>;
+  return <Text className="px-4 pb-2 pt-6 text-[14px] text-inkMuted">{label}</Text>;
 }
 
 const Rule = () => <View className="h-px bg-border" />;
@@ -302,9 +302,9 @@ export function NewManualProjectForm({
           onPress={onCancel}
           hitSlop={10}
         >
-          <Text className="text-[20px] text-primary">Cancel</Text>
+          <Text className="text-[16px] text-primary">Cancel</Text>
         </Pressable>
-        <Text testID="project-form.title" className="flex-1 text-center text-[22px] font-bold text-ink">
+        <Text testID="project-form.title" className="flex-1 text-center text-[18px] font-bold text-ink">
           New Manual Project
         </Text>
         {/* Balances the centred title against the Cancel link. */}
@@ -348,7 +348,7 @@ export function NewManualProjectForm({
 
         <SectionLabel label="Payment" />
         <Card className="mx-4 px-4 py-3">
-          <Text className="text-[19px] text-ink">Price</Text>
+          <Text className="text-[16px] text-ink">Price</Text>
           {PRICES.map((option) => (
             <RadioRow
               key={option}
@@ -371,7 +371,7 @@ export function NewManualProjectForm({
           />
           <Rule />
           <View className="py-4">
-            <Text className="text-[19px] text-ink">Start date & time</Text>
+            <Text className="text-[16px] text-ink">Start date & time</Text>
             <View className="flex-row gap-3 pt-3">
               <PresetChip
                 value={startDate}
@@ -389,7 +389,7 @@ export function NewManualProjectForm({
           </View>
           <Rule />
           <View className="py-4">
-            <Text className="text-[19px] text-ink">End Date & Time*</Text>
+            <Text className="text-[16px] text-ink">End Date & Time*</Text>
             <View className="flex-row gap-3 pt-3">
               <PresetChip
                 value={endDate}
@@ -435,7 +435,7 @@ export function NewManualProjectForm({
 
       <View className="bg-background px-4 pb-4 pt-3">
         <View className="flex-row items-center justify-center gap-3 pb-3">
-          <Text className="text-[19px] text-ink">Visible</Text>
+          <Text className="text-[16px] text-ink">Visible</Text>
           <Switch
             testID="project-form.visible"
             value={visible}

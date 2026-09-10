@@ -35,7 +35,7 @@ export function Segmented({
               selected ? 'bg-primary' : 'bg-surface'
             }`}
           >
-            <Text className={`text-[17px] ${selected ? 'text-white' : 'text-primaryInk'}`}>
+            <Text className={`text-[15px] ${selected ? 'text-white' : 'text-primaryInk'}`}>
               {option}
             </Text>
           </Pressable>

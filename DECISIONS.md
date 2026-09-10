@@ -957,3 +957,42 @@ same control the Properties search uses. It appears as soon as anything is typed
 search filters as you type rather than on submit. Its Detox spec caught a real bug on the way in —
 without `keyboardShouldPersistTaps="handled"` on the screen's `ScrollView`, the first tap while
 the keyboard is up is spent dismissing it and the button never fires.
+
+### The app-wide type sweep
+
+Three new reference screenshots landed in `poc/screenshots/4/` and prompted a sweep. Method as
+before: normalise the reference to 1170-space, then compare ink bounding boxes of the *same*
+string, with a control string whose size is already known to calibrate the reference's own
+downscale. What the sweep found, screen by screen:
+
+- **Projects.** "Sep 26" is regular weight in the reference, not bold, and 0.72 the height —
+  26px bold became 19px regular. Month title 22→17, weekdays 17→13, day numbers 22→16, section
+  labels 17→14, header icons 30/26→24/22.
+- **The calendar's project card is a different component from Home's row.** The reference gives
+  it alias, Start/End lines, the project id and a chip strip, with a mint bar down the left; Home
+  keeps the compact avatar row. `ProjectRow`'s docstring claimed they were one card "so they do
+  not drift" — the reference says they were never the same card. `ProjectCard` is the new one.
+- **Project detail.** Everything down a step or two (26→22 title, 26→20 times, 19→15 pills and
+  detail rows, 17→13 time labels), icons with them. The times card is square where it meets the
+  mint band and rounds ~3px at the bottom — measured by walking the reference's corner pixel by
+  pixel, which gave a 4–5px arc against our 8px radius. The Cleaning band is `mintBand`, not
+  `primaryMuted`. "Still Unassigned" takes the warning triangle, not a filled circle.
+- **Dialogs.** The Automatic-vs-Manual dialog was a third too large: 26→19 title, 20→16 body and
+  buttons, leading 30→24. `ConfirmDialog` had the same shape and got the same treatment.
+- **Marketplace searches.** The card's "Created …" line runs the full width beneath the alias row
+  rather than indented beside it — the shape Home's Cleaner Search card already had. Alias 20→18,
+  created 15→14, "Search Summary" 17→16, house icon 44→48.
+- **More.** Only the name was out: 28→24. The email and the menu rows already measured right.
+- **New Manual Project.** Uniformly ~0.82: title 22→18, Cancel 20→16, section labels 17→14, rows
+  19→16.
+- **Bids list.** Only the segmented tabs were out, 17→15; the header and the bid cards measure
+  right.
+
+**Measured and left alone**, because the evidence says they are already correct: `ScreenHeader`'s
+18px title (`IMG_0031` and reference 17 both land on it), the Properties list (its title measures
+1.05 — if anything ours is a hair small), `Button`, `Checkbox` and the payment rows. The pattern
+across the whole sweep is the same one the chat screens showed: **type that was set by eye is
+large, type that was measured against a reference is right.**
+
+**Not swept:** the cleaner-search wizard, the Congrats screen, the property forms and the
+marketplace empty state. They were not in the report and were left rather than adjusted blind.
