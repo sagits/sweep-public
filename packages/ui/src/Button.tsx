@@ -14,10 +14,23 @@ const VARIANTS = {
 
 export type ButtonVariant = keyof typeof VARIANTS;
 
+/**
+ * Measured off the references: a primary button is 45pt tall there ("Find new cleaners" in
+ * screenshot `03`), and the promo card's white CTA is 39.4pt. They really are two sizes, so this
+ * is a prop rather than one compromise. Both were 52pt until they were measured.
+ */
+const SIZES = {
+  regular: 'h-[45px]',
+  small: 'h-[40px]',
+} as const;
+
+export type ButtonSize = keyof typeof SIZES;
+
 export function Button({
   label,
   onPress,
   variant = 'primary',
+  size = 'regular',
   loading = false,
   disabled = false,
   className = '',
@@ -26,6 +39,7 @@ export function Button({
   label: string;
   onPress?: () => void;
   variant?: ButtonVariant;
+  size?: ButtonSize;
   loading?: boolean;
   disabled?: boolean;
   className?: string;
@@ -40,7 +54,7 @@ export function Button({
       accessibilityState={{ disabled: disabled || loading }}
       disabled={disabled || loading}
       onPress={onPress}
-      className={`h-[52px] items-center justify-center rounded-md px-4 ${style.box} ${
+      className={`${SIZES[size]} items-center justify-center rounded-md px-4 ${style.box} ${
         disabled ? 'opacity-50' : ''
       } ${className}`}
     >

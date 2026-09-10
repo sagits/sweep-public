@@ -177,14 +177,21 @@ describe('marketplace', () => {
     // the scroll view (`keyboardShouldPersistTaps="handled"`) closes it.
     await element(by.id('search-form.warning')).tap();
 
-    // The overlay and the button spinner are both up while the mock resolver is in flight, so
-    // this leg runs unsynchronized — a synchronized tap would only hand back once it is over.
+    // The dialog and the button spinner are both up while the search is posted, so this leg runs
+    // unsynchronized — a synchronized tap would only hand back once it is over.
     await device.disableSynchronization();
     await element(by.id('search-form.submit')).tap();
-    await exists('search-form.congrats', 5000);
-    await text('Congrats!');
+    await exists('search-form.searching', 5000);
+    await text('Loading');
+    await text('Searching for cleaners');
     await exists('search-form.submit.spinner');
     await device.enableSynchronization();
+
+    // The dialog hands over to Congrats; "Got it!" is what reaches the bids.
+    await exists('screen.search-congrats');
+    await text('Congrats!');
+    await exists('congrats.step.chat');
+    await element(by.id('congrats.got-it')).tap();
 
     // Landed on the new search's bids, with all three cleaners bidding.
     await expect(element(by.id('bids.title'))).toHaveText(SECOND_ALIAS);

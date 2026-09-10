@@ -1,6 +1,7 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useState } from 'react';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
+import { Alert, Image, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { FIXED_ADDRESS } from '@sweep/mocks';
 import type { NewProperty, UnitSizeUnit } from '@sweep/types';
@@ -11,7 +12,11 @@ import { Field, InfoRow, ReadOnlyField, SegmentedToggle, SelectField } from './f
 
 const STEPS = ['Reservations Calendar', 'Name, address and details', 'Details and times'];
 
-/** Visible but inert: only the manual path — Skip → Yes — is implemented. */
+/**
+ * No provider is actually wired to a calendar, so all four lead where Skip leads: manual
+ * registration. They go straight there rather than through Skip's "Are you sure?" — that
+ * dialog warns about *not* syncing a calendar, which is not what picking a provider says.
+ */
 const PROVIDERS = [
   { id: 'airbnb', label: 'Airbnb' },
   { id: 'vrbo', label: 'HomeAway / Vrbo' },
@@ -57,6 +62,34 @@ export function NewPropertyForm({
   const [checkoutTime, setCheckoutTime] = useState('11:00 am');
   const [checkinTime, setCheckinTime] = useState('3:00 pm');
   const [description, setDescription] = useState('');
+  const [image, setImage] = useState<string | undefined>(undefined);
+
+  /**
+   * `base64: true` rather than the asset's file URI: there is no server and no persistent file
+   * store here, so the photo has to travel inside the property itself. A data URI renders the
+   * same on both targets — on web the picker is a file input and its URI is a blob that dies
+   * with the page.
+   */
+  const pickImage = async () => {
+    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permission.granted) {
+      Alert.alert('Photo access needed', 'Allow photo access to add a picture of the property.');
+      return;
+    }
+
+    const picked = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      aspect: [4, 3],
+      // The whole thing is held in memory as text, so it is downscaled hard on the way in.
+      quality: 0.4,
+      base64: true,
+    });
+
+    const asset = picked.assets?.[0];
+    if (picked.canceled || !asset?.base64) return;
+    setImage(`data:${asset.mimeType ?? 'image/jpeg'};base64,${asset.base64}`);
+  };
 
   const save = async () => {
     setSaving(true);
@@ -73,6 +106,7 @@ export function NewPropertyForm({
       checkoutTime,
       checkinTime,
       description,
+      image,
     });
   };
 
@@ -116,13 +150,16 @@ export function NewPropertyForm({
               <View className="gap-4">
                 <InfoRow label="Reservations Calendar" testID={`${ID}.calendar-info`} />
                 {PROVIDERS.map((provider) => (
-                  <View
+                  <Pressable
                     key={provider.id}
                     testID={`${ID}.provider.${provider.id}`}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Register manually with ${provider.label}`}
+                    onPress={() => setStep(1)}
                     className="items-center justify-center rounded border border-border py-5"
                   >
                     <Text className="text-[19px] text-inkMuted">{provider.label}</Text>
-                  </View>
+                  </Pressable>
                 ))}
               </View>
             ) : null}
@@ -175,16 +212,29 @@ export function NewPropertyForm({
                       testID={`${ID}.currency`}
                     />
                   </View>
-                  {/* Inert: nothing is uploaded in the PoC. */}
-                  <View
+                  <Pressable
                     testID={`${ID}.image`}
-                    className="mt-4 h-[130px] w-[130px] items-center justify-center rounded border-2 border-dashed border-primary px-2"
+                    accessibilityRole="button"
+                    accessibilityLabel={image ? 'Change property photo' : 'Add a property photo'}
+                    onPress={() => void pickImage()}
+                    className="mt-4 h-[130px] w-[130px] items-center justify-center overflow-hidden rounded border-2 border-dashed border-primary px-2"
                   >
-                    <MaterialCommunityIcons name="plus" size={36} color={colors.primary} />
-                    <Text className="pt-2 text-center text-[15px] text-ink">
-                      Tap to upload an image
-                    </Text>
-                  </View>
+                    {image ? (
+                      <Image
+                        testID={`${ID}.image-preview`}
+                        source={{ uri: image }}
+                        resizeMode="cover"
+                        className="h-full w-full"
+                      />
+                    ) : (
+                      <>
+                        <MaterialCommunityIcons name="plus" size={36} color={colors.primary} />
+                        <Text className="pt-2 text-center text-[15px] text-ink">
+                          Tap to upload an image
+                        </Text>
+                      </>
+                    )}
+                  </Pressable>
                 </View>
               </View>
             ) : null}

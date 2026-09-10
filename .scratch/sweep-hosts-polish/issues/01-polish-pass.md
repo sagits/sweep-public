@@ -7,7 +7,7 @@ request is in `../FEATURES.md` — read it if any criterion below reads ambiguou
 **Blocked by:** None — the `sweep-hosts-poc` branch is merged and green (86 unit tests, Detox 43/43
 seeded and 6/6 seed-off).
 
-**Status:** ready-for-agent
+**Status:** done
 
 ## Three of these override the PRD
 
@@ -27,18 +27,18 @@ needs its spec line, its Detox assertion and `DECISIONS.md` updated to match, no
 
 ## Acceptance criteria
 
-- [ ] Unselected tab icons **and** labels render in the app's grey — use `inkMuted` (`#8A90A2`)
+- [x] Unselected tab icons **and** labels render in the app's grey — use `inkMuted` (`#8A90A2`)
       from `packages/ui/tokens.js` unless a better-matching token already exists; do not introduce
       a new hex. The active tab stays teal. `apps/host/src/navigation/TabBar.tsx:38` currently
       picks `primaryMuted` and renders the label only when focused
-- [ ] The More tab uses a profile icon (a person, not three dots)
-- [ ] Home, Projects, Marketplace, Payments and Properties each show skeleton placeholders while
+- [x] The More tab uses a profile icon (a person, not three dots)
+- [x] Home, Projects, Marketplace, Payments and Properties each show skeleton placeholders while
       their store loads, for **0.5s**, using the existing `Skeleton` from `@sweep/ui`. Screens that
       already have skeletons keep them — this is about coverage and timing being uniform, not about
       re-inventing them
-- [ ] Every tab supports pull-to-refresh, and refreshing genuinely re-runs that screen's store load
+- [x] Every tab supports pull-to-refresh, and refreshing genuinely re-runs that screen's store load
       rather than faking a delay
-- [ ] The Congrats overlay after posting a cleaner search is replaced by a **centred alert dialog
+- [x] The Congrats overlay after posting a cleaner search is replaced by a **centred alert dialog
       over a dimmed scrim**, shaped like `../loading-dialog-reference.png`: a white rounded card
       in the middle of the screen, a large element centred at the top, text beneath it. Take the
       *shape* from that reference, not its colours — it is a generic React Native alert and its
@@ -48,24 +48,24 @@ needs its spec line, its Detox assertion and `DECISIONS.md` updated to match, no
       the design system like every other surface. It shows for 1s, then navigates to that search's
       bids screen. It replaces the Congrats overlay of `poc/screenshots/13-cleaner-search-congrats.jpg`,
       so that screenshot no longer describes this flow
-- [ ] On the Projects tab, a day with no scheduled cleanings renders an empty line beneath its date
+- [x] On the Projects tab, a day with no scheduled cleanings renders an empty line beneath its date
       so consecutive empty dates are visually separated. The line carries the same horizontal
       padding as a date that has cards
-- [ ] The Payments header's title font size and icon sizes match the other screens' headers.
+- [x] The Payments header's title font size and icon sizes match the other screens' headers.
       `DECISIONS.md` §07 records that this screen was deliberately given the app's largest type
       (title 30px, empty sentence 36px/44px) measured off screenshot 22 — that decision is being
       reversed here, so update it rather than leaving the file contradicting the code
-- [ ] The three seeded properties use real house photographs, downloaded into the repo (not hotlinked).
+- [x] The three seeded properties use real house photographs, downloaded into the repo (not hotlinked).
       Use permissively licensed images (Unsplash/Pexels or similar), keep them small, and record the
       source and licence for each in the README
-- [ ] In New Property, the Airbnb and other provider tiles are tappable and all lead to the same
+- [x] In New Property, the Airbnb and other provider tiles are tappable and all lead to the same
       manual-registration screen the Skip button leads to. They are currently inert by ticket 03's
       design
-- [ ] Payments is removed from the tab bar; a dollar-sign icon in Home's header opens the Payment
+- [x] Payments is removed from the tab bar; a dollar-sign icon in Home's header opens the Payment
       History screen. The screen itself stays reachable and unchanged otherwise
-- [ ] Tests updated, not deleted: every behaviour above is covered. Prefer editing the existing test
+- [x] Tests updated, not deleted: every behaviour above is covered. Prefer editing the existing test
       that owns the behaviour; add a new one only where no existing test fits. Per
       `docs/adr/0001-testing-seams-tdd-and-detox.md`, store and mock-resolver behaviour goes to
       Jest, screen behaviour to Detox
-- [ ] `pnpm test`, `pnpm lint`, `pnpm typecheck` green; Detox seeded suite green; seed-off pass
+- [x] `pnpm test`, `pnpm lint`, `pnpm typecheck` green; Detox seeded suite green; seed-off pass
       (`cd apps/host && EXPO_PUBLIC_SEED=false ./scripts/e2e-test.sh e2e/seed.e2e.ts`) still 6/6

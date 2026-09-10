@@ -11,9 +11,10 @@ export const FIXED_ADDRESS = 'Los Angeles, CA 90001, USA';
 
 /**
  * The app boots with three properties already registered — the aliases the seeded
- * notifications already name. `image` is an emoji rather than a shipped asset; the card
- * renders a house outline for a property without one, which is what the reference
- * screenshot shows.
+ * notifications already name. `image` is a key into the app's bundled photographs
+ * (`src/properties/images.ts`), not a path: these mocks stay plain data with no bundler in
+ * them. The card renders a house outline for a property without one, which is what the
+ * reference screenshot shows.
  */
 export const seededProperties: Property[] = [
   {
@@ -26,7 +27,7 @@ export const seededProperties: Property[] = [
     bathrooms: 2,
     unitSize: 1200,
     unitSizeUnit: 'sq. ft.',
-    image: '🏖️',
+    image: 'beach-house',
     currency: 'USD',
     checkoutTime: '11:00 am',
     checkinTime: '3:00 pm',
@@ -42,7 +43,7 @@ export const seededProperties: Property[] = [
     bathrooms: 2,
     unitSize: 1800,
     unitSizeUnit: 'sq. ft.',
-    image: '🏡',
+    image: 'rural-home',
     currency: 'USD',
     checkoutTime: '10:00 am',
     checkinTime: '4:00 pm',
@@ -58,7 +59,7 @@ export const seededProperties: Property[] = [
     bathrooms: 1,
     unitSize: 850,
     unitSizeUnit: 'sq. ft.',
-    image: '🏙️',
+    image: 'city-apartment',
     currency: 'USD',
     checkoutTime: '11:00 am',
     checkinTime: '3:00 pm',

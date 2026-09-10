@@ -101,7 +101,9 @@ Choices made while building from `poc/PRD.md` where the PRD left something open.
   last card and inside a card all return `#FFFEFF`: on Home the cards separate from the page by
   their shadow alone. The screenshot wins, so Home passes `surface` to `Screen`. The `background`
   token keeps the PRD's gray for the screens that do show it.
-- **Screenshot conflict — the blue "Get $100 credit" pill is not unconditional.** The PRD lists it
+- **Screenshot conflict — the blue "Get $100 credit" pill is not unconditional.** *(Moot as of the
+  polish pass: the pill was removed from Home's header on request. The `Pill` component stays —
+  the Payments "Paid" chip uses it.)* The PRD lists it
   as part of the Home header. Screenshot `02` shows the pill *and* the promo card; screenshot `01`
   is the same screen with the promo card gone, and the pill is gone with it. They are one feature,
   so dismissing the promo hides both.
@@ -240,12 +242,15 @@ Choices made while building from `poc/PRD.md` where the PRD left something open.
   which is the only path to the screenshot's state, and it is what `payments.e2e.ts` taps. Leaving
   the tab and coming back reloads the seed, so nothing is lost. Swap the handler the day a real
   filter sheet exists.
-- **The type on this screen is the largest in the app, and that is measured, not a guess.** Ink
-  heights off screenshot `22`, scaled against ticket 02's `Sweep` wordmark (26px of ink at 28px):
+- **The type on this screen is the largest in the app, and that is measured, not a guess.**
+  *(Superseded by the polish pass: Payments is a pushed screen now and wears the shared header's
+  18px title and 26px icons. The measurement below still describes screenshot `22`; it no longer
+  describes the code.)* Ink heights off screenshot `22`, scaled against ticket 02's `Sweep` wordmark (26px of ink at 28px):
   "Payment History" is 31px of ink → **30px**, and the empty-state sentence is 38px → **36px** over
   a 44px line, which is what makes it wrap after "any" exactly as the screenshot does. Rows fall
   back to the established scale (17px name, 15px property, 19px amount).
-- **`PaymentsHeader` is local to the screen, not a shared primitive.** `HeaderBand` is the teal
+- **`PaymentsHeader` is local to the screen, not a shared primitive.** *(Superseded by the polish
+  pass: this file is gone; Payments now uses the shared `ScreenHeader`.)* `HeaderBand` is the teal
   band and centers nothing; this header is white, clears the status bar itself and centers its
   title with the icons pinned right. Two screens would have to want it before it earns a spot in
   `packages/ui`.
@@ -710,9 +715,118 @@ left alone. Nothing here changed a layout, a token or a copy string.
   and `02` (02 above); the reviewer's finding is answered by the screenshot.
 - **`PaymentsHeader` and `MarketplaceHeader` are still two files.** 07 and 05 both recorded why:
   `HeaderBand` is the teal band and centres nothing, and neither header has yet been wanted by a
-  third screen.
+  third screen. **Superseded by the polish pass**: Payments became a pushed screen and made it the
+  fourth, so `MarketplaceHeader` was promoted to `src/navigation/ScreenHeader.tsx` and
+  `PaymentsHeader` was deleted.
 
 **Verified on the device, not only in the browser.** `pnpm test` 76 passed across 20 suites;
 `pnpm lint` and `pnpm typecheck` (4/4) green; seeded `pnpm e2e:test` **44 passed across 9 suites**
 — the 43 that were green before, plus More's new loading spec; and the seed-off pass,
 `EXPO_PUBLIC_SEED=false ./scripts/e2e-test.sh e2e/seed.e2e.ts`, still 6/6.
+
+## Polish pass — the eleven changes, and what they overrode
+
+Worked from `.scratch/sweep-hosts-polish/issues/01-polish-pass.md`. Three items overrode the PRD
+outright; those lines in `poc/PRD.md` were rewritten rather than left to contradict the code.
+
+- **Every tab carries its label now**, the active one teal and the rest `inkMuted` grey. The PRD
+  had inactive tabs muted teal with no label, and `navigation.e2e.ts` asserted "only the active one
+  carries its label". Both changed. This is also what broke `more.e2e.ts` on the first device run:
+  `by.text('Properties')` started matching the tab label as well as the More menu row, so that
+  assertion is now scoped `withAncestor(by.id('more.menu'))`. Worth remembering — every bare
+  `by.text` matcher in the suite now competes with five permanent tab labels.
+- **Five tabs.** Payments left the bar for a dollar icon in Home's header, so it is a pushed screen
+  and wears the shared white header. That made it the fourth screen wanting the shape
+  `MarketplaceHeader` had, which is exactly the promotion trigger that component's own comment
+  named: it is now `src/navigation/ScreenHeader.tsx`, and `PaymentsHeader` is gone. Ticket 07's
+  measured 30px title / 30px icons go with it — a pushed screen wears 18px and 26px like the rest.
+- **The mock delay is a flat 500ms**, not the PRD's random 600–1200ms. One line in `resolve.ts`,
+  since every mock resolves through it. `MIN_DELAY_MS` and `MAX_DELAY_MS` are both 500 rather than
+  renamed, because roughly twenty store and mock tests advance fake timers by one of them.
+
+Three more worth recording:
+
+- **Pull-to-refresh needed a store change, not a `RefreshControl`.** Every `load` sits behind
+  `once()`, which answers from the in-flight promise — the gesture would have been a silent no-op
+  after the first fetch. Every store now has the shape `useProjects` already had: `reload` does the
+  work, `load` is `once(reload)`. The keep-what-was-added-this-session merge that projects,
+  properties and marketplace each had a private copy of is now `stores/merge.ts`.
+- **The provider tiles skip Skip's confirmation.** Airbnb, Vrbo, Booking.com and TripAdvisor all
+  lead where Skip leads, but go straight there: Skip's dialog warns that you cannot accept a
+  Marketplace bid *until you sync a calendar*, which is a non-sequitur immediately after picking a
+  provider.
+- **`Property.image` is a key, not an emoji and not a path.** `src/properties/images.ts` maps it to
+  a bundled photograph, so `packages/mocks` keeps no `require()` for Metro to resolve. The three
+  photographs are CC0, downloaded into `assets/properties/` at 480px, credited in the README.
+
+### Review fixes
+
+The two-axis review of this branch found one real bug and several tidy-ups:
+
+- **The loading dialog was not held for its second.** The wizard started a 1000ms promise, awaited
+  `onSubmit`, then awaited the promise — but `onSubmit` is what navigates, so the screen was gone
+  at ~500ms and the remaining wait delayed nothing anybody saw. The wait now lives in
+  `app/search/new.tsx` beside the navigation: `Promise.all([post(input), delay(SEARCHING_MS)])`.
+  The lesson is general — a minimum-display wait has to sit where the unmount is, not after it.
+- **`useRefreshControl` is no longer called inside JSX.** It was `refreshControl={useRefreshControl(…)}`
+  on six screens, which is correct today because each has a single unconditional return, but three
+  of those screens already branch on `loading` inside the scroll view. The day one of those branches
+  moves outward the hook goes conditional and the screen throws on hook order, and
+  `eslint-plugin-react-hooks` would not catch it — the call is still lexically inside the component.
+  Each screen now declares `const refreshControl = useRefreshControl(…)` at the top.
+- **`resolve()` no longer computes a random offset between two equal bounds**, and the test that
+  mocked `Math.random` to prove the dead branch stayed dead is gone with it.
+- `projects.refresh` was on both the header button and the `RefreshControl`; the gesture is now
+  `projects.pull-refresh`.
+- `openPayments` and `dayKey` were copied across specs; they live in `e2e/support.ts` now.
+
+## Polish round two — photo upload, Home layout, slower skeletons
+
+Worked from `.scratch/sweep-hosts-polish/issues/02-polish-round-two.md`.
+
+- **An uploaded photo travels inside the property as a `data:` URI.** `expo-image-picker` returns
+  base64 directly (`base64: true`), which is what the request asked for and also the only thing
+  that works on both targets: there is no server and no file store, and on web the picker's asset
+  URI is a blob that dies with the page. `Property.image` therefore holds one of two things now — a
+  key into the bundled seed photographs, or a `data:` URI — and `propertyImage()` branches on the
+  prefix. The picker downscales hard (`quality: 0.4`) because the whole image is held as text.
+- **`expo-image-picker` is a native module, so the dev client needed rebuilding.** The running
+  build failed with `Cannot find native module 'ExponentImagePicker'` until `pnpm e2e:build` ran
+  again. Its config plugin is in `app.json` with a `photosPermission` string: iOS crashes on the
+  permission request without one. Anything that adds native code from here needs the same rebuild
+  before the simulator sees it.
+- **Skeletons run for a second, once per store per session.** `MIN_DELAY_MS`/`MAX_DELAY_MS` are
+  both 1000 now. The "only the first time a tab opens" half needed no code: `once()` already holds
+  the first load's promise, so a second visit to a tab has its data. Pull-to-refresh is the
+  deliberate exception.
+- **The card shadow was too faint, and that is what "no shadow" meant — the page was never
+  wrong.** First attempt greyed Home's page and widened its insets to 16px. Both were wrong, and
+  decoding the reference screenshot said so: between the cards it samples `#FFFFFF`, and a card's
+  left edge sits ~8pt in. Ticket 02's original sampling stands. What is actually different is the
+  shadow: straight down from a card's bottom edge the reference darkens to ~205/255 and fades out
+  over ~8.5pt, where ours was `0.10` alpha over an 8px blur — invisible against white. The token
+  is now `0px 2px 10px rgba(43, 52, 80, 0.38)` — landed by decoding our own screenshot the same
+  way and comparing: 0.20 reached only 229/255, 0.38 reaches 206 against the reference's 205,
+  over the same ~8.3pt. Home is white with 8px insets again. The
+  14px between cards is measured too (~13.6pt) and stays.
+
+  Worth remembering: the screenshot is 924px wide for a 393pt screen, so **2.35 px per point**.
+  Every measurement above is a decode of the PNG, not an eyeball.
+- **The Quality center card is gone from Home.** Its unit test was doing a second job — guarding
+  the `@sweep/ui` hook surface, because a duplicate React under `packages/ui` gives it its own
+  copy of the hooks and every one of them throws. That guard now renders `Spinner` directly rather
+  than going through a card that no longer exists.
+
+### The cleaner work gallery
+
+- **One shared set of six interiors for every cleaner.** The request allowed it and the alternative
+  is eighteen photographs to make the same point. `workPhoto(index)` wraps, so a cleaner with more
+  tiles than there are photographs still fills its grid. `cleaner.workPhotos` keeps its emoji: it
+  is what sets each grid's *length*, and changing the seed would have rippled into ticket 05's
+  tests for no visible gain.
+- **The gallery is an overlay, not a `Modal`.** DECISIONS 03 recorded that `Modal` renders nothing
+  under jest-expo; a modal here would be untestable at the component seam, which is where swipe,
+  arrows and close actually live. Same call `ConfirmDialog` made.
+- **The arrows disappear at each end** rather than sitting inert — an inert arrow reads as a bug.
+  The counter (`2 / 6`) is what the Detox spec asserts, since it is the one piece of the gallery's
+  state that is visible as text.

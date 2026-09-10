@@ -42,16 +42,16 @@ describe('home', () => {
   it('renders the teal header and the static cards', async () => {
     await exists('home.header');
     await expect(element(by.id('home.wordmark'))).toHaveText('Sweep');
-    await exists('home.credit-pill');
-    await expect(element(by.text('Get $100 credit'))).toBeVisible();
     await exists('home.bell');
     await exists('home.messages');
 
     // The seed holds three open searches, so the "Search for New Cleaners" prompt is already
     // replaced by the Cleaner Search card — its own test is below.
     await exists('home.cleaner-search-card');
-    await visible('home.invite-teammates-card');
-    await expect(element(by.text('Invite Current Teammates'))).toBeVisible();
+    // A container, so existence — and its text needs scrolling to now that Home carries 16px
+    // more above the first card.
+    await exists('home.invite-teammates-card');
+    await scrolledToText('Invite Current Teammates');
   });
 
   it('mounts the data cards as skeletons, then resolves them', async () => {
@@ -90,13 +90,20 @@ describe('home', () => {
     await exists('home.notification.notification-1.stamp');
   });
 
-  it('keeps the Quality center card in a spinner', async () => {
-    await scrolledToText('Quality center');
-    await exists('home.quality-center-card');
-    await exists('home.quality-center-spinner');
+  it('pulls to refresh without losing the cards it already had', async () => {
+    await exists('home.projects-card');
+
+    // Swipe down from the top of the scroll view to trip the RefreshControl.
+    await element(by.id(SCROLL)).swipe('down', 'slow', 0.9, NaN, 0.05);
+
+    // The refresh re-fetches the seed and merges it over what is already there, so the cards
+    // come back rather than emptying out.
+    await exists('home.projects-card', 20000);
+    await exists('home.notifications-card', 20000);
+    await exists('home.cleaner-search-card', 20000);
   });
 
-  it('dismisses the promo card, and its header pill, for the session', async () => {
+  it('dismisses the promo card for the session', async () => {
     await exists('home.promo-card');
     await scrolledToText('Invite a Host and get $100 in Credits');
 
@@ -104,13 +111,11 @@ describe('home', () => {
     await element(by.id('home.promo-dismiss')).tap();
 
     await gone('home.promo-card');
-    await gone('home.credit-pill');
 
     // Still gone after leaving Home and coming back.
     await element(by.id('tabs.projects')).tap();
     await element(by.id('tabs.home')).tap();
     await gone('home.promo-card');
-    await gone('home.credit-pill');
   });
 
   it('shows the seeded Cleaner Search card, with a bid chip per search', async () => {

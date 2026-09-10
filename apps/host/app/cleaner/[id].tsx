@@ -5,14 +5,14 @@ import { View } from 'react-native';
 import { Card, Screen, Skeleton } from '@sweep/ui';
 
 import { CleanerProfile } from '@/marketplace/CleanerProfile';
-import { MarketplaceHeader } from '@/marketplace/MarketplaceHeader';
+import { ScreenHeader } from '@/navigation/ScreenHeader';
 import { useMarketplace } from '@/stores/useMarketplace';
 
 /** Skeleton for a deep link that arrives before the seed does — screenshots show no loading state. */
 function LoadingProfile() {
   return (
     <>
-      <MarketplaceHeader testID="cleaner.header" title="Loading…">
+      <ScreenHeader testID="cleaner.header" title="Loading…">
         <View className="flex-row items-center gap-3 px-3 pb-3">
           <Skeleton className="h-[72px] w-[72px]" />
           <View className="flex-1 gap-2">
@@ -21,7 +21,7 @@ function LoadingProfile() {
             <Skeleton className="h-4 w-1/3" />
           </View>
         </View>
-      </MarketplaceHeader>
+      </ScreenHeader>
       <View testID="cleaner.skeleton" className="gap-3 p-3">
         <Card className="gap-3 p-4">
           <Skeleton className="h-5 w-1/3" />

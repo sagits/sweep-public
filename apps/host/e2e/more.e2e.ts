@@ -66,7 +66,9 @@ describe('more', () => {
     await exists('more.menu');
     for (const [id, label] of ROWS) {
       await exists(`more.row.${id}`);
-      await expect(element(by.text(label))).toBeVisible();
+      // Scoped to the menu: every tab carries its label now, so a bare `by.text('Properties')`
+      // also matches the tab bar underneath.
+      await expect(element(by.text(label).withAncestor(by.id('more.menu')))).toBeVisible();
     }
 
     await expect(element(by.text('Check for updates'))).toBeVisible();

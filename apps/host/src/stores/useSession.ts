@@ -9,14 +9,17 @@ type SessionState = {
   loading: boolean;
   /** There is no sign in — "logging in" is just resolving the hardcoded user. */
   load: () => Promise<void>;
+  /** Pull-to-refresh on More: re-resolves the user, outside the load guard. */
+  reload: () => Promise<void>;
 };
 
-export const useSession = create<SessionState>((set) => ({
+export const useSession = create<SessionState>((set, get) => ({
   user: null,
   loading: false,
-  load: once(async () => {
+  load: once(() => get().reload()),
+  reload: async () => {
     set({ loading: true });
     const user = await resolve(currentUser);
     set({ user, loading: false });
-  }),
+  },
 }));

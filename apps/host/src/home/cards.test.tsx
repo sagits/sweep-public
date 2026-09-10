@@ -1,7 +1,8 @@
 import { fireEvent, render, screen } from '@testing-library/react-native';
 
+import { Spinner } from '@sweep/ui';
+
 import { PromoCard } from './PromoCard';
-import { QualityCenterCard } from './QualityCenterCard';
 
 describe('Home cards', () => {
   it('dismisses the promo through its "Don\'t show this anymore" checkbox', async () => {
@@ -14,11 +15,12 @@ describe('Home cards', () => {
     expect(onDismiss).toHaveBeenCalled();
   });
 
-  it('mounts the Quality center spinner', async () => {
+  it('mounts a Spinner from @sweep/ui', async () => {
     // Guards the whole @sweep/ui hook surface: a duplicate React under packages/ui gives it its
     // own copy of the hooks, and every one of them throws. Spinner is the first to call one.
-    await render(<QualityCenterCard />);
+    // It used to guard this through Home's Quality center card, which has since been removed.
+    await render(<Spinner testID="ui.spinner" />);
 
-    expect(screen.getByTestId('home.quality-center-spinner')).toBeTruthy();
+    expect(screen.getByTestId('ui.spinner')).toBeTruthy();
   });
 });

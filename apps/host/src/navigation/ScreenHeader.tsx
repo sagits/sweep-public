@@ -6,15 +6,15 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors } from '@sweep/ui';
 
 /**
- * The white header the three Marketplace screens share: an optional teal back chevron on the
- * left, the title centred, icons on the right, and whatever comes next (always the segmented
- * control) still on white, over a hairline.
+ * The white header every pushed screen shares: an optional teal back chevron on the left, the
+ * title centred, icons on the right, and whatever comes next (a segmented control, say) still on
+ * white, over a hairline.
  *
- * ponytail: local to the feature, not in `packages/ui`. `HeaderBand` is the teal band and
- * centres nothing; ticket 07's `PaymentsHeader` is the same idea but pins its own icons. When a
- * fourth screen wants this shape it can be promoted — three of the four are in this folder.
+ * Promoted out of `marketplace/` when Payments became the fourth screen to want this shape —
+ * which is the trigger the original comment named. `HeaderBand` remains the teal band; this is
+ * the white one.
  */
-export function MarketplaceHeader({
+export function ScreenHeader({
   title,
   onBack,
   right,

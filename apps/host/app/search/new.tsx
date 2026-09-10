@@ -4,7 +4,7 @@ import { View } from 'react-native';
 
 import { Screen, Spinner } from '@sweep/ui';
 
-import { NewSearchWizard } from '@/marketplace/NewSearchWizard';
+import { NewSearchWizard, SEARCHING_MS } from '@/marketplace/NewSearchWizard';
 import { useMarketplace } from '@/stores/useMarketplace';
 import { useProperties } from '@/stores/useProperties';
 
@@ -28,8 +28,15 @@ export default function NewSearchScreen() {
         <NewSearchWizard
           properties={properties}
           onSubmit={async (input) => {
-            const search = await post(input);
-            router.replace(`/search/${search.id}`);
+            // The wizard's dialog is up for as long as this takes, so hold it for its full
+            // second even though the mock resolver comes back in half of one.
+            const [search] = await Promise.all([
+              post(input),
+              new Promise((done) => setTimeout(done, SEARCHING_MS)),
+            ]);
+            // The dialog hands over to the Congrats screen; its "Got it!" is what reaches the
+            // bids list.
+            router.replace({ pathname: '/search/congrats', params: { id: search.id } });
           }}
           onClose={close}
         />

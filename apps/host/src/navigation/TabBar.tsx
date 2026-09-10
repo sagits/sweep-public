@@ -16,7 +16,7 @@ function tabTestID(routeName: string) {
 
 /**
  * Bottom bar on phones, left sidebar at the `md` breakpoint and above — same source, no second
- * web layout. Active tab is teal with its label showing; inactive tabs are muted teal, no label.
+ * web layout. Every tab carries its label; the active one is teal, the rest grey.
  */
 export function TabBar({ state, descriptors, navigation }: TabBarProps) {
   const insets = useSafeAreaInsets();
@@ -35,7 +35,7 @@ export function TabBar({ state, descriptors, navigation }: TabBarProps) {
 
         const { options } = descriptor;
         const focused = state.index === index;
-        const color = focused ? colors.primary : colors.primaryMuted;
+        const color = focused ? colors.primary : colors.inkMuted;
         const testID = tabTestID(route.name);
 
         return (
@@ -58,16 +58,14 @@ export function TabBar({ state, descriptors, navigation }: TabBarProps) {
             className="flex-1 items-center py-2.5 md:flex-none"
           >
             {options.tabBarIcon?.({ focused, color, size: ICON_SIZE })}
-            {focused ? (
-              <Text
-                testID={`${testID}.label`}
-                className="text-primary"
-                style={{ fontSize: 12, marginTop: 4 }}
-                numberOfLines={1}
-              >
-                {options.title}
-              </Text>
-            ) : null}
+            <Text
+              testID={`${testID}.label`}
+              className={focused ? 'text-primary' : 'text-inkMuted'}
+              style={{ fontSize: 12, marginTop: 4 }}
+              numberOfLines={1}
+            >
+              {options.title}
+            </Text>
           </Pressable>
         );
       })}

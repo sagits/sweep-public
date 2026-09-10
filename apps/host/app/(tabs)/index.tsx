@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router';
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { ScrollView, View } from 'react-native';
 
 import { Screen } from '@sweep/ui';
@@ -10,7 +10,7 @@ import { NotificationsCard } from '@/home/NotificationsCard';
 import { ProjectsCard } from '@/home/ProjectsCard';
 import { PromoCard } from '@/home/PromoCard';
 import { PromptCard } from '@/home/PromptCard';
-import { QualityCenterCard } from '@/home/QualityCenterCard';
+import { useRefreshControl } from '@/refresh';
 import { useMarketplace } from '@/stores/useMarketplace';
 import { useNotifications } from '@/stores/useNotifications';
 import { useProjects } from '@/stores/useProjects';
@@ -29,6 +29,15 @@ export default function HomeScreen() {
   const searches = useMarketplace((state) => state.searches);
   const searchesLoaded = useMarketplace((state) => state.loaded);
   const loadSearches = useMarketplace((state) => state.load);
+  const reloadNotifications = useNotifications((state) => state.reload);
+  const reloadProjects = useProjects((state) => state.reload);
+  const reloadSearches = useMarketplace((state) => state.reload);
+
+  // Home is three cards over three stores, so the gesture refreshes all three at once.
+  const refresh = useCallback(
+    () => Promise.all([reloadNotifications(), reloadProjects(), reloadSearches()]),
+    [reloadNotifications, reloadProjects, reloadSearches],
+  );
 
   useEffect(() => {
     void loadNotifications();
@@ -36,16 +45,23 @@ export default function HomeScreen() {
     void loadSearches();
   }, [loadNotifications, loadProjects, loadSearches]);
 
+  // Declared here, not inline in the JSX: a hook must never sit in an attribute that a
+  // later refactor could move behind a branch.
+  const refreshControl = useRefreshControl(refresh, 'home.refresh');
+
   return (
     <Screen testID="screen.home" insetTop={false} surface>
-      <HomeHeader unreadCount={notifications.length} showCreditPill={!promoDismissed} />
+      <HomeHeader
+        unreadCount={notifications.length}
+        onOpenPayments={() => router.navigate('/payments')}
+      />
       <ScrollView
+        refreshControl={refreshControl}
         testID="home.scroll"
         className="flex-1"
         contentContainerStyle={{ paddingBottom: 24 }}
       >
-        {/* The teal band runs behind these two, so they stay tight together. */}
-        <View className="gap-2 px-2">
+        <View className="gap-[14px] px-2 pt-4">
           {searchesLoaded && searches.length === 0 ? (
             <PromptCard
               title="Search for New Cleaners"
@@ -79,7 +95,6 @@ export default function HomeScreen() {
             }
           />
           <NotificationsCard notifications={notifications} loading={notificationsLoading} />
-          <QualityCenterCard />
         </View>
       </ScrollView>
     </Screen>

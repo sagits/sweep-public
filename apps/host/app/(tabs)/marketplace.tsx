@@ -6,9 +6,10 @@ import { Pressable, ScrollView, Text, View } from 'react-native';
 import { Card, Screen, Skeleton, colors } from '@sweep/ui';
 
 import { EmptySearches } from '@/marketplace/EmptySearches';
-import { MarketplaceHeader } from '@/marketplace/MarketplaceHeader';
+import { ScreenHeader } from '@/navigation/ScreenHeader';
 import { SearchCard } from '@/marketplace/SearchCard';
 import { Segmented } from '@/marketplace/Segmented';
+import { useRefreshControl } from '@/refresh';
 import { useMarketplace } from '@/stores/useMarketplace';
 
 const TABS = ['Open', 'Closed'] as const;
@@ -33,6 +34,7 @@ export default function MarketplaceScreen() {
   const searches = useMarketplace((state) => state.searches);
   const loading = useMarketplace((state) => state.loading);
   const load = useMarketplace((state) => state.load);
+  const reload = useMarketplace((state) => state.reload);
   const [tab, setTab] = useState<string>(TABS[0]);
 
   useEffect(() => {
@@ -45,9 +47,13 @@ export default function MarketplaceScreen() {
   const open = tab === TABS[0];
   const listed = open ? searches : [];
 
+  // Declared here, not inline in the JSX: a hook must never sit in an attribute that a
+  // later refactor could move behind a branch.
+  const refreshControl = useRefreshControl(reload, 'marketplace.refresh');
+
   return (
     <Screen testID="screen.marketplace" insetTop={false}>
-      <MarketplaceHeader
+      <ScreenHeader
         title="Marketplace searches"
         titleTestID="marketplace.title"
         testID="marketplace.header"
@@ -71,9 +77,10 @@ export default function MarketplaceScreen() {
         }
       >
         <Segmented options={TABS} value={tab} onChange={setTab} testID="marketplace.tabs" />
-      </MarketplaceHeader>
+      </ScreenHeader>
 
       <ScrollView
+        refreshControl={refreshControl}
         testID="marketplace.scroll"
         className="flex-1"
         contentContainerStyle={{ padding: 12, paddingBottom: 24 }}

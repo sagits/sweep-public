@@ -61,4 +61,25 @@ describe('useProperties', () => {
 
     expect(useProperties.getState().properties).toHaveLength(seededProperties.length + 1);
   });
+
+  it('re-fetches on reload, so pull-to-refresh is not a no-op behind the load guard', async () => {
+    await settle(useProperties.getState().load());
+
+    const pending = useProperties.getState().reload();
+
+    expect(useProperties.getState().loading).toBe(true);
+    await settle(pending);
+    expect(useProperties.getState().properties).toEqual(seededProperties);
+  });
+
+  it('keeps a property added this session across a reload', async () => {
+    await settle(useProperties.getState().load());
+    await settle(useProperties.getState().add(NEW_PROPERTY));
+
+    await settle(useProperties.getState().reload());
+
+    const { properties } = useProperties.getState();
+    expect(properties).toHaveLength(seededProperties.length + 1);
+    expect(properties.at(-1)?.alias).toBe('Beach house');
+  });
 });

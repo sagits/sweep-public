@@ -23,4 +23,17 @@ describe('usePayments', () => {
     expect(usePayments.getState().loading).toBe(false);
     expect(usePayments.getState().payments).toEqual(seededPayments);
   });
+
+  it('re-fetches on reload, so pull-to-refresh is not a no-op behind the load guard', async () => {
+    const first = usePayments.getState().load();
+    jest.advanceTimersByTime(MAX_DELAY_MS);
+    await first;
+
+    const pending = usePayments.getState().reload();
+
+    expect(usePayments.getState().loading).toBe(true);
+    jest.advanceTimersByTime(MAX_DELAY_MS);
+    await pending;
+    expect(usePayments.getState().payments).toEqual(seededPayments);
+  });
 });

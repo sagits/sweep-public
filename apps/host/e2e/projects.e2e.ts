@@ -1,5 +1,7 @@
 import { by, device, element, expect, waitFor } from 'detox';
 
+import { dayKey } from './support';
+
 /** The seeded projects, from `packages/mocks/src/projects.ts`. */
 const SEEDED = [
   { id: '38261465', alias: 'Beach apartment', cleaner: 'Unassigned' },
@@ -31,10 +33,21 @@ const openProjectsTab = async () => {
   await element(by.id('tabs.projects')).tap();
 };
 
+
 describe('projects', () => {
   beforeEach(async () => {
     await device.launchApp({ delete: true });
     await openProjectsTab();
+  });
+
+  it('rules off a day with nothing scheduled, so a run of empty dates reads apart', async () => {
+    await exists('projects.scroll');
+
+    // The seed fills today, tomorrow and day 4 — days 2 and 3 are empty, and each gets a rule
+    // under its date instead of the heading sitting straight on the next one.
+    await exists(`projects.section.${dayKey(2)}`);
+    await exists(`projects.empty-day.${dayKey(2)}`);
+    await exists(`projects.empty-day.${dayKey(3)}`);
   });
 
   it('opens on the calendar: header icons, month navigator, week strip and day sections', async () => {

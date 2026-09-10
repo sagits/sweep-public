@@ -8,6 +8,7 @@ import { flush } from '@/testing/flush';
 
 import { BidCard } from './BidCard';
 import { CleanerProfile, messagePreview } from './CleanerProfile';
+import { PhotoGallery } from './PhotoGallery';
 import { SearchCard, createdLabel } from './SearchCard';
 import { WhileYouWaitCard } from './WhileYouWaitCard';
 
@@ -97,6 +98,22 @@ describe('WhileYouWaitCard', () => {
 });
 
 describe('CleanerSearchCard', () => {
+  it('says "Waiting for Bids" instead of a chip until a cleaner bids', async () => {
+    const waiting = { ...firstSearch, id: 'search-waiting', bids: [] };
+    await render(
+      <CleanerSearchCard
+        searches={[waiting]}
+        loading={false}
+        onSeeAll={jest.fn()}
+        onOpenSearch={jest.fn()}
+        onFindCleaners={jest.fn()}
+      />
+    );
+
+    expect(screen.getByTestId('home.cleaner-search.search-waiting.waiting')).toBeTruthy();
+    expect(screen.queryByTestId('home.cleaner-search.search-waiting.bids')).toBeNull();
+  });
+
   it('counts the searches and chips each one with its bids', async () => {
     const onOpenSearch = jest.fn();
     await render(
@@ -176,7 +193,7 @@ describe('CleanerProfile', () => {
       expect(screen.getByText('Reviews')).toBeTruthy();
       expect(screen.getByText(`(${cleaner.reviewCount} reviews)`)).toBeTruthy();
       expect(screen.getByText(`Photos of ${cleaner.name}'s work`)).toBeTruthy();
-      expect(screen.getAllByTestId(/^cleaner\.photo\./)).toHaveLength(cleaner.workPhotos.length);
+      expect(screen.getAllByTestId(/^cleaner\.photo\.\d+$/)).toHaveLength(cleaner.workPhotos.length);
 
       // Aurea carries neither the chip nor the Handy Pro rows; the screen renders without them.
       expect(screen.queryByText('Super Cleaner') !== null).toBe(cleaner.superCleaner);
@@ -248,5 +265,53 @@ describe('CleanerProfile', () => {
     await flush();
 
     expect(screen.queryByTestId('cleaner.info')).toBeNull();
+  });
+});
+
+describe('PhotoGallery', () => {
+  const photos = [1, 2, 3].map(() => ({ uri: 'x' }));
+
+  it('opens at the photo that was tapped and steps forward and back', async () => {
+    await render(
+      <PhotoGallery photos={photos} initialIndex={1} onClose={jest.fn()} testID="g" />
+    );
+
+    expect(screen.getByTestId('g.counter')).toHaveTextContent('2 / 3');
+
+    fireEvent.press(screen.getByTestId('g.next'));
+    await flush();
+    expect(screen.getByTestId('g.counter')).toHaveTextContent('3 / 3');
+
+    fireEvent.press(screen.getByTestId('g.prev'));
+    await flush();
+    expect(screen.getByTestId('g.counter')).toHaveTextContent('2 / 3');
+  });
+
+  it('hides the arrow at each end rather than leaving it inert', async () => {
+    await render(
+      <PhotoGallery photos={photos} initialIndex={0} onClose={jest.fn()} testID="g" />
+    );
+
+    expect(screen.queryByTestId('g.prev')).toBeNull();
+    expect(screen.getByTestId('g.next')).toBeTruthy();
+
+    fireEvent.press(screen.getByTestId('g.next'));
+    await flush();
+    fireEvent.press(screen.getByTestId('g.next'));
+    await flush();
+
+    expect(screen.getByTestId('g.prev')).toBeTruthy();
+    expect(screen.queryByTestId('g.next')).toBeNull();
+  });
+
+  it('closes', async () => {
+    const onClose = jest.fn();
+    await render(
+      <PhotoGallery photos={photos} initialIndex={0} onClose={onClose} testID="g" />
+    );
+
+    fireEvent.press(screen.getByTestId('g.close'));
+
+    expect(onClose).toHaveBeenCalled();
   });
 });

@@ -9,6 +9,7 @@ import { CalendarStrip } from '@/projects/CalendarStrip';
 import { ManualProjectDialog } from '@/projects/ManualProjectDialog';
 import { ProjectRow } from '@/projects/ProjectRow';
 import { groupByDay, sectionLabel, shortMonthLabel, startOfDay } from '@/projects/days';
+import { useRefreshControl } from '@/refresh';
 import { useProjects } from '@/stores/useProjects';
 
 function SkeletonSection({ testID }: { testID: string }) {
@@ -53,6 +54,10 @@ export default function ProjectsScreen() {
     setSelected(next);
   };
 
+  // Declared here, not inline in the JSX: a hook must never sit in an attribute that a
+  // later refactor could move behind a branch.
+  const refreshControl = useRefreshControl(reload, 'projects.pull-refresh');
+
   return (
     // The header and calendar are white; only the day sections sit on the grey page.
     <Screen testID="screen.projects" surface>
@@ -95,6 +100,7 @@ export default function ProjectsScreen() {
       <CalendarStrip selected={selected} onSelect={setSelected} onStepMonth={stepMonth} />
 
       <ScrollView
+        refreshControl={refreshControl}
         testID="projects.scroll"
         className="flex-1 bg-background"
         contentContainerStyle={{ paddingBottom: 32 }}
@@ -121,7 +127,14 @@ export default function ProjectsScreen() {
                     />
                   ))}
                 </Card>
-              ) : null}
+              ) : (
+                // A day with nothing scheduled still needs to end somewhere, or a run of empty
+                // dates reads as one stack of headings. Same horizontal extent as the card.
+                <View
+                  testID={`projects.empty-day.${section.key}`}
+                  className="mt-4 h-px bg-border"
+                />
+              )}
             </View>
           ))
         )}

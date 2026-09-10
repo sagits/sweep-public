@@ -1,16 +1,13 @@
 import { by, device, element, expect, waitFor } from 'detox';
 
+import { openPayments } from './support';
+
 /** Containers assert existence; only text is scored for visibility. See DECISIONS.md. */
 const exists = (id: string, timeout = 10000) =>
   waitFor(element(by.id(id))).toExist().withTimeout(timeout);
 
 const gone = (id: string, timeout = 10000) =>
   waitFor(element(by.id(id))).not.toExist().withTimeout(timeout);
-
-const openPayments = async () => {
-  await waitFor(element(by.id('tabs.payments'))).toBeVisible().withTimeout(30000);
-  await element(by.id('tabs.payments')).tap();
-};
 
 describe('payments', () => {
   beforeEach(async () => {

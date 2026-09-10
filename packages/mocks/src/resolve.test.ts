@@ -16,6 +16,21 @@ describe('resolve', () => {
     expect(settled).toBe(false);
   });
 
+  it('waits a flat second, so every skeleton shows for the same 1s', async () => {
+    let settled = false;
+    void resolve('ok').then(() => {
+      settled = true;
+    });
+
+    jest.advanceTimersByTime(999);
+    await Promise.resolve();
+    expect(settled).toBe(false);
+
+    jest.advanceTimersByTime(1);
+    await Promise.resolve();
+    expect(settled).toBe(true);
+  });
+
   it('resolves with the value it was given once the maximum delay has passed', async () => {
     const pending = resolve('ok');
 
