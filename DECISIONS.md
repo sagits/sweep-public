@@ -830,3 +830,212 @@ Worked from `.scratch/sweep-hosts-polish/issues/02-polish-round-two.md`.
 - **The arrows disappear at each end** rather than sitting inert — an inert arrow reads as a bug.
   The counter (`2 / 6`) is what the Detox spec asserts, since it is the one piece of the gallery's
   state that is visible as text.
+
+## Notifications and Messages
+
+- **`read` and `kind` are fields on `Notification`, not a second store.** Unread is what Home's
+  bell badges, so it has to be state the list can change; a parallel set of read ids would have
+  been a second source of truth for one boolean. `unreadCount(notifications)` is exported beside
+  the store rather than derived in Home, so the badge and the row tint agree by construction.
+- **A refresh does not un-read the list.** The mock always resolves the seed unread, so
+  `reload` carries the read ids over the fetch. Without it, marking all read and then pulling to
+  refresh on Home brought the badge straight back — a bug the store test now pins.
+- **The invitation notification is a `handshake`, not an `alert`.** The ticket left the third
+  row's icon open. A team joining up reads like a bid being agreed, and the alert triangle is
+  worth keeping for the one row that is actually a warning: the unassigned project.
+- **The notification rows are inert, chevron and all.** The reference draws a chevron on every
+  row, but there is nowhere in the PoC for any of them to go. They render as shown and do
+  nothing — the same call `BidCard`'s chat button and the Payments filter made.
+- **Messages reads `useMarketplace`; a conversation *is* a bid.** No message store exists,
+  nothing ever sends, and every reference state is "No messages yet." — so a store for it would
+  hold nothing. The chat is addressed by **bid id**, like `/cleaner/[id]`, because the whole
+  `Cleaner` rides on the `Bid` and the search supplies the property alias.
+- **With no bids, Messages shows the Marketplace's own empty state.** The ticket asked for its
+  wording; `EmptySearches` *is* that wording, so it is rendered rather than transcribed. Its
+  "Find Your Next Cleaner" button sits above the two pinned ones, which reads fine because both
+  routes go to the same place.
+- **"Bid Details" pushes the cleaner detail rather than sitting inert.** The ticket allowed
+  either. That screen is the bid's details, it is addressed by the same id, and the route
+  already exists — inert would have been more code to do less.
+- **The bid strip's price and expiry are two points down from the reference.** The reference
+  sets that row in a narrower typeface than the system one; at matching sizes "$100.00 per
+  project" and "Bid expires in: 2 days" do not both fit across 390pt — the price wrapped, which
+  pushed the rules card below the fold, and forcing one line clipped the expiry instead. 17px
+  and 15px fit. This is the same reference-vs-system-font gap DECISIONS records elsewhere.
+- **`$100.00` has cents here, and now so does everywhere else.** The ticket allowed matching the
+  reference "if it is free". It was cheaper than free: `PaymentList` and `CleanerProfile` had
+  each written the same `toLocaleString` line, so the third caller became `usd` in `@sweep/ui`
+  and the other two now import it. `relativeLabel` came out of `SearchCard`'s `createdLabel` the
+  same way — the notifications stamp needed "3 hours ago" without the "Created " in front.
+- **`PinnedFooter` clears the home indicator.** Messages' two buttons, the chat's "I agree" and
+  its composer are all pinned to the bottom of a **pushed** screen, which has no tab bar to hold
+  the indicator off. First render put "Invite Teammates" underneath it. One component now does
+  what `TabBar` was already doing, in the three places that need it.
+- **The chat agreement is component state, deliberately.** Per-conversation and in-memory is
+  what the ticket asked for, so `ChatBody`'s `useState` *is* the feature: leaving the screen and
+  coming back may show the rules again, and nothing persists.
+- **Messages pushes outside `(tabs)`, so its tab bar does not show.** The reference keeps it.
+  Following the `/payments` precedent, as the ticket directed; on the simulator it looks right.
+
+### Review fixes
+
+The two-axis review caught one real bug and five smaller things:
+
+- **Messages showed the Marketplace empty state while the searches were still loading.** The
+  screen read `searches` but not `loaded`, so a cold open rendered the full "Find a New Cleaner"
+  illustration for the mock's 600–1200ms and then swapped to the bid rows. An empty store is
+  "not yet", not "no bids". `MessageList` now takes `loading` and renders skeleton rows, and the
+  Detox spec asserts the skeleton *and* that the empty state is absent behind it — which is the
+  assertion that would have caught this in the first place.
+- **The borrowed empty state no longer ships its own CTA.** Rendering `EmptySearches` whole put a
+  live "Find Your Next Cleaner" → `/search/new` on Messages, a third navigation the ticket did
+  not ask for next to its two pinned buttons. `onFindCleaner` is now optional; Messages passes
+  none and gets the wording without the button.
+- **The Detox scroll matcher went back to `by.text`.** Two call sites scrolled `whileElement`
+  toward `by.id('home.notifications-card')` — a container packed with content, which never
+  reaches the 75% threshold. It passed, but it is the exact shape DECISIONS 02 recorded as a
+  flake, so it scrolls to a notification's text instead.
+- **The empty `<View testID="…unread" />` is gone.** It existed only so a test could assert the
+  mint tint, and ADR-0001 keeps layout out of both seams. The behaviour worth pinning is that
+  the badge empties, which the store test and the Detox round trip already cover.
+- **`await flush()` after every `fireEvent`**, per DECISIONS 03 — the rule is written blanket,
+  and four presses were relying on asserting a spy rather than a re-render.
+- Smaller: `RULES[].body` is a `ReactNode` rather than a string-or-tuple union, which deletes the
+  branch in `Rule`; `CleanerAvatar` is exported from `MessageList` rather than written twice
+  byte-for-byte; `PinnedFooter` lost a `testID` prop no call site passed; the composer assertions
+  use RNTL's `toHaveProp` rather than reaching into `.props`.
+
+Not changed, deliberately: the `usd`/`relativeLabel` extractions touch `PaymentList`,
+`CleanerProfile` and `SearchCard`, which the spec axis flagged as reach. They replace three and
+two existing copies of the same line rather than adding a fourth, and the alternative was a
+private formatter on a screen whose sibling already had one.
+
+### Type scale, measured off the references
+
+A follow-up pass after testing on the simulator. The chat screens were sized by eye and came out
+consistently ~15% large; the type is now decoded from the reference PNGs rather than guessed.
+
+**Method.** Both the references (1170×2532) and our simulator shots (1179×2556) are 3×, so glyph
+pixels compare directly. For each line, the **cap height of the same first capital** is measured in
+both and the ratio applied to the size we set — cap height is what the eye reads as "text size",
+and unlike an ink-run it does not move with which glyphs happen to fall in the crop. Wrapped body
+copy is checked on **line pitch** instead. `poc/screenshots/17` is a downscaled JPEG (768 wide), so
+every reading there is normalised by 1170/768 **and** sanity-checked against an unchanged shared
+`Button` label as a control — that control reads 1.06 rather than 1.00, which is the noise floor
+for that screenshot and why only differences past ~1.5pt were acted on there.
+
+`IMG_0032`/`IMG_0033` after the change: every ratio lands 0.94–1.02, and the rule body and info
+line match the reference's 38px ink over a 60px pitch exactly.
+
+- **The chat's own scale**: header name 19→17, "Last seen" 17→15, property alias 19→17, price
+  17→15, expiry label and value 15→14, card heading 24→20, rule titles 19→17, rule bodies
+  17→14/20, the info line 17→14/20, the orange card's title 24→20 and its body 17→16/24, "Set up
+  my account" 19→16, the composer 17→16. Icons came down with them (26→24, 30→26, 22→20, 20→18).
+- **The rule bodies are grey, not ink.** Sampling the reference's glyph cores: headings and
+  labels are #334465 (our `ink`), but the rule bodies are #707070 and "Last seen" is #999999 —
+  two distinct greys, which map onto `slate` and `inkMuted`. Ours had both at `ink`.
+- **The orange card's body is deliberately larger than the rule bodies** — 44px of ink per line
+  against the rules' 38 — so it is 16px where they are 14px.
+- **Button labels were already right.** "Bid Details" and "I agree" both measure 1.00 against the
+  reference, because they come from the shared `Button` (16px), which an earlier ticket measured.
+  That is the tell: everything hand-sized was large, everything measured was correct.
+
+**Cleaner detail** (`poc/screenshots/17`), reached from the chat's "Bid Details": name 19→17,
+info rows 17→16, the rating line 15→14, "Reviews" 19→17, "is also a Rental Handy Pro" 17→14, and
+`HowItWorksRow`'s title 17→14 — which is what made "How Adding a Cleaner to My Team Works" wrap to
+two lines where the reference fits it on one. That row is shared with the search wizard's step 1,
+which moves with it.
+
+**Left alone, deliberately:** `ScreenHeader`'s 18px title and `SectionHeader`'s 19px. Both are
+shared primitives — the header by six pushed screens, the section title by Home's cards — and the
+evidence does not support changing them: `IMG_0031` measures the header at 17.6, i.e. the 18 it
+already is, and the three references disagree with each other by more than the gap. A global type
+pass is its own ticket, not a side effect of this one.
+
+**Also:** the notifications search grew a clear button, `close-circle` at 20px in `inkMuted`, the
+same control the Properties search uses. It appears as soon as anything is typed, because this
+search filters as you type rather than on submit. Its Detox spec caught a real bug on the way in —
+without `keyboardShouldPersistTaps="handled"` on the screen's `ScrollView`, the first tap while
+the keyboard is up is spent dismissing it and the button never fires.
+
+### The app-wide type sweep
+
+Three new reference screenshots landed in `poc/screenshots/4/` and prompted a sweep. Method as
+before: normalise the reference to 1170-space, then compare ink bounding boxes of the *same*
+string, with a control string whose size is already known to calibrate the reference's own
+downscale. What the sweep found, screen by screen:
+
+- **Projects.** "Sep 26" is regular weight in the reference, not bold, and 0.72 the height —
+  26px bold became 19px regular. Month title 22→17, weekdays 17→13, day numbers 22→16, section
+  labels 17→14, header icons 30/26→24/22.
+- **The calendar's project card is a different component from Home's row.** The reference gives
+  it alias, Start/End lines, the project id and a chip strip, with a mint bar down the left; Home
+  keeps the compact avatar row. `ProjectRow`'s docstring claimed they were one card "so they do
+  not drift" — the reference says they were never the same card. `ProjectCard` is the new one.
+- **Project detail.** Everything down a step or two (26→22 title, 26→20 times, 19→15 pills and
+  detail rows, 17→13 time labels), icons with them. The times card is square where it meets the
+  mint band and rounds ~3px at the bottom — measured by walking the reference's corner pixel by
+  pixel, which gave a 4–5px arc against our 8px radius. The Cleaning band is `mintBand`, not
+  `primaryMuted`. "Still Unassigned" takes the warning triangle, not a filled circle.
+- **Dialogs.** The Automatic-vs-Manual dialog was a third too large: 26→19 title, 20→16 body and
+  buttons, leading 30→24. `ConfirmDialog` had the same shape and got the same treatment.
+- **Marketplace searches.** The card's "Created …" line runs the full width beneath the alias row
+  rather than indented beside it — the shape Home's Cleaner Search card already had. Alias 20→18,
+  created 15→14, "Search Summary" 17→16, house icon 44→48.
+- **More.** Only the name was out: 28→24. The email and the menu rows already measured right.
+- **New Manual Project.** Uniformly ~0.82: title 22→18, Cancel 20→16, section labels 17→14, rows
+  19→16.
+- **Bids list.** Only the segmented tabs were out, 17→15; the header and the bid cards measure
+  right.
+
+**Measured and left alone**, because the evidence says they are already correct: `ScreenHeader`'s
+18px title (`IMG_0031` and reference 17 both land on it), the Properties list (its title measures
+1.05 — if anything ours is a hair small), `Button`, `Checkbox` and the payment rows. The pattern
+across the whole sweep is the same one the chat screens showed: **type that was set by eye is
+large, type that was measured against a reference is right.**
+
+**Not swept:** the cleaner-search wizard, the Congrats screen, the property forms and the
+marketplace empty state. They were not in the report and were left rather than adjusted blind.
+
+### The spinner
+
+Replaced with the eight-spoke starburst of `poc/screenshots/4/33-spinner.png`, decoded rather
+than eyeballed: at a 120px render a spoke measures 17px wide by 43px long with the ring's inner
+edge 17.5px out, which is `size * 0.142` by `size * 0.358` centred `size * 0.32` from the middle.
+The old twelve-blade version already used that formula — only the count, the length and the ramp
+were wrong.
+
+The opacity ramp is the reference's own, read off the green channel against its background:
+four spokes sit flat at 0.28 and the last four climb 0.46 → 0.56 → 0.83 → 1. It does not fade
+evenly the whole way round, which is what gives it a distinct head.
+
+One turn is 2000ms, half the previous 1000ms — "50% slower" read as half speed.
+
+**The colour is still ours.** The reference's darkest spoke samples #5BAFAA, a muted teal that is
+not in this palette and does not solve as any opacity of `primary` over that background. The
+spinner keeps its `color` prop (defaulting to `primary`, and white inside a teal `Button`), so it
+stays on-brand; the shape is what was asked for and the shape is what changed.
+
+### Flow and control changes
+
+- **"I can't find my address" is gone** from the property form and the search wizard. The PoC
+  ships one fixed address (`FIXED_ADDRESS`), so the escape hatch never had anywhere to go; the
+  "Can't find your address? Contact us" line beneath it stays.
+- **The cleaner profile no longer carries "How Adding a Cleaner to My Team Works."** That card
+  belongs to the search wizard, where the reference still shows it. `HowItWorksRow` keeps its
+  other caller.
+- **The search wizard is three steps, not two**: property details → cleaning needs → note, with
+  the progress bar at a third, two thirds, then full. The middle step is
+  `poc/screenshots/4/34-search-cleaning-needs.png` — two estimate dropdowns and the three
+  "The cleaner needs to" boxes with a checklist select that appears only while its box is ticked.
+  Nothing consumes those values: `NewSearch` has no field for them and the PoC has no checklists,
+  so they are wizard state, exactly as `saveNotes` already was. Extending the type to carry values
+  no screen reads would have been shape without behaviour.
+- **`Dropdown` is local to that step.** `SelectField` is the underlined form row; the reference's
+  boxed grey select with a teal chevron is a different control, and only this step draws it.
+- **`Checkbox` grew a `large` variant.** On one screenshot the wizard's "Provide Cleaning
+  Supplies" measures 16px while "Don't show this message again" two cards above measures 13px —
+  two sizes in the reference, not one drifting, so it is a variant rather than a new default.
+- **The wizard's footer is a `PinnedFooter`**, so its button clears the home indicator like every
+  other pushed screen's.
+- **The property card's overflow button lost its teal circle** and its icon is ink, per request.

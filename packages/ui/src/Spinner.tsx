@@ -3,11 +3,23 @@ import { Animated, Easing, View } from 'react-native';
 
 import { colors } from '../tokens';
 
-const BLADES = 12;
+/**
+ * Eight spokes on a fade, decoded from `poc/screenshots/4/33-spinner.png`: measured against a
+ * 120px render, a spoke is 17px wide and 43px long and the ring's inner edge sits 17.5px out,
+ * which is `size * 0.142` by `size * 0.358` centred `size * 0.32` from the middle.
+ *
+ * The opacity ramp is the reference's own: four spokes sit flat at the tail and the last four
+ * climb to the head, rather than fading evenly the whole way round. Index 0 is the top spoke and
+ * the ramp runs clockwise, so the head leads the rotation.
+ */
+const SPOKES = [0.28, 0.28, 0.28, 0.28, 0.46, 0.56, 0.83, 1];
+
+/** One turn. The reference reads as a slow spinner, and this is half the speed it used to be. */
+const TURN_MS = 2000;
 
 /**
- * The teal starburst the real app spins: twelve rounded blades on an opacity ramp, rotating.
- * Used for full-screen loads, in-button pending states and the Quality center card.
+ * The teal starburst the real app spins. Used for full-screen loads, in-button pending states
+ * and anywhere else a mock resolver is still running.
  *
  * ponytail: `animating={false}` renders the starburst still. Detox waits for animations to
  * settle, so a spinner that never stops makes the app permanently "busy" and every spec in the
@@ -34,7 +46,7 @@ export function Spinner({
     const loop = Animated.loop(
       Animated.timing(turn, {
         toValue: 1,
-        duration: 1000,
+        duration: TURN_MS,
         easing: Easing.linear,
         useNativeDriver: true,
       })
@@ -43,9 +55,9 @@ export function Spinner({
     return () => loop.stop();
   }, [animating, turn]);
 
-  const bladeWidth = Math.max(2, Math.round(size * 0.14));
-  const bladeHeight = Math.round(size * 0.3);
-  const radius = size / 2 - bladeHeight / 2;
+  const spokeWidth = Math.max(2, Math.round(size * 0.142));
+  const spokeLength = Math.round(size * 0.358);
+  const radius = size / 2 - spokeLength / 2;
 
   return (
     <Animated.View
@@ -59,19 +71,19 @@ export function Spinner({
         ],
       }}
     >
-      {Array.from({ length: BLADES }, (_, i) => (
+      {SPOKES.map((opacity, i) => (
         <View
           key={i}
           style={{
             position: 'absolute',
-            left: (size - bladeWidth) / 2,
-            top: (size - bladeHeight) / 2,
-            width: bladeWidth,
-            height: bladeHeight,
-            borderRadius: bladeWidth / 2,
+            left: (size - spokeWidth) / 2,
+            top: (size - spokeLength) / 2,
+            width: spokeWidth,
+            height: spokeLength,
+            borderRadius: spokeWidth / 2,
             backgroundColor: color,
-            opacity: 0.2 + (i / BLADES) * 0.7,
-            transform: [{ rotate: `${i * (360 / BLADES)}deg` }, { translateY: -radius }],
+            opacity,
+            transform: [{ rotate: `${i * (360 / SPOKES.length)}deg` }, { translateY: -radius }],
           }}
         />
       ))}

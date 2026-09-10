@@ -7,7 +7,7 @@ import { Card, Screen, Skeleton, colors } from '@sweep/ui';
 
 import { CalendarStrip } from '@/projects/CalendarStrip';
 import { ManualProjectDialog } from '@/projects/ManualProjectDialog';
-import { ProjectRow } from '@/projects/ProjectRow';
+import { ProjectCard } from '@/projects/ProjectCard';
 import { groupByDay, sectionLabel, shortMonthLabel, startOfDay } from '@/projects/days';
 import { useRefreshControl } from '@/refresh';
 import { useProjects } from '@/stores/useProjects';
@@ -62,7 +62,7 @@ export default function ProjectsScreen() {
     // The header and calendar are white; only the day sections sit on the grey page.
     <Screen testID="screen.projects" surface>
       <View className="flex-row items-center justify-between border-b border-border px-5 py-3">
-        <Text testID="projects.title" className="text-[26px] font-bold text-ink">
+        <Text testID="projects.title" className="text-[19px] text-ink">
           {shortMonthLabel(selected)}
         </Text>
         <View className="flex-row items-center gap-5">
@@ -73,7 +73,7 @@ export default function ProjectsScreen() {
             onPress={() => (manualDialogHidden ? openForm() : setDialogOpen(true))}
             hitSlop={10}
           >
-            <MaterialCommunityIcons name="plus" size={30} color={colors.primary} />
+            <MaterialCommunityIcons name="plus" size={24} color={colors.primary} />
           </Pressable>
           {/* ponytail: inert. The PoC has no filter sheet and the PRD does not describe one; the
               icon is in the reference, so it renders. */}
@@ -83,7 +83,7 @@ export default function ProjectsScreen() {
             accessibilityLabel="Filter projects"
             hitSlop={10}
           >
-            <MaterialCommunityIcons name="filter" size={26} color={colors.primary} />
+            <MaterialCommunityIcons name="filter" size={22} color={colors.primary} />
           </Pressable>
           <Pressable
             testID="projects.refresh"
@@ -92,7 +92,7 @@ export default function ProjectsScreen() {
             onPress={() => void reload()}
             hitSlop={10}
           >
-            <MaterialCommunityIcons name="refresh" size={26} color={colors.ink} />
+            <MaterialCommunityIcons name="refresh" size={22} color={colors.ink} />
           </Pressable>
         </View>
       </View>
@@ -113,11 +113,11 @@ export default function ProjectsScreen() {
         ) : (
           sections.map((section) => (
             <View key={section.key} testID={`projects.section.${section.key}`} className="px-4 pt-7">
-              <Text className="text-[17px] text-inkMuted">{sectionLabel(section.date)}</Text>
+              <Text className="text-[14px] text-inkMuted">{sectionLabel(section.date)}</Text>
               {section.projects.length > 0 ? (
-                <Card className="mt-4 px-[14px]">
+                <View className="mt-4 gap-3">
                   {section.projects.map((project) => (
-                    <ProjectRow
+                    <ProjectCard
                       key={project.id}
                       project={project}
                       onPress={() =>
@@ -126,7 +126,7 @@ export default function ProjectsScreen() {
                       testID={`projects.row.${project.id}`}
                     />
                   ))}
-                </Card>
+                </View>
               ) : (
                 // A day with nothing scheduled still needs to end somewhere, or a run of empty
                 // dates reads as one stack of headings. Same horizontal extent as the card.

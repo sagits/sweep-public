@@ -47,8 +47,6 @@ export function NewPropertyForm({
   const [step, setStep] = useState(0);
   const [confirmingSkip, setConfirmingSkip] = useState(false);
   const [saving, setSaving] = useState(false);
-
-  const [cantFindAddress, setCantFindAddress] = useState(false);
   const [unit, setUnit] = useState('');
   const [alias, setAlias] = useState('');
   const [currency, setCurrency] = useState(DEFAULT_CURRENCY);
@@ -173,14 +171,6 @@ export function NewPropertyForm({
                   value={FIXED_ADDRESS}
                   testID={`${ID}.address`}
                 />
-                <View className="pt-3">
-                  <Checkbox
-                    label="I can't find my address"
-                    checked={cantFindAddress}
-                    onChange={setCantFindAddress}
-                    testID={`${ID}.cant-find-address`}
-                  />
-                </View>
                 <View className="flex-row items-center gap-2 pt-2">
                   <MaterialCommunityIcons name="information" size={16} color={colors.accent} />
                   <Text className="text-[14px] text-accent">

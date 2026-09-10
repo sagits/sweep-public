@@ -34,9 +34,9 @@ export function CalendarStrip({
           onPress={() => onStepMonth(-1)}
           hitSlop={12}
         >
-          <MaterialCommunityIcons name="chevron-left" size={30} color={colors.primary} />
+          <MaterialCommunityIcons name="chevron-left" size={24} color={colors.primary} />
         </Pressable>
-        <Text testID="projects.month" className="text-[22px] font-bold text-ink">
+        <Text testID="projects.month" className="text-[17px] font-bold text-ink">
           {monthLabel(selected)}
         </Text>
         <Pressable
@@ -46,13 +46,13 @@ export function CalendarStrip({
           onPress={() => onStepMonth(1)}
           hitSlop={12}
         >
-          <MaterialCommunityIcons name="chevron-right" size={30} color={colors.primary} />
+          <MaterialCommunityIcons name="chevron-right" size={24} color={colors.primary} />
         </Pressable>
       </View>
 
       <View className="flex-row pt-4">
         {WEEKDAYS.map((weekday) => (
-          <Text key={weekday} className="flex-1 text-center text-[17px] text-inkMuted">
+          <Text key={weekday} className="flex-1 text-center text-[13px] text-inkMuted">
             {weekday}
           </Text>
         ))}
@@ -72,7 +72,7 @@ export function CalendarStrip({
                   isSelected ? 'bg-ink' : ''
                 }`}
               >
-                <Text className={`text-[22px] ${isSelected ? 'text-white' : 'text-ink'}`}>
+                <Text className={`text-[16px] ${isSelected ? 'text-white' : 'text-ink'}`}>
                   {date.getDate()}
                 </Text>
               </Pressable>

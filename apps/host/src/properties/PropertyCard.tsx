@@ -37,9 +37,9 @@ export function PropertyCard({ property }: { property: Property }) {
           accessibilityRole="button"
           accessibilityLabel={`More options for ${property.alias}`}
           hitSlop={8}
-          className="h-9 w-9 items-center justify-center rounded-full bg-primary"
+          className="h-9 w-9 items-center justify-end"
         >
-          <MaterialCommunityIcons name="dots-vertical" size={20} color={colors.surface} />
+          <MaterialCommunityIcons name="dots-vertical" size={22} color={colors.ink} />
         </Pressable>
       </View>
 

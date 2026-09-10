@@ -12,7 +12,7 @@ import { PromoCard } from '@/home/PromoCard';
 import { PromptCard } from '@/home/PromptCard';
 import { useRefreshControl } from '@/refresh';
 import { useMarketplace } from '@/stores/useMarketplace';
-import { useNotifications } from '@/stores/useNotifications';
+import { unreadCount, useNotifications } from '@/stores/useNotifications';
 import { useProjects } from '@/stores/useProjects';
 import { usePromo } from '@/stores/usePromo';
 
@@ -52,8 +52,10 @@ export default function HomeScreen() {
   return (
     <Screen testID="screen.home" insetTop={false} surface>
       <HomeHeader
-        unreadCount={notifications.length}
+        unreadCount={unreadCount(notifications)}
         onOpenPayments={() => router.navigate('/payments')}
+        onOpenNotifications={() => router.navigate('/notifications')}
+        onOpenMessages={() => router.navigate('/messages')}
       />
       <ScrollView
         refreshControl={refreshControl}
@@ -94,7 +96,11 @@ export default function HomeScreen() {
               router.navigate({ pathname: '/project/[id]', params: { id: project.id } })
             }
           />
-          <NotificationsCard notifications={notifications} loading={notificationsLoading} />
+          <NotificationsCard
+            notifications={notifications}
+            loading={notificationsLoading}
+            onOpen={() => router.navigate('/notifications')}
+          />
         </View>
       </ScrollView>
     </Screen>

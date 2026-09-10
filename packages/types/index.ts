@@ -3,12 +3,18 @@ export type User = {
   email: string;
 };
 
-/** A row in Home's Notifications card and, later, the notifications list. */
+/** Which rounded-square icon tile the notifications list draws: a warning, or a handshake. */
+export type NotificationKind = 'alert' | 'bid';
+
+/** A row in Home's Notifications card and in the notifications list. */
 export type Notification = {
   id: string;
   message: string;
-  /** ISO timestamp — rendered as a date over a time on the right of the row. */
+  /** ISO timestamp — a date over a time on Home, a relative stamp in the list. */
   at: string;
+  /** Unread rows sit on a mint tint and are what Home's bell badge counts. */
+  read: boolean;
+  kind: NotificationKind;
 };
 
 /** A cleaning project. Home shows the next few; the Projects tab lays them out on a calendar. */

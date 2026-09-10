@@ -23,6 +23,13 @@ const colors = {
   inkMuted: '#8A90A2',
   // Light gray page background
   background: '#F1F2F6',
+  // The mint an unread notification row sits on — sampled off `poc/screenshots/3/IMG_0030.PNG`
+  mint: '#E1F3EE',
+  // The bright mint of the project detail's Cleaning band and the calendar card's left bar.
+  // Averaged off flat regions of `poc/screenshots/4/31-project-detail.png`; the calendar
+  // reference reads #9CFBD9 for the same band, which is inside its downscale's noise.
+  // Lighter and greener than `primaryMuted`, which stays what it always was.
+  mintBand: '#A5FFDB',
   surface: '#FFFFFF',
   // Off-white panels inside a card: the Quality center's title strip, the search row on Home
   surfaceMuted: '#F8F8FB',

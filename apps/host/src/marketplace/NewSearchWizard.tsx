@@ -1,14 +1,18 @@
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import type { NewSearch, Property, UnitSizeUnit } from '@sweep/types';
 import { useState } from 'react';
-import { ScrollView, Text, TextInput, View } from 'react-native';
+import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 
-import { Button, Card, Checkbox, Spinner, colors } from '@sweep/ui';
+import { Button, Card, Checkbox, PinnedFooter, Spinner, colors } from '@sweep/ui';
 
 import { HowItWorksRow } from '@/marketplace/HowItWorksRow';
 import { ScreenHeader } from '@/navigation/ScreenHeader';
 import { Field, ReadOnlyField, SegmentedToggle, SelectField } from '@/properties/fields';
 
 const COUNTS = ['1', '2', '3', '4', '5', '6', '7', '8'];
+
+/** The checklist the cleaning-needs step offers. Nothing consumes it; the PoC has no checklists. */
+const CHECKLISTS = ['Default Checklist', 'Deep Clean Checklist'];
 const UNITS: readonly UnitSizeUnit[] = ['sq. ft.', 'sq. mt.'];
 
 type Details = {
@@ -80,6 +84,88 @@ function SearchingDialog() {
  * The inputs are the property form's field primitives, so the whole app speaks one field
  * vocabulary; see DECISIONS for where that reads differently from the reference.
  */
+/**
+ * The grey rounded select of `poc/screenshots/4/34-search-cleaning-needs.png` — value on the
+ * left, teal chevron on the right, options opening underneath. `SelectField` is the underlined
+ * form row; this is the boxed one, and only this step draws it.
+ */
+function Dropdown({
+  value,
+  options,
+  onChange,
+  testID,
+}: {
+  value: string;
+  options: string[];
+  onChange: (next: string) => void;
+  testID: string;
+}) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <View className="overflow-hidden rounded bg-surfaceMuted">
+      <Pressable
+        testID={testID}
+        accessibilityRole="button"
+        accessibilityState={{ expanded: open }}
+        onPress={() => setOpen((was) => !was)}
+        className="h-[52px] flex-row items-center justify-between px-4"
+      >
+        <Text className="text-[16px] text-ink">{value}</Text>
+        <MaterialCommunityIcons
+          name={open ? 'chevron-up' : 'chevron-down'}
+          size={26}
+          color={colors.primary}
+        />
+      </Pressable>
+      {open
+        ? options.map((option) => (
+            <Pressable
+              key={option}
+              testID={`${testID}.option.${option}`}
+              accessibilityRole="button"
+              accessibilityState={{ selected: option === value }}
+              onPress={() => {
+                onChange(option);
+                setOpen(false);
+              }}
+              className="border-t border-border px-4 py-3"
+            >
+              <Text className={`text-[16px] ${option === value ? 'text-primaryInk' : 'text-ink'}`}>
+                {option}
+              </Text>
+            </Pressable>
+          ))
+        : null}
+    </View>
+  );
+}
+
+/** A bold question over a regular hint over its dropdown. */
+function Question({
+  title,
+  hint,
+  value,
+  options,
+  onChange,
+  testID,
+}: {
+  title: string;
+  hint: string;
+  value: string;
+  options: string[];
+  onChange: (next: string) => void;
+  testID: string;
+}) {
+  return (
+    <View className="pt-5">
+      <Text className="text-[16px] font-bold text-ink">{title}</Text>
+      <Text className="pb-2 text-[16px] text-ink">{hint}</Text>
+      <Dropdown value={value} options={options} onChange={onChange} testID={testID} />
+    </View>
+  );
+}
+
 export function NewSearchWizard({
   properties,
   onSubmit,
@@ -89,12 +175,15 @@ export function NewSearchWizard({
   onSubmit: (input: NewSearch) => Promise<void>;
   onClose: () => void;
 }) {
-  const [step, setStep] = useState<1 | 2>(1);
+  const [step, setStep] = useState<1 | 2 | 3>(1);
   const [property, setProperty] = useState<Property | undefined>(properties[0]);
   const [details, setDetails] = useState<Details>(
     properties[0] ? detailsOf(properties[0]) : detailsOf(EMPTY_PROPERTY)
   );
-  const [cantFindAddress, setCantFindAddress] = useState(false);
+  const [turnovers, setTurnovers] = useState('1');
+  const [cleanHours, setCleanHours] = useState('3');
+  const [needs, setNeeds] = useState({ supplies: true, linen: true, checklist: true });
+  const [checklist, setChecklist] = useState(CHECKLISTS[0] as string);
   const [notes, setNotes] = useState('');
   const [saveNotes, setSaveNotes] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -128,13 +217,15 @@ export function NewSearchWizard({
     <View className="flex-1">
       <ScreenHeader
         title="New Cleaner Search"
-        onBack={() => (step === 1 ? onClose() : setStep(1))}
+        onBack={() => (step === 1 ? onClose() : setStep(step === 3 ? 2 : 1))}
         testID="search-form.header"
       >
         <View className="h-[5px] bg-background">
           <View
             testID="search-form.progress"
-            className={`h-full bg-primary ${step === 1 ? 'w-1/2' : 'w-full'}`}
+            className={`h-full bg-primary ${
+              step === 1 ? 'w-1/3' : step === 2 ? 'w-2/3' : 'w-full'
+            }`}
           />
         </View>
       </ScreenHeader>
@@ -165,14 +256,6 @@ export function NewSearchWizard({
                 value={property?.address ?? ''}
                 testID="search-form.address"
               />
-              <View className="pt-4">
-                <Checkbox
-                  label="I can't find my address"
-                  checked={cantFindAddress}
-                  onChange={setCantFindAddress}
-                  testID="search-form.cant-find-address"
-                />
-              </View>
 
               <Field
                 label="Unit #, Building Name, etc."
@@ -219,12 +302,73 @@ export function NewSearchWizard({
               </View>
             </Card>
           </View>
+        ) : step === 2 ? (
+          <View className="gap-3">
+            <HowItWorksRow title="How the Sweep Marketplace works" testID="search-form.needs-info" />
+            <Card className="px-4 pb-5 pt-4">
+              <Text testID="search-form.step-title" className="text-[18px] font-bold text-ink">
+                Describe your cleaning needs
+              </Text>
+
+              <Question
+                title="How many guest turnovers per month?"
+                hint="Estimated:"
+                value={turnovers}
+                options={COUNTS}
+                onChange={setTurnovers}
+                testID="search-form.turnovers"
+              />
+              <Question
+                title="How long does it take to clean your unit?"
+                hint="Estimated hours:"
+                value={cleanHours}
+                options={COUNTS}
+                onChange={setCleanHours}
+                testID="search-form.clean-hours"
+              />
+
+              <Text className="pt-5 text-[16px] font-bold text-ink">The cleaner needs to</Text>
+              <View className="gap-2 pt-2">
+                <Checkbox
+                  label="Provide Cleaning Supplies"
+                  checked={needs.supplies}
+                  onChange={(next) => setNeeds((n) => ({ ...n, supplies: next }))}
+                  large
+                  testID="search-form.needs.supplies"
+                />
+                <Checkbox
+                  label="Wash and dry linen and towels"
+                  checked={needs.linen}
+                  onChange={(next) => setNeeds((n) => ({ ...n, linen: next }))}
+                  large
+                  testID="search-form.needs.linen"
+                />
+                <Checkbox
+                  label="Use this checklist (Optional)"
+                  checked={needs.checklist}
+                  onChange={(next) => setNeeds((n) => ({ ...n, checklist: next }))}
+                  large
+                  testID="search-form.needs.checklist"
+                />
+                {needs.checklist ? (
+                  <View className="pl-7 pt-1">
+                    <Dropdown
+                      value={checklist}
+                      options={CHECKLISTS}
+                      onChange={setChecklist}
+                      testID="search-form.checklist"
+                    />
+                  </View>
+                ) : null}
+              </View>
+            </Card>
+          </View>
         ) : (
           <Card className="px-4 pb-5 pt-4">
-            <Text testID="search-form.step-title" className="text-[22px] font-bold text-ink">
-              Describe your cleaning needs
+            <Text testID="search-form.step-title" className="text-[18px] font-bold text-ink">
+              Add a note
             </Text>
-            <Text className="pt-3 text-[17px] font-bold text-ink">
+            <Text className="pt-3 text-[15px] font-bold text-ink">
               Add a note below about any special requirements.{' '}
               <Text className="font-normal">(Optional)</Text>
             </Text>
@@ -264,12 +408,18 @@ export function NewSearchWizard({
         )}
       </ScrollView>
 
-      <View className="border-t border-border bg-surface p-3">
+      <PinnedFooter className="px-3 pt-3">
         {step === 1 ? (
           <Button
             label="Next: Describe your cleaning needs"
             onPress={() => setStep(2)}
             testID="search-form.next"
+          />
+        ) : step === 2 ? (
+          <Button
+            label="Next: Add a note"
+            onPress={() => setStep(3)}
+            testID="search-form.next-note"
           />
         ) : (
           <Button
@@ -279,7 +429,7 @@ export function NewSearchWizard({
             testID="search-form.submit"
           />
         )}
-      </View>
+      </PinnedFooter>
 
       {submitting ? <SearchingDialog /> : null}
     </View>

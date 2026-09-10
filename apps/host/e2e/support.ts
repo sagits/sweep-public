@@ -6,10 +6,16 @@ import { by, element, waitFor } from 'detox';
  * See DECISIONS.md.
  */
 
-/** Payments has no tab of its own — the dollar icon in Home's header is the way in. */
-export const openPayments = async () => {
+/** Home, settled — the way in to Payments, Notifications and Messages, none of which has a tab. */
+export const openHome = async () => {
   await waitFor(element(by.id('tabs.home'))).toExist().withTimeout(30000);
   await element(by.id('tabs.home')).tap();
+  await waitFor(element(by.id('home.header'))).toExist().withTimeout(30000);
+};
+
+/** Payments has no tab of its own — the dollar icon in Home's header is the way in. */
+export const openPayments = async () => {
+  await openHome();
   await waitFor(element(by.id('home.payments'))).toExist().withTimeout(30000);
   await element(by.id('home.payments')).tap();
 };

@@ -11,8 +11,12 @@ const STATS = [
 /**
  * Screenshot `10`. Reached with no searches at all (`EXPO_PUBLIC_SEED=false`) and, since nothing
  * in the PoC ever closes a search, from the Closed tab.
+ *
+ * Messages borrows this for its own "nothing to message about" state and passes no
+ * `onFindCleaner`: it already pins a "Find a Cleaner in the Marketplace" button of its own, and
+ * a second live CTA would be a navigation nobody asked for.
  */
-export function EmptySearches({ onFindCleaner }: { onFindCleaner: () => void }) {
+export function EmptySearches({ onFindCleaner }: { onFindCleaner?: () => void }) {
   return (
     <View testID="marketplace.empty" className="items-center px-4 pt-16">
       <MaterialCommunityIcons name="handshake-outline" size={116} color={colors.illustration} />
@@ -34,13 +38,15 @@ export function EmptySearches({ onFindCleaner }: { onFindCleaner: () => void }) 
         ))}
       </View>
 
-      <View className="w-full pt-8">
-        <Button
-          label="Find Your Next Cleaner"
-          onPress={onFindCleaner}
-          testID="marketplace.find-cleaner"
-        />
-      </View>
+      {onFindCleaner ? (
+        <View className="w-full pt-8">
+          <Button
+            label="Find Your Next Cleaner"
+            onPress={onFindCleaner}
+            testID="marketplace.find-cleaner"
+          />
+        </View>
+      ) : null}
     </View>
   );
 }

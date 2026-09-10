@@ -4,10 +4,9 @@ import { useState } from 'react';
 import { Image, Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Button, Card, SectionHeader, colors } from '@sweep/ui';
+import { Button, Card, SectionHeader, colors, usd } from '@sweep/ui';
 
 import { SuperCleanerPill } from './BidCard';
-import { HowItWorksRow } from './HowItWorksRow';
 import { PhotoGallery } from './PhotoGallery';
 import { workPhoto } from './workPhotos';
 import { ScreenHeader } from '@/navigation/ScreenHeader';
@@ -27,9 +26,6 @@ export function messagePreview(message: string, limit = MESSAGE_PREVIEW) {
   return `${(space > 0 ? cut.slice(0, space) : cut).trimEnd()}… `;
 }
 
-const money = (amount: number) =>
-  amount.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
-
 /** A hairline between the white card's sections — screenshots `17`/`20` draw one per boundary. */
 function Divider() {
   return <View className="h-px bg-border" />;
@@ -38,8 +34,8 @@ function Divider() {
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
     <View className="flex-row items-center justify-between py-1.5">
-      <Text className="text-[17px] text-ink">{label}</Text>
-      <Text className="text-[17px] text-inkMuted">{value}</Text>
+      <Text className="text-[16px] text-ink">{label}</Text>
+      <Text className="text-[16px] text-inkMuted">{value}</Text>
     </View>
   );
 }
@@ -56,23 +52,23 @@ function SummaryRow({ bid }: { bid: Bid }) {
 
       <View className="flex-1 gap-1">
         <View className="flex-row items-center gap-2">
-          <Text className="text-[19px] font-bold text-ink">{cleaner.name}</Text>
+          <Text className="text-[17px] font-bold text-ink">{cleaner.name}</Text>
           {cleaner.superCleaner ? <SuperCleanerPill /> : null}
         </View>
 
         <View className="flex-row items-center gap-1.5">
           <MaterialCommunityIcons name="star" size={18} color={colors.star} />
-          <Text testID="cleaner.rating" className="text-[15px] font-bold text-ink">
+          <Text testID="cleaner.rating" className="text-[14px] font-bold text-ink">
             {cleaner.rating.toFixed(1)}
           </Text>
           {/* One template literal: React Native splits `({n} reviews)` into separate text nodes
               and no `by.text` matcher can reach those. */}
-          <Text className="text-[15px] text-ink">{`(${cleaner.reviewCount} reviews)`}</Text>
+          <Text className="text-[14px] text-ink">{`(${cleaner.reviewCount} reviews)`}</Text>
         </View>
 
         <View className="flex-row items-center gap-1.5">
           <MaterialCommunityIcons name="clock" size={16} color={colors.inkMuted} />
-          <Text className="text-[15px] text-ink">{`Expires in ${bid.expiresInDays} days`}</Text>
+          <Text className="text-[14px] text-ink">{`Expires in ${bid.expiresInDays} days`}</Text>
         </View>
       </View>
 
@@ -139,7 +135,7 @@ function PriceCard({ bid }: { bid: Bid }) {
       <View className="flex-row items-center">
         <View className="flex-1 items-center">
           <Text testID="cleaner.price.amount" className="text-[26px] font-bold text-ink">
-            {money(bid.price)}
+            {usd(bid.price)}
           </Text>
           <Text className="text-[15px] text-ink">per Project + Fees</Text>
         </View>
@@ -167,7 +163,7 @@ function PriceCard({ bid }: { bid: Bid }) {
       {open ? (
         <View testID="cleaner.price.breakdown" className="gap-1.5 pt-3">
           <Divider />
-          <InfoRow label="Cleaner Bid" value={money(bid.price)} />
+          <InfoRow label="Cleaner Bid" value={usd(bid.price)} />
           <InfoRow label="Fees" value="Added at checkout" />
         </View>
       ) : null}
@@ -213,7 +209,7 @@ export function CleanerProfile({
             <Divider />
             <View testID="cleaner.handy-pro" className="flex-row items-center gap-2 px-3 py-3">
               <MaterialCommunityIcons name="tools" size={20} color={colors.ink} />
-              <Text className="flex-1 text-[17px] font-bold text-ink">
+              <Text className="flex-1 text-[14px] font-bold text-ink">
                 is also a Rental Handy Pro
               </Text>
               <MaterialCommunityIcons
@@ -231,11 +227,6 @@ export function CleanerProfile({
         className="flex-1"
         contentContainerStyle={{ padding: 12, paddingBottom: 24 }}
       >
-        <HowItWorksRow
-          title="How Adding a Cleaner to My Team Works"
-          testID="cleaner.info"
-          chevronColor={colors.primary}
-        />
 
         <Card className="mt-3">
           <View testID="cleaner.information" className="gap-1 p-4">
@@ -305,9 +296,9 @@ export function CleanerProfile({
 
           {/* ponytail: inert. The PoC has no reviews list and the PRD does not ask for one. */}
           <View testID="cleaner.reviews" className="flex-row items-center gap-3 p-4">
-            <Text className="text-[19px] font-bold text-ink">Reviews</Text>
+            <Text className="text-[17px] font-bold text-ink">Reviews</Text>
             <MaterialCommunityIcons name="star" size={20} color={colors.star} />
-            <Text className="flex-1 text-[17px] text-ink">{cleaner.rating.toFixed(1)}</Text>
+            <Text className="flex-1 text-[16px] text-ink">{cleaner.rating.toFixed(1)}</Text>
             <MaterialCommunityIcons name="chevron-right" size={24} color={colors.illustration} />
           </View>
 

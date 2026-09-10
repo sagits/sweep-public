@@ -2,10 +2,7 @@ import type { Payment } from '@sweep/types';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Text, View } from 'react-native';
 
-import { Card, DateTimeStamp, Pill, Skeleton, colors } from '@sweep/ui';
-
-const usd = (amount: number) =>
-  amount.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+import { Card, DateTimeStamp, Pill, Skeleton, colors, usd } from '@sweep/ui';
 
 /** Screenshot 22's empty state: a flat gray folder over two lines of bold navy. */
 function EmptyHistory() {

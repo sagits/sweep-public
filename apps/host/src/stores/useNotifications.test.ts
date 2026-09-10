@@ -4,6 +4,8 @@ import { resetLoads } from './once';
 
 import { useNotifications } from './useNotifications';
 
+const unread = () => useNotifications.getState().notifications.filter((item) => !item.read);
+
 describe('useNotifications', () => {
   beforeEach(() => {
     jest.useFakeTimers();
@@ -31,6 +33,31 @@ describe('useNotifications', () => {
     await pending;
 
     expect(useNotifications.getState().notifications).toHaveLength(3);
+    expect(unread()).toHaveLength(3);
+  });
+
+  it('empties the bell badge when the list is marked all read', async () => {
+    const pending = useNotifications.getState().load();
+    jest.advanceTimersByTime(MAX_DELAY_MS);
+    await pending;
+
+    useNotifications.getState().markAllRead();
+
+    expect(unread()).toHaveLength(0);
+    expect(useNotifications.getState().notifications).toHaveLength(3);
+  });
+
+  it('keeps rows read across a pull-to-refresh, so the badge does not come back', async () => {
+    const pending = useNotifications.getState().load();
+    jest.advanceTimersByTime(MAX_DELAY_MS);
+    await pending;
+    useNotifications.getState().markAllRead();
+
+    const refreshed = useNotifications.getState().reload();
+    jest.advanceTimersByTime(MAX_DELAY_MS);
+    await refreshed;
+
+    expect(unread()).toHaveLength(0);
   });
 
   it('re-fetches on reload, so pull-to-refresh is not a no-op behind the load guard', async () => {
