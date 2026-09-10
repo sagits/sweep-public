@@ -1,8 +1,8 @@
 # Sweep Hosts
 
-A universal host app for the turnover cleaning that sits between short-term-rental guests,
-running from one codebase on iOS and in the browser. It is a portfolio piece and an architecture
-study: mock data only, no backend, no API, no auth, and every async operation is a timer.
+An app to find cleaners and schedule cleanings for short-term rental properties, running from one
+codebase on iOS and in the browser. It is a portfolio piece and an architecture study: mock data
+only, no backend, no API, no auth, and every async operation is a timer.
 
 Sweep has two sides, the host who owns the property and the cleaner who turns it over, so the
 repo is a monorepo built to hold both apps. Only the host app exists so far. The cleaner app has
