@@ -8,6 +8,7 @@
   "buildCommand": "pnpm build:web",
   "outputDirectory": "apps/host/dist",
   "framework": null,
+  "cleanUrls": true,
   "rewrites": [
     { "source": "/project/new", "destination": "/project/new.html" },
     { "source": "/search/new", "destination": "/search/new.html" },
