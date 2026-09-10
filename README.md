@@ -21,6 +21,20 @@ shared packages.
   gallery of their previous work.
 - Looks over payment history, and their own profile.
 
+## What this project has
+
+- A Turborepo monorepo holding a universal Expo app (the host), running as React Native on iOS
+  and as React on the web.
+- End-to-end tests with Detox, one spec per feature, driven against the iOS simulator.
+- Integration tests with Jest and React Native Testing Library, covering the Zustand stores, the
+  mock resolvers and the components that carry real interaction.
+- A shared `packages/` folder, so UI, domain types and mock data are written once and used by
+  every app in the repo.
+- React Native Web, so the same components render on native and in the browser.
+- Zustand for state management.
+- Expo Router for routes and navigation, with the file tree as the route tree.
+- NativeWind for Tailwind class names and design tokens.
+
 ## Stack
 
 Expo (SDK 54) + Expo Router · TypeScript · NativeWind · Zustand · React Native Web · Turborepo +
