@@ -70,11 +70,22 @@ describe('notifications', () => {
     await exists('notifications.row.notification-3');
     await expect(element(by.text(UNASSIGNED))).toBeVisible();
 
+    // Nothing typed yet, so there is nothing to clear.
+    await gone('notifications.search-clear');
+
     await element(by.id('notifications.search')).typeText('unassigned');
 
     await exists('notifications.row.notification-2');
     await gone('notifications.row.notification-1');
     await gone('notifications.row.notification-3');
+
+    // The clear button puts every row back.
+    await element(by.id('notifications.search-clear')).tap();
+
+    await exists('notifications.row.notification-1');
+    await exists('notifications.row.notification-2');
+    await exists('notifications.row.notification-3');
+    await gone('notifications.search-clear');
   });
 
   it('mounts the list as skeletons, then resolves it into rows', async () => {

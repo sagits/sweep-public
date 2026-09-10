@@ -909,3 +909,51 @@ Not changed, deliberately: the `usd`/`relativeLabel` extractions touch `PaymentL
 `CleanerProfile` and `SearchCard`, which the spec axis flagged as reach. They replace three and
 two existing copies of the same line rather than adding a fourth, and the alternative was a
 private formatter on a screen whose sibling already had one.
+
+### Type scale, measured off the references
+
+A follow-up pass after testing on the simulator. The chat screens were sized by eye and came out
+consistently ~15% large; the type is now decoded from the reference PNGs rather than guessed.
+
+**Method.** Both the references (1170×2532) and our simulator shots (1179×2556) are 3×, so glyph
+pixels compare directly. For each line, the **cap height of the same first capital** is measured in
+both and the ratio applied to the size we set — cap height is what the eye reads as "text size",
+and unlike an ink-run it does not move with which glyphs happen to fall in the crop. Wrapped body
+copy is checked on **line pitch** instead. `poc/screenshots/17` is a downscaled JPEG (768 wide), so
+every reading there is normalised by 1170/768 **and** sanity-checked against an unchanged shared
+`Button` label as a control — that control reads 1.06 rather than 1.00, which is the noise floor
+for that screenshot and why only differences past ~1.5pt were acted on there.
+
+`IMG_0032`/`IMG_0033` after the change: every ratio lands 0.94–1.02, and the rule body and info
+line match the reference's 38px ink over a 60px pitch exactly.
+
+- **The chat's own scale**: header name 19→17, "Last seen" 17→15, property alias 19→17, price
+  17→15, expiry label and value 15→14, card heading 24→20, rule titles 19→17, rule bodies
+  17→14/20, the info line 17→14/20, the orange card's title 24→20 and its body 17→16/24, "Set up
+  my account" 19→16, the composer 17→16. Icons came down with them (26→24, 30→26, 22→20, 20→18).
+- **The rule bodies are grey, not ink.** Sampling the reference's glyph cores: headings and
+  labels are #334465 (our `ink`), but the rule bodies are #707070 and "Last seen" is #999999 —
+  two distinct greys, which map onto `slate` and `inkMuted`. Ours had both at `ink`.
+- **The orange card's body is deliberately larger than the rule bodies** — 44px of ink per line
+  against the rules' 38 — so it is 16px where they are 14px.
+- **Button labels were already right.** "Bid Details" and "I agree" both measure 1.00 against the
+  reference, because they come from the shared `Button` (16px), which an earlier ticket measured.
+  That is the tell: everything hand-sized was large, everything measured was correct.
+
+**Cleaner detail** (`poc/screenshots/17`), reached from the chat's "Bid Details": name 19→17,
+info rows 17→16, the rating line 15→14, "Reviews" 19→17, "is also a Rental Handy Pro" 17→14, and
+`HowItWorksRow`'s title 17→14 — which is what made "How Adding a Cleaner to My Team Works" wrap to
+two lines where the reference fits it on one. That row is shared with the search wizard's step 1,
+which moves with it.
+
+**Left alone, deliberately:** `ScreenHeader`'s 18px title and `SectionHeader`'s 19px. Both are
+shared primitives — the header by six pushed screens, the section title by Home's cards — and the
+evidence does not support changing them: `IMG_0031` measures the header at 17.6, i.e. the 18 it
+already is, and the three references disagree with each other by more than the gap. A global type
+pass is its own ticket, not a side effect of this one.
+
+**Also:** the notifications search grew a clear button, `close-circle` at 20px in `inkMuted`, the
+same control the Properties search uses. It appears as soon as anything is typed, because this
+search filters as you type rather than on submit. Its Detox spec caught a real bug on the way in —
+without `keyboardShouldPersistTaps="handled"` on the screen's `ScrollView`, the first tap while
+the keyboard is up is spent dismissing it and the button never fires.

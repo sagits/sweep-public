@@ -57,6 +57,9 @@ export default function NotificationsScreen() {
         testID="notifications.scroll"
         className="flex-1"
         contentContainerStyle={{ paddingBottom: 24 }}
+        // Without this the first tap while the keyboard is up is spent dismissing it, and the
+        // clear button never fires — the same reason the Properties search sets it.
+        keyboardShouldPersistTaps="handled"
       >
         <NotificationList
           notifications={notifications}

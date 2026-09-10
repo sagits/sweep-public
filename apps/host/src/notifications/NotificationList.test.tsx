@@ -50,6 +50,28 @@ describe('NotificationList', () => {
     expect(screen.getByTestId('notifications.empty')).toBeTruthy();
   });
 
+  it('clears the search from the field, restoring every row', async () => {
+    await render(
+      <NotificationList notifications={seededNotifications} loading={false} onMarkAllRead={jest.fn()} />,
+    );
+
+    // Nothing to clear until something is typed.
+    expect(screen.queryByTestId('notifications.search-clear')).toBeNull();
+
+    fireEvent.changeText(screen.getByTestId('notifications.search'), 'unassigned');
+    await flush();
+    expect(screen.getAllByTestId(/^notifications\.row\.[^.]+$/)).toHaveLength(1);
+
+    fireEvent.press(screen.getByTestId('notifications.search-clear'));
+    await flush();
+
+    expect(screen.getByTestId('notifications.search')).toHaveProp('value', '');
+    expect(screen.getAllByTestId(/^notifications\.row\.[^.]+$/)).toHaveLength(
+      seededNotifications.length,
+    );
+    expect(screen.queryByTestId('notifications.search-clear')).toBeNull();
+  });
+
   it('marks the whole list read from its own row', async () => {
     const onMarkAllRead = jest.fn();
     await render(

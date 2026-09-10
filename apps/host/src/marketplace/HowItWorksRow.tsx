@@ -26,7 +26,7 @@ export function HowItWorksRow({
     <View testID={testID} className="gap-3 rounded bg-surfaceMuted p-4">
       <View className="flex-row items-center gap-2">
         <MaterialCommunityIcons name="information" size={20} color={colors.primary} />
-        <Text className="flex-1 text-[17px] font-bold text-ink">{title}</Text>
+        <Text className="flex-1 text-[14px] font-bold text-ink">{title}</Text>
         <MaterialCommunityIcons name="chevron-right" size={24} color={chevronColor} />
       </View>
       <Checkbox

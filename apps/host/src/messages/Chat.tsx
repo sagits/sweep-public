@@ -40,8 +40,8 @@ export function ChatHeader({ cleaner, onBack }: { cleaner: Cleaner; onBack: () =
         <CleanerAvatar cleaner={cleaner} />
 
         <View className="flex-1 gap-0.5">
-          <Text className="text-[19px] font-bold text-ink">{cleaner.name}</Text>
-          <Text className="text-[17px] text-inkMuted">{LAST_SEEN}</Text>
+          <Text className="text-[17px] font-bold text-ink">{cleaner.name}</Text>
+          <Text className="text-[15px] text-inkMuted">{LAST_SEEN}</Text>
         </View>
       </View>
     </View>
@@ -61,12 +61,12 @@ export function BidStrip({
   return (
     <View className="bg-surface px-4 pb-2">
       <View className="flex-row items-center gap-2">
-        <MaterialCommunityIcons name="map-marker" size={22} color={colors.ink} />
-        <Text className="text-[19px] font-bold text-ink">{propertyAlias}</Text>
+        <MaterialCommunityIcons name="map-marker" size={20} color={colors.ink} />
+        <Text className="text-[17px] font-bold text-ink">{propertyAlias}</Text>
       </View>
 
       <View className="flex-row items-center gap-2 pt-1">
-        <MaterialCommunityIcons name="cash" size={22} color={colors.ink} />
+        <MaterialCommunityIcons name="cash" size={20} color={colors.ink} />
         {/* One template literal: React Native splits `{price} per project` into separate text
             nodes, which no `by.text` matcher can reach.
 
@@ -76,13 +76,13 @@ export function BidStrip({
             Two points down from the alias above, and the expiry two down again: the reference
             sets this row in a narrower typeface than the system one, and at matching sizes the
             price and the expiry do not both fit across 390pt. */}
-        <Text className="text-[17px] font-bold text-ink">
+        <Text className="text-[15px] font-bold text-ink">
           {`${usd(bid.price)} per project`}
         </Text>
         <View className="flex-1" />
-        <Text className="text-[15px] text-ink">Bid expires in:</Text>
+        <Text className="text-[14px] text-ink">Bid expires in:</Text>
         {/* `Bid` counts days, not hours — the same wording `BidCard` prints. */}
-        <Text testID="chat.expiry" className="text-[15px] font-bold text-danger">
+        <Text testID="chat.expiry" className="text-[14px] font-bold text-danger">
           {`${bid.expiresInDays} days`}
         </Text>
       </View>
@@ -129,10 +129,10 @@ function Rule({ rule }: { rule: (typeof RULES)[number] }) {
   return (
     <View className="pt-5">
       <View className="flex-row items-center gap-3">
-        <MaterialCommunityIcons name={rule.icon} size={26} color={rule.color} />
-        <Text className="flex-1 text-[19px] font-bold text-ink">{rule.title}</Text>
+        <MaterialCommunityIcons name={rule.icon} size={24} color={rule.color} />
+        <Text className="flex-1 text-[17px] font-bold text-ink">{rule.title}</Text>
       </View>
-      <Text className="pt-2 text-[17px] leading-[26px] text-ink">{rule.body}</Text>
+      <Text className="pt-2 text-[14px] leading-[20px] text-slate">{rule.body}</Text>
     </View>
   );
 }
@@ -142,15 +142,15 @@ function ChatRules() {
   return (
     <>
       <Card className="px-5 pb-6 pt-5">
-        <Text className="text-[24px] font-bold text-ink">How to use our chat</Text>
+        <Text className="text-[20px] font-bold text-ink">How to use our chat</Text>
         {RULES.map((rule) => (
           <Rule key={rule.title} rule={rule} />
         ))}
       </Card>
 
       <View className="flex-row items-start gap-2 px-2 pt-4">
-        <MaterialCommunityIcons name="information" size={20} color={colors.accent} />
-        <Text className="flex-1 text-center text-[17px] leading-[24px] text-accent">
+        <MaterialCommunityIcons name="information" size={18} color={colors.accent} />
+        <Text className="flex-1 text-center text-[14px] leading-[20px] text-accent">
           This chat is monitored by our Customer Support team for quality assurance.
         </Text>
       </View>
@@ -163,21 +163,21 @@ function SetUpAccountCard() {
   return (
     <Card background="bg-warning" className="px-5 pb-5 pt-5">
       <View className="flex-row items-center gap-3">
-        <MaterialCommunityIcons name="alert-outline" size={30} color={colors.surface} />
-        <Text className="flex-1 text-[24px] font-bold text-white">
+        <MaterialCommunityIcons name="alert-outline" size={26} color={colors.surface} />
+        <Text className="flex-1 text-[20px] font-bold text-white">
           Finish setting up your account
         </Text>
       </View>
-      <Text className="pt-3 text-[17px] leading-[26px] text-white">
+      <Text className="pt-3 text-[16px] leading-[24px] text-white">
         You need to finish setting up your account prior to chatting to make sure you are serious
         about your search.
       </Text>
       <Pressable
         testID="chat.setup-account"
         accessibilityRole="button"
-        className="mt-4 h-[50px] items-center justify-center rounded bg-white/30"
+        className="mt-4 h-[45px] items-center justify-center rounded bg-white/30"
       >
-        <Text className="text-[19px] text-white">Set up my account</Text>
+        <Text className="text-[16px] text-white">Set up my account</Text>
       </Pressable>
     </Card>
   );
@@ -193,9 +193,9 @@ function Composer() {
         multiline
         placeholder="Please finish setting up your account to chat with this cleaner"
         placeholderTextColor={colors.inkMuted}
-        className="flex-1 rounded bg-background px-4 py-3 text-[17px] text-ink"
+        className="flex-1 rounded bg-background px-4 py-3 text-[16px] text-ink"
       />
-      <MaterialCommunityIcons name="send-variant-outline" size={30} color={colors.illustration} />
+      <MaterialCommunityIcons name="send-variant-outline" size={28} color={colors.illustration} />
     </PinnedFooter>
   );
 }

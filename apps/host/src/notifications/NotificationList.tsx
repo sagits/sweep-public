@@ -95,6 +95,19 @@ export function NotificationList({
             autoCorrect={false}
             className="flex-1 text-[17px] text-ink"
           />
+          {/* This search filters as you type, so it clears the moment there is anything to
+              clear — unlike the Properties one, which waits for the filter to be applied. */}
+          {query === '' ? null : (
+            <Pressable
+              testID="notifications.search-clear"
+              accessibilityRole="button"
+              accessibilityLabel="Clear search"
+              onPress={() => setQuery('')}
+              hitSlop={8}
+            >
+              <MaterialCommunityIcons name="close-circle" size={20} color={colors.inkMuted} />
+            </Pressable>
+          )}
         </View>
       </View>
 
