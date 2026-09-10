@@ -8,7 +8,13 @@ const TONES = {
 
 export type PillTone = keyof typeof TONES;
 
-/** A rounded label chip. */
+/**
+ * A rounded label chip.
+ *
+ * Sized off the reference's credit pill: 114.6 x 26.6pt with 10.7pt of text ink, where a 14px
+ * bold chip rendered 135 x 31pt with 11.7pt of ink. The Payments "Paid" chip is the only other
+ * caller and takes the same size rather than earning a variant of its own.
+ */
 export function Pill({
   label,
   tone = 'teal',
@@ -19,8 +25,8 @@ export function Pill({
   testID?: string;
 }) {
   return (
-    <View testID={testID} className={`rounded-full px-4 py-2 ${TONES[tone]}`}>
-      <Text className="text-[14px] font-bold text-white">{label}</Text>
+    <View testID={testID} className={`rounded-full px-3 py-1.5 ${TONES[tone]}`}>
+      <Text className="text-[13px] font-semibold text-white">{label}</Text>
     </View>
   );
 }

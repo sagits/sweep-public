@@ -24,6 +24,7 @@ export function PromoCard({ onDismiss }: { onDismiss: () => void }) {
         Get Credits for every new host who signs up and completes 2 Marketplace cleaning projects.
       </Text>
       <Button
+        size="small"
         label="Get $100 Credit"
         variant="white"
         className="mt-5"

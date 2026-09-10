@@ -3,10 +3,15 @@
 // Plain CommonJS so tailwind.config.js can require it without a build step.
 
 const colors = {
-  // Primary teal — header band, primary buttons, links, active tab
-  primary: '#22C99C',
-  primaryDark: '#00C1AF',
-  // Inactive tab icons: teal, muted
+  // Primary teal — header band, primary buttons, links, active tab.
+  //
+  // Sampled, not taken from the PRD. The PRD says "around #22C99C / #00C1AF" and ticket 01 took
+  // the first of those literally; decoding screenshot `03` says the app is a single flat
+  // #37D3B1 across the band, the buttons and the bid chips (15k+ samples, no second teal). The
+  // spec's own rule is that the screenshot wins.
+  primary: '#37D3B1',
+  // Muted teal: the project detail's cleaning band and the AFTER label on a work photo.
+  // (It was the inactive tab icons until the polish pass turned those grey.)
   primaryMuted: '#A8E9D5',
   // Teal as *text* on white — the "Search for New Cleaners" card titles read much deeper
   // in the screenshots than the band teal does.

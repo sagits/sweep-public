@@ -61,7 +61,8 @@ export default function SearchCongratsScreen() {
           <View className="gap-5 pt-5">
             {NEXT_STEPS.map((step) => (
               <View key={step.id} testID={`congrats.step.${step.id}`} className="flex-row gap-4">
-                <MaterialCommunityIcons name={step.icon} size={28} color={colors.primary} />
+                {/* Blue, not teal: the reference draws these three in the accent blue. */}
+                <MaterialCommunityIcons name={step.icon} size={28} color={colors.accent} />
                 <Text className="flex-1 text-[17px] leading-[24px] text-ink">{step.text}</Text>
               </View>
             ))}
