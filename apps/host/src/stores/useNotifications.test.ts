@@ -32,4 +32,17 @@ describe('useNotifications', () => {
 
     expect(useNotifications.getState().notifications).toHaveLength(3);
   });
+
+  it('re-fetches on reload, so pull-to-refresh is not a no-op behind the load guard', async () => {
+    const first = useNotifications.getState().load();
+    jest.advanceTimersByTime(MAX_DELAY_MS);
+    await first;
+
+    const pending = useNotifications.getState().reload();
+
+    expect(useNotifications.getState().loading).toBe(true);
+    jest.advanceTimersByTime(MAX_DELAY_MS);
+    await pending;
+    expect(useNotifications.getState().notifications).toEqual(seededNotifications);
+  });
 });

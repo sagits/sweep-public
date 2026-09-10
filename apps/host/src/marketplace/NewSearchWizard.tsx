@@ -46,7 +46,12 @@ const detailsOf = (property: Property): Details => ({
   unitSizeUnit: property.unitSizeUnit,
 });
 
-/** How long the dialog stays up before the bids screen, even if the post lands sooner. */
+/**
+ * How long the dialog stays up before the bids screen, even if the post lands sooner.
+ *
+ * The wait has to happen where the navigation does — `onSubmit` replaces this screen, so anything
+ * awaited after it delays nothing anybody sees.
+ */
 export const SEARCHING_MS = 1000;
 
 /**
@@ -106,9 +111,6 @@ export function NewSearchWizard({
   const submit = async () => {
     if (!property || submitting) return;
     setSubmitting(true);
-    // The dialog is the point of this wait, so it is held for its full second even when the
-    // mock resolver comes back sooner.
-    const shown = new Promise((done) => setTimeout(done, SEARCHING_MS));
     await onSubmit({
       propertyId: property.id,
       propertyAlias: property.alias,
@@ -120,7 +122,6 @@ export function NewSearchWizard({
       unitSizeUnit: details.unitSizeUnit,
       notes: notes.trim(),
     });
-    await shown;
   };
 
   return (

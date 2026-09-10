@@ -22,15 +22,16 @@ describe('navigation', () => {
     }
   });
 
-  it('switches to every tab, and every tab carries its label', async () => {
+  it('switches to every tab', async () => {
     for (const { tab, screen } of TABS) {
       await element(by.id(tab)).tap();
       await expect(element(by.id(screen))).toExist();
+    }
+  });
 
-      // Every tab is labelled now, active or not — the active one is teal, the rest grey.
-      for (const other of TABS) {
-        await expect(element(by.id(`${other.tab}.label`))).toBeVisible();
-      }
+  it('labels every tab, not only the active one', async () => {
+    for (const { tab } of TABS) {
+      await expect(element(by.id(`${tab}.label`))).toBeVisible();
     }
   });
 

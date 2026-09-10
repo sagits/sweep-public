@@ -1,5 +1,7 @@
 import { by, device, element, expect, waitFor } from 'detox';
 
+import { dayKey, openPayments } from './support';
+
 /**
  * The seed toggle, swept across every list that has an empty state.
  *
@@ -35,20 +37,7 @@ const openTab = async (tab: string) => {
   await element(by.id(tab)).tap();
 };
 
-/** Payments has no tab: the dollar icon in Home's header is the way in. */
-const openPayments = async () => {
-  await openTab('tabs.home');
-  await waitFor(element(by.id('home.payments'))).toBeVisible().withTimeout(30000);
-  await element(by.id('home.payments')).tap();
-};
 
-/** The same key `src/projects/days.ts` builds, so today's section can be addressed by testID. */
-const todayKey = () => {
-  const now = new Date();
-  const month = `${now.getMonth() + 1}`.padStart(2, '0');
-  const day = `${now.getDate()}`.padStart(2, '0');
-  return `${now.getFullYear()}-${month}-${day}`;
-};
 
 describe(`seed toggle (EXPO_PUBLIC_SEED=${SEEDED ? 'on' : 'false'})`, () => {
   beforeEach(async () => {
@@ -119,7 +108,7 @@ describe(`seed toggle (EXPO_PUBLIC_SEED=${SEEDED ? 'on' : 'false'})`, () => {
     await gone('projects.skeleton', 20000);
 
     // Screenshot `04` is a calendar of empty days: the sections render either way.
-    await exists(`projects.section.${todayKey()}`);
+    await exists(`projects.section.${dayKey()}`);
 
     if (SEEDED) {
       await exists('projects.row.38261465');

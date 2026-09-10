@@ -22,11 +22,15 @@ export default function MoreScreen() {
     void load();
   }, [load]);
 
+  // Declared here, not inline in the JSX: a hook must never sit in an attribute that a
+  // later refactor could move behind a branch.
+  const refreshControl = useRefreshControl(reload, 'more.refresh');
+
   return (
     <Screen testID="screen.more" insetTop={false}>
       <MoreHeader user={user} />
       <ScrollView
-        refreshControl={useRefreshControl(reload, 'more.refresh')}
+        refreshControl={refreshControl}
         testID="more.scroll"
         className="flex-1"
         contentContainerStyle={{ paddingBottom: 24 }}

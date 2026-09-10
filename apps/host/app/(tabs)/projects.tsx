@@ -54,6 +54,10 @@ export default function ProjectsScreen() {
     setSelected(next);
   };
 
+  // Declared here, not inline in the JSX: a hook must never sit in an attribute that a
+  // later refactor could move behind a branch.
+  const refreshControl = useRefreshControl(reload, 'projects.pull-refresh');
+
   return (
     // The header and calendar are white; only the day sections sit on the grey page.
     <Screen testID="screen.projects" surface>
@@ -96,7 +100,7 @@ export default function ProjectsScreen() {
       <CalendarStrip selected={selected} onSelect={setSelected} onStepMonth={stepMonth} />
 
       <ScrollView
-        refreshControl={useRefreshControl(reload, 'projects.refresh')}
+        refreshControl={refreshControl}
         testID="projects.scroll"
         className="flex-1 bg-background"
         contentContainerStyle={{ paddingBottom: 32 }}

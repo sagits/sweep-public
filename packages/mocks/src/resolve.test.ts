@@ -16,8 +16,7 @@ describe('resolve', () => {
     expect(settled).toBe(false);
   });
 
-  it('waits a flat half second, whatever Math.random says, so every skeleton shows for 0.5s', async () => {
-    jest.spyOn(Math, 'random').mockReturnValue(0.999);
+  it('waits a flat half second, so every skeleton shows for the same 0.5s', async () => {
     let settled = false;
     void resolve('ok').then(() => {
       settled = true;

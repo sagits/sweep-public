@@ -46,6 +46,10 @@ export default function HomeScreen() {
     void loadSearches();
   }, [loadNotifications, loadProjects, loadSearches]);
 
+  // Declared here, not inline in the JSX: a hook must never sit in an attribute that a
+  // later refactor could move behind a branch.
+  const refreshControl = useRefreshControl(refresh, 'home.refresh');
+
   return (
     <Screen testID="screen.home" insetTop={false} surface>
       <HomeHeader
@@ -54,7 +58,7 @@ export default function HomeScreen() {
         onOpenPayments={() => router.navigate('/payments')}
       />
       <ScrollView
-        refreshControl={useRefreshControl(refresh, 'home.refresh')}
+        refreshControl={refreshControl}
         testID="home.scroll"
         className="flex-1"
         contentContainerStyle={{ paddingBottom: 24 }}

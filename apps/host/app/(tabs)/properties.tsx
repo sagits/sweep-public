@@ -54,10 +54,14 @@ export default function PropertiesScreen() {
   );
   const visible = matches.slice(0, pageSize);
 
+  // Declared here, not inline in the JSX: a hook must never sit in an attribute that a
+  // later refactor could move behind a branch.
+  const refreshControl = useRefreshControl(reload, 'properties.refresh');
+
   return (
     <Screen testID="screen.properties">
       <ScrollView
-        refreshControl={useRefreshControl(reload, 'properties.refresh')}
+        refreshControl={refreshControl}
         testID="properties.scroll"
         className="flex-1"
         contentContainerStyle={{ padding: 12, paddingBottom: 24 }}

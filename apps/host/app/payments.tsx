@@ -26,6 +26,10 @@ export default function PaymentsScreen() {
     void load();
   }, [load]);
 
+  // Declared here, not inline in the JSX: a hook must never sit in an attribute that a
+  // later refactor could move behind a branch.
+  const refreshControl = useRefreshControl(reload, 'payments.refresh');
+
   return (
     // The header is white and clears the status bar itself, so the page does not inset again.
     <Screen testID="screen.payments" insetTop={false}>
@@ -59,7 +63,7 @@ export default function PaymentsScreen() {
         }
       />
       <ScrollView
-        refreshControl={useRefreshControl(reload, 'payments.refresh')}
+        refreshControl={refreshControl}
         testID="payments.scroll"
         className="flex-1"
         contentContainerStyle={{ paddingBottom: 24 }}

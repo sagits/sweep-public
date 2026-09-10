@@ -240,12 +240,15 @@ Choices made while building from `poc/PRD.md` where the PRD left something open.
   which is the only path to the screenshot's state, and it is what `payments.e2e.ts` taps. Leaving
   the tab and coming back reloads the seed, so nothing is lost. Swap the handler the day a real
   filter sheet exists.
-- **The type on this screen is the largest in the app, and that is measured, not a guess.** Ink
-  heights off screenshot `22`, scaled against ticket 02's `Sweep` wordmark (26px of ink at 28px):
+- **The type on this screen is the largest in the app, and that is measured, not a guess.**
+  *(Superseded by the polish pass: Payments is a pushed screen now and wears the shared header's
+  18px title and 26px icons. The measurement below still describes screenshot `22`; it no longer
+  describes the code.)* Ink heights off screenshot `22`, scaled against ticket 02's `Sweep` wordmark (26px of ink at 28px):
   "Payment History" is 31px of ink → **30px**, and the empty-state sentence is 38px → **36px** over
   a 44px line, which is what makes it wrap after "any" exactly as the screenshot does. Rows fall
   back to the established scale (17px name, 15px property, 19px amount).
-- **`PaymentsHeader` is local to the screen, not a shared primitive.** `HeaderBand` is the teal
+- **`PaymentsHeader` is local to the screen, not a shared primitive.** *(Superseded by the polish
+  pass: this file is gone; Payments now uses the shared `ScreenHeader`.)* `HeaderBand` is the teal
   band and centers nothing; this header is white, clears the status bar itself and centers its
   title with the icons pinned right. Two screens would have to want it before it earns a spot in
   `packages/ui`.
@@ -710,7 +713,9 @@ left alone. Nothing here changed a layout, a token or a copy string.
   and `02` (02 above); the reviewer's finding is answered by the screenshot.
 - **`PaymentsHeader` and `MarketplaceHeader` are still two files.** 07 and 05 both recorded why:
   `HeaderBand` is the teal band and centres nothing, and neither header has yet been wanted by a
-  third screen.
+  third screen. **Superseded by the polish pass**: Payments became a pushed screen and made it the
+  fourth, so `MarketplaceHeader` was promoted to `src/navigation/ScreenHeader.tsx` and
+  `PaymentsHeader` was deleted.
 
 **Verified on the device, not only in the browser.** `pnpm test` 76 passed across 20 suites;
 `pnpm lint` and `pnpm typecheck` (4/4) green; seeded `pnpm e2e:test` **44 passed across 9 suites**
@@ -751,3 +756,24 @@ Three more worth recording:
 - **`Property.image` is a key, not an emoji and not a path.** `src/properties/images.ts` maps it to
   a bundled photograph, so `packages/mocks` keeps no `require()` for Metro to resolve. The three
   photographs are CC0, downloaded into `assets/properties/` at 480px, credited in the README.
+
+### Review fixes
+
+The two-axis review of this branch found one real bug and several tidy-ups:
+
+- **The loading dialog was not held for its second.** The wizard started a 1000ms promise, awaited
+  `onSubmit`, then awaited the promise — but `onSubmit` is what navigates, so the screen was gone
+  at ~500ms and the remaining wait delayed nothing anybody saw. The wait now lives in
+  `app/search/new.tsx` beside the navigation: `Promise.all([post(input), delay(SEARCHING_MS)])`.
+  The lesson is general — a minimum-display wait has to sit where the unmount is, not after it.
+- **`useRefreshControl` is no longer called inside JSX.** It was `refreshControl={useRefreshControl(…)}`
+  on six screens, which is correct today because each has a single unconditional return, but three
+  of those screens already branch on `loading` inside the scroll view. The day one of those branches
+  moves outward the hook goes conditional and the screen throws on hook order, and
+  `eslint-plugin-react-hooks` would not catch it — the call is still lexically inside the component.
+  Each screen now declares `const refreshControl = useRefreshControl(…)` at the top.
+- **`resolve()` no longer computes a random offset between two equal bounds**, and the test that
+  mocked `Math.random` to prove the dead branch stayed dead is gone with it.
+- `projects.refresh` was on both the header button and the `RefreshControl`; the gesture is now
+  `projects.pull-refresh`.
+- `openPayments` and `dayKey` were copied across specs; they live in `e2e/support.ts` now.

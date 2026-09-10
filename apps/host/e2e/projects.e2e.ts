@@ -1,5 +1,7 @@
 import { by, device, element, expect, waitFor } from 'detox';
 
+import { dayKey } from './support';
+
 /** The seeded projects, from `packages/mocks/src/projects.ts`. */
 const SEEDED = [
   { id: '38261465', alias: 'Beach apartment', cleaner: 'Unassigned' },
@@ -31,14 +33,6 @@ const openProjectsTab = async () => {
   await element(by.id('tabs.projects')).tap();
 };
 
-/** The section key `src/projects/days.ts` builds, for a day `offset` days from today. */
-const dayKey = (offset: number) => {
-  const date = new Date();
-  date.setDate(date.getDate() + offset);
-  const month = `${date.getMonth() + 1}`.padStart(2, '0');
-  const day = `${date.getDate()}`.padStart(2, '0');
-  return `${date.getFullYear()}-${month}-${day}`;
-};
 
 describe('projects', () => {
   beforeEach(async () => {

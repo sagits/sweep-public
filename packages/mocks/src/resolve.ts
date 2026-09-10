@@ -11,8 +11,7 @@ export const MIN_DELAY_MS = 500;
 export const MAX_DELAY_MS = 500;
 
 export function resolve<T>(value: T): Promise<T> {
-  const delay = MIN_DELAY_MS + Math.random() * (MAX_DELAY_MS - MIN_DELAY_MS);
   return new Promise((done) => {
-    setTimeout(() => done(value), delay);
+    setTimeout(() => done(value), MIN_DELAY_MS);
   });
 }

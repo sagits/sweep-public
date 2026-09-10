@@ -39,6 +39,7 @@ describe('properties', () => {
     // The emoji thumbnails are gone: each seeded property has a bundled CC0 photo.
     await exists('properties.card.property-1.photo');
     await exists('properties.card.property-2.photo');
+    await exists('properties.card.property-3.photo');
   });
 
   it('lists the seeded properties under the search field and the New Property button', async () => {
