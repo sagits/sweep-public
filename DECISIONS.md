@@ -716,3 +716,38 @@ left alone. Nothing here changed a layout, a token or a copy string.
 `pnpm lint` and `pnpm typecheck` (4/4) green; seeded `pnpm e2e:test` **44 passed across 9 suites**
 — the 43 that were green before, plus More's new loading spec; and the seed-off pass,
 `EXPO_PUBLIC_SEED=false ./scripts/e2e-test.sh e2e/seed.e2e.ts`, still 6/6.
+
+## Polish pass — the eleven changes, and what they overrode
+
+Worked from `.scratch/sweep-hosts-polish/issues/01-polish-pass.md`. Three items overrode the PRD
+outright; those lines in `poc/PRD.md` were rewritten rather than left to contradict the code.
+
+- **Every tab carries its label now**, the active one teal and the rest `inkMuted` grey. The PRD
+  had inactive tabs muted teal with no label, and `navigation.e2e.ts` asserted "only the active one
+  carries its label". Both changed. This is also what broke `more.e2e.ts` on the first device run:
+  `by.text('Properties')` started matching the tab label as well as the More menu row, so that
+  assertion is now scoped `withAncestor(by.id('more.menu'))`. Worth remembering — every bare
+  `by.text` matcher in the suite now competes with five permanent tab labels.
+- **Five tabs.** Payments left the bar for a dollar icon in Home's header, so it is a pushed screen
+  and wears the shared white header. That made it the fourth screen wanting the shape
+  `MarketplaceHeader` had, which is exactly the promotion trigger that component's own comment
+  named: it is now `src/navigation/ScreenHeader.tsx`, and `PaymentsHeader` is gone. Ticket 07's
+  measured 30px title / 30px icons go with it — a pushed screen wears 18px and 26px like the rest.
+- **The mock delay is a flat 500ms**, not the PRD's random 600–1200ms. One line in `resolve.ts`,
+  since every mock resolves through it. `MIN_DELAY_MS` and `MAX_DELAY_MS` are both 500 rather than
+  renamed, because roughly twenty store and mock tests advance fake timers by one of them.
+
+Three more worth recording:
+
+- **Pull-to-refresh needed a store change, not a `RefreshControl`.** Every `load` sits behind
+  `once()`, which answers from the in-flight promise — the gesture would have been a silent no-op
+  after the first fetch. Every store now has the shape `useProjects` already had: `reload` does the
+  work, `load` is `once(reload)`. The keep-what-was-added-this-session merge that projects,
+  properties and marketplace each had a private copy of is now `stores/merge.ts`.
+- **The provider tiles skip Skip's confirmation.** Airbnb, Vrbo, Booking.com and TripAdvisor all
+  lead where Skip leads, but go straight there: Skip's dialog warns that you cannot accept a
+  Marketplace bid *until you sync a calendar*, which is a non-sequitur immediately after picking a
+  provider.
+- **`Property.image` is a key, not an emoji and not a path.** `src/properties/images.ts` maps it to
+  a bundled photograph, so `packages/mocks` keeps no `require()` for Metro to resolve. The three
+  photographs are CC0, downloaded into `assets/properties/` at 480px, credited in the README.
