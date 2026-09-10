@@ -48,6 +48,30 @@ describe('SearchCard', () => {
   });
 });
 
+describe('SearchCard bid count', () => {
+  it('counts the bids in the footer, and opens the search from the chip', async () => {
+    const onOpen = jest.fn();
+    await render(<SearchCard search={firstSearch} onOpen={onOpen} />);
+
+    const testID = `marketplace.search.${firstSearch.id}`;
+    expect(screen.getByTestId(`${testID}.bids`)).toBeTruthy();
+    expect(screen.getByText(`${firstSearch.bids.length} Bids`)).toBeTruthy();
+
+    fireEvent.press(screen.getByTestId(`${testID}.bids`));
+    await flush();
+    expect(onOpen).toHaveBeenCalled();
+  });
+
+  it('says "Waiting for Bids" until a cleaner bids', async () => {
+    const waiting = { ...firstSearch, id: 'search-waiting', bids: [] };
+    await render(<SearchCard search={waiting} onOpen={jest.fn()} />);
+
+    expect(screen.getByTestId('marketplace.search.search-waiting.waiting')).toBeTruthy();
+    expect(screen.queryByTestId('marketplace.search.search-waiting.bids')).toBeNull();
+    expect(screen.getByText('Waiting for Bids')).toBeTruthy();
+  });
+});
+
 describe('BidCard', () => {
   it('shows the cleaner, the rating, the review count and the price', async () => {
     await render(<BidCard bid={firstBid} />);

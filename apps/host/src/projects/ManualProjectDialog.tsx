@@ -46,10 +46,10 @@ export function ManualProjectDialog({
     >
       <View className="rounded bg-surface">
         <View className="px-5 pb-6 pt-6">
-          <Text className="text-center text-[26px] font-bold text-ink">
+          <Text className="text-center text-[19px] font-bold text-ink">
             Automatic vs. Manual Projects
           </Text>
-          <Text className="pt-3 text-center text-[20px] leading-[30px] text-ink">{BODY}</Text>
+          <Text className="pt-3 text-center text-[16px] leading-[24px] text-ink">{BODY}</Text>
         </View>
         <View className="h-px bg-border" />
         <Pressable
@@ -58,7 +58,7 @@ export function ManualProjectDialog({
           onPress={() => dismiss(onCreate)}
           className="items-center py-4"
         >
-          <Text className="text-[20px] text-primary">Create Manual Project</Text>
+          <Text className="text-[16px] text-primary">Create Manual Project</Text>
         </Pressable>
         <View className="h-px bg-border" />
         <Pressable
@@ -67,7 +67,7 @@ export function ManualProjectDialog({
           onPress={() => dismiss(onCancel)}
           className="items-center py-4"
         >
-          <Text className="text-[20px] text-inkMuted">Cancel</Text>
+          <Text className="text-[16px] text-inkMuted">Cancel</Text>
         </Pressable>
         <View className="h-px bg-border" />
         <View className="px-5 py-4">

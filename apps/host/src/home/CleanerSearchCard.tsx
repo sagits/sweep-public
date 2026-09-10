@@ -4,7 +4,7 @@ import { Pressable, Text, View } from 'react-native';
 
 import { Button, Card, SectionHeader, Skeleton, colors } from '@sweep/ui';
 
-import { createdLabel } from '@/marketplace/SearchCard';
+import { BidCount, createdLabel } from '@/marketplace/SearchCard';
 
 /** One search inside the card: the gray panel of screenshot `03`, with its teal bid chip. */
 function SearchRow({ search, onOpen }: { search: CleanerSearch; onOpen: () => void }) {
@@ -29,19 +29,7 @@ function SearchRow({ search, onOpen }: { search: CleanerSearch; onOpen: () => vo
       <View className="h-px bg-border" />
 
       <View className="flex-row justify-end p-3">
-        {search.bids.length === 0 ? (
-          // No chip until a cleaner bids — the reference says so in plain bold text.
-          <Text testID={`${testID}.waiting`} className="text-[17px] font-bold text-ink">
-            Waiting for Bids
-          </Text>
-        ) : (
-          /* A rounded rectangle, not `Pill`: the reference chip is not a full-radius pill. */
-          <View testID={`${testID}.bids`} className="rounded bg-primary px-4 py-2">
-            <Text className="text-[15px] font-bold text-white">
-              {`${search.bids.length} ${search.bids.length === 1 ? 'Bid' : 'Bids'}`}
-            </Text>
-          </View>
-        )}
+        <BidCount count={search.bids.length} testID={testID} />
       </View>
     </View>
   );

@@ -24,11 +24,11 @@ function StatusPill({
   return (
     <View
       testID={testID}
-      className="flex-row items-center gap-2 rounded-full bg-surface px-4 py-2"
+      className="flex-row items-center gap-2 rounded-full bg-surface px-3 py-1.5"
       style={shadow.card}
     >
-      <MaterialCommunityIcons name={icon} size={20} color={iconColor} />
-      <Text className="text-[19px] text-ink">{label}</Text>
+      <MaterialCommunityIcons name={icon} size={16} color={iconColor} />
+      <Text className="text-[15px] text-ink">{label}</Text>
     </View>
   );
 }
@@ -51,12 +51,12 @@ function DetailRow({
   testID: string;
 }) {
   return (
-    <View testID={testID} className="flex-row items-center gap-3 py-4">
-      <MaterialCommunityIcons name={icon} size={24} color={iconColor} />
+    <View testID={testID} className="flex-row items-center gap-3 py-3">
+      <MaterialCommunityIcons name={icon} size={20} color={iconColor} />
       <View className="flex-1">{children}</View>
-      {value ? <Text className={`text-[19px] ${valueClassName}`}>{value}</Text> : null}
+      {value ? <Text className={`text-[15px] ${valueClassName}`}>{value}</Text> : null}
       {chevron ? (
-        <MaterialCommunityIcons name="chevron-right" size={24} color={colors.inkMuted} />
+        <MaterialCommunityIcons name="chevron-right" size={20} color={colors.inkMuted} />
       ) : null}
     </View>
   );
@@ -74,9 +74,9 @@ function Header({ id, onBack }: { id: string; onBack: () => void }) {
         onPress={onBack}
         hitSlop={10}
       >
-        <MaterialCommunityIcons name="chevron-left" size={30} color={colors.surface} />
+        <MaterialCommunityIcons name="chevron-left" size={24} color={colors.surface} />
       </Pressable>
-      <Text testID="project.number" className="flex-1 text-center text-[22px] font-bold text-white">
+      <Text testID="project.number" className="flex-1 text-center text-[20px] font-bold text-white">
         Project #{id}
       </Text>
       <Pressable
@@ -85,7 +85,7 @@ function Header({ id, onBack }: { id: string; onBack: () => void }) {
         accessibilityLabel="More"
         hitSlop={10}
       >
-        <MaterialCommunityIcons name="dots-horizontal" size={26} color={colors.surface} />
+        <MaterialCommunityIcons name="dots-horizontal" size={22} color={colors.surface} />
       </Pressable>
     </HeaderBand>
   );
@@ -98,7 +98,7 @@ export function ProjectDetailLoading({ id, onBack }: { id: string; onBack: () =>
       <Header id={id} onBack={onBack} />
       <View testID="project.loading" className="flex-1 items-center justify-center gap-4">
         <Spinner size={64} testID="project.spinner" />
-        <Text className="text-[19px] text-inkMuted">Loading…</Text>
+        <Text className="text-[15px] text-inkMuted">Loading…</Text>
       </View>
     </Screen>
   );
@@ -115,19 +115,19 @@ export function ProjectDetail({ project, onBack }: { project: Project; onBack: (
         contentContainerStyle={{ paddingBottom: 32 }}
       >
         <View className="items-center bg-primary px-4 pb-5 pt-2">
-          <Text testID="project.property" className="text-[26px] font-bold text-white">
+          <Text testID="project.property" className="text-[22px] font-bold text-white">
             {project.propertyAlias}
           </Text>
-          <Text testID="project.assignment" className="pt-1 text-[19px] text-white">
+          <Text testID="project.assignment" className="pt-1 text-[16px] text-white">
             {project.cleanerName ?? 'Unassigned Project'}
           </Text>
         </View>
 
         {/* The teal runs on behind the mint band and the top of the times card, which is why the
             strip is absolute rather than a background on this container. */}
-        <View className="px-4">
+        <View className="px-2">
           <View className="absolute left-0 right-0 top-0 h-[90px] bg-primary" />
-          <View testID="project.cleaning-band" className="items-center bg-primaryMuted py-2">
+          <View testID="project.cleaning-band" className="items-center bg-mintBand py-2">
             <StatusPill
               icon="spray-bottle"
               iconColor={colors.ink}
@@ -135,22 +135,22 @@ export function ProjectDetail({ project, onBack }: { project: Project; onBack: (
               testID="project.cleaning-pill"
             />
           </View>
-          <Card testID="project.times" className="flex-row py-4">
+          <Card testID="project.times" className="flex-row rounded-t-none rounded-b-[3px] py-4">
             <View className="flex-1 items-center">
-              <Text className="text-[17px] text-inkMuted">Start time</Text>
-              <Text testID="project.start-time" className="pt-1 text-[26px] font-bold text-ink">
+              <Text className="text-[13px] text-inkMuted">Start time</Text>
+              <Text testID="project.start-time" className="pt-1 text-[20px] font-bold text-ink">
                 {timeLabel(project.startsAt)}
               </Text>
-              <Text className="pt-1 text-[15px] text-inkMuted">
+              <Text className="pt-1 text-[14px] text-inkMuted">
                 {longDay(new Date(project.startsAt))}
               </Text>
             </View>
             <View className="flex-1 items-center">
-              <Text className="text-[17px] text-inkMuted">End time</Text>
-              <Text testID="project.end-time" className="pt-1 text-[26px] font-bold text-ink">
+              <Text className="text-[13px] text-inkMuted">End time</Text>
+              <Text testID="project.end-time" className="pt-1 text-[20px] font-bold text-ink">
                 {timeLabel(project.endsAt)}
               </Text>
-              <Text className="pt-1 text-[15px] text-inkMuted">
+              <Text className="pt-1 text-[14px] text-inkMuted">
                 {longDay(new Date(project.endsAt))}
               </Text>
             </View>
@@ -168,7 +168,7 @@ export function ProjectDetail({ project, onBack }: { project: Project; onBack: (
           ) : null}
           {project.cleanerName === null ? (
             <StatusPill
-              icon="alert-circle"
+              icon="alert"
               iconColor={colors.warning}
               label="Still Unassigned - Due 24h"
               testID="project.pill.unassigned"
@@ -192,13 +192,13 @@ export function ProjectDetail({ project, onBack }: { project: Project; onBack: (
 
         <Card testID="project.details" className="mx-4 mt-6 px-4">
           <DetailRow icon="refresh" chevron testID="project.row.history">
-            <Text className="text-[19px] text-ink">
+            <Text className="text-[15px] text-ink">
               Project History: <Text className="font-bold text-primaryInk">Project created</Text>
             </Text>
           </DetailRow>
           <Rule />
           <DetailRow icon="map-marker" testID="project.row.address">
-            <Text className="text-[19px] text-ink">{project.propertyAddress}</Text>
+            <Text className="text-[15px] text-ink">{project.propertyAddress}</Text>
           </DetailRow>
           <Rule />
           <DetailRow
@@ -209,11 +209,11 @@ export function ProjectDetail({ project, onBack }: { project: Project; onBack: (
             chevron
             testID="project.row.problems"
           >
-            <Text className="text-[19px] text-ink">Property Problems</Text>
+            <Text className="text-[15px] text-ink">Property Problems</Text>
           </DetailRow>
           <Rule />
           <DetailRow icon="format-list-checks" value="0/26 done" chevron testID="project.row.checklist">
-            <Text className="text-[19px] text-ink">Checklist:</Text>
+            <Text className="text-[15px] text-ink">Checklist:</Text>
           </DetailRow>
           <Rule />
           <DetailRow
@@ -223,15 +223,15 @@ export function ProjectDetail({ project, onBack }: { project: Project; onBack: (
             chevron
             testID="project.row.inventory"
           >
-            <Text className="text-[19px] text-ink">Inventory</Text>
+            <Text className="text-[15px] text-ink">Inventory</Text>
           </DetailRow>
           <Rule />
           <DetailRow icon="clipboard-text" testID="project.row.name">
-            <Text className="text-[19px] text-ink">Project: {project.name}</Text>
+            <Text className="text-[15px] text-ink">Project: {project.name}</Text>
           </DetailRow>
           <Rule />
           <DetailRow icon="format-list-bulleted" testID="project.row.notes">
-            <Text className="text-[19px] text-ink">Private Notes:</Text>
+            <Text className="text-[15px] text-ink">Private Notes:</Text>
           </DetailRow>
         </Card>
       </ScrollView>

@@ -41,8 +41,8 @@ export function ConfirmDialog({
       className="absolute bottom-0 left-0 right-0 top-0 justify-center bg-ink/40 px-5"
     >
       <View className="rounded-card bg-surface px-5 py-7">
-        <Text className="text-center text-[26px] font-semibold text-ink">{title}</Text>
-        <Text className="pt-5 text-center text-[17px] leading-6 text-ink">{message}</Text>
+        <Text className="text-center text-[19px] font-semibold text-ink">{title}</Text>
+        <Text className="pt-5 text-center text-[16px] leading-[24px] text-ink">{message}</Text>
         <Button
           label={confirmLabel}
           onPress={onConfirm}
