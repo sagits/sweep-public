@@ -1,0 +1,13 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "pnpm build:web",
+  "outputDirectory": "apps/host/dist",
+  "framework": null,
+  "rewrites": [
+    { "source": "/project/new", "destination": "/project/new.html" },
+    { "source": "/search/new", "destination": "/search/new.html" },
+    { "source": "/cleaner/:id", "destination": "/cleaner/[id].html" },
+    { "source": "/project/:id", "destination": "/project/[id].html" },
+    { "source": "/search/:id", "destination": "/search/[id].html" }
+  ]
+}
