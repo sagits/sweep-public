@@ -10,10 +10,8 @@
   "framework": null,
   "cleanUrls": true,
   "rewrites": [
-    { "source": "/project/new", "destination": "/project/new.html" },
-    { "source": "/search/new", "destination": "/search/new.html" },
-    { "source": "/cleaner/:id", "destination": "/cleaner/[id].html" },
-    { "source": "/project/:id", "destination": "/project/[id].html" },
-    { "source": "/search/:id", "destination": "/search/[id].html" }
+    { "source": "/cleaner/:id", "destination": "/cleaner/[id]" },
+    { "source": "/project/:id", "destination": "/project/[id]" },
+    { "source": "/search/:id", "destination": "/search/[id]" }
   ]
 }
