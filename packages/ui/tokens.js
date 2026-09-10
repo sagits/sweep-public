@@ -51,11 +51,12 @@ const radius = {
 //
 // Measured off the reference rather than guessed: Home's page is white, so the shadow is the
 // only thing separating a card from it. Sampling straight down from a card's bottom edge, the
-// reference darkens to ~205/255 and fades out over ~8.5pt, which is this blur and alpha. The
-// original 0.10/8px was invisible on white.
+// reference darkens to 205/255 and fades out over ~8.5pt. Decoding our own screenshot the same
+// way: 0.10/8px gave no visible shadow at all, 0.20 reached 229, and this reaches 206 over
+// 8.3pt — the reference, within a point of grey.
 const shadow = {
   card: {
-    boxShadow: '0px 2px 10px rgba(43, 52, 80, 0.20)',
+    boxShadow: '0px 2px 10px rgba(43, 52, 80, 0.38)',
   },
 };
 

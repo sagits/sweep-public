@@ -803,7 +803,9 @@ Worked from `.scratch/sweep-hosts-polish/issues/02-polish-round-two.md`.
   left edge sits ~8pt in. Ticket 02's original sampling stands. What is actually different is the
   shadow: straight down from a card's bottom edge the reference darkens to ~205/255 and fades out
   over ~8.5pt, where ours was `0.10` alpha over an 8px blur — invisible against white. The token
-  is now `0px 2px 10px rgba(43, 52, 80, 0.20)`, and Home is white with 8px insets again. The
+  is now `0px 2px 10px rgba(43, 52, 80, 0.38)` — landed by decoding our own screenshot the same
+  way and comparing: 0.20 reached only 229/255, 0.38 reaches 206 against the reference's 205,
+  over the same ~8.3pt. Home is white with 8px insets again. The
   14px between cards is measured too (~13.6pt) and stays.
 
   Worth remembering: the screenshot is 924px wide for a 393pt screen, so **2.35 px per point**.
