@@ -1,9 +1,9 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { ScrollView, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Button, Screen, colors } from '@sweep/ui';
+import { Screen, colors } from '@sweep/ui';
 
 type IconName = React.ComponentProps<typeof MaterialCommunityIcons>['name'];
 
@@ -43,7 +43,7 @@ export default function SearchCongratsScreen() {
       <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 24 }}>
         <View
           testID="congrats.banner"
-          className="items-center bg-primary px-6 pb-8"
+          className="items-center bg-congrats px-6 pb-8"
           style={{ paddingTop: insets.top + 24 }}
         >
           <Text className="text-[56px]">🎉</Text>
@@ -61,8 +61,8 @@ export default function SearchCongratsScreen() {
           <View className="gap-5 pt-5">
             {NEXT_STEPS.map((step) => (
               <View key={step.id} testID={`congrats.step.${step.id}`} className="flex-row gap-4">
-                {/* Blue, not teal: the reference draws these three in the accent blue. */}
-                <MaterialCommunityIcons name={step.icon} size={28} color={colors.accent} />
+                {/* The reference draws these in a teal-blue of their own, not the app's teal. */}
+                <MaterialCommunityIcons name={step.icon} size={28} color={colors.congratsIcon} />
                 <Text className="flex-1 text-[17px] leading-[24px] text-ink">{step.text}</Text>
               </View>
             ))}
@@ -70,11 +70,22 @@ export default function SearchCongratsScreen() {
         </View>
       </ScrollView>
 
+      {/* 40.4pt tall and 9.8pt in from each edge in the reference, in the banner's teal. */}
       <View
-        className="border-t border-border px-4 pt-3"
+        className="border-t border-border px-2.5 pt-3"
         style={{ paddingBottom: insets.bottom + 12 }}
       >
-        <Button label="Got it!" onPress={goToBids} testID="congrats.got-it" />
+        {/* Not `Button`: this screen's teal is its own, and passing `bg-congrats` through
+            `className` loses to the variant's own `bg-primary` in NativeWind. A one-off colour
+            on one screen is not worth a variant in the shared component. */}
+        <Pressable
+          testID="congrats.got-it"
+          accessibilityRole="button"
+          onPress={goToBids}
+          className="h-[40px] items-center justify-center rounded-md bg-congrats px-4"
+        >
+          <Text className="text-[16px] text-white">Got it!</Text>
+        </Pressable>
       </View>
     </Screen>
   );

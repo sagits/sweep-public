@@ -45,6 +45,11 @@ const colors = {
   badge: '#6510CC',
   // The slate warning block under the cleaning-needs textarea
   slate: '#6F7C8B',
+  // The Congrats screen is its own palette in the reference, and it is not the app's teal:
+  // Home's band and buttons sample #37D3B1, that screen's banner and CTA sample #29C2AF, and
+  // its three step icons a teal-blue. Measured off `.scratch/sweep-hosts-polish/congrats-reference.png`.
+  congrats: '#29C2AF',
+  congratsIcon: '#2298AC',
 };
 
 const radius = {
