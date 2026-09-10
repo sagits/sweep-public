@@ -1,23 +1,23 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Pressable, Text, View } from 'react-native';
 
-import { CountBadge, HeaderBand, Pill, colors } from '@sweep/ui';
+import { CountBadge, HeaderBand, colors } from '@sweep/ui';
 
 /** Teal behind the first two cards. Measured off screenshots 01–03. */
 const BAND_EXTEND = 152;
 
 /**
- * Home's teal header: the Sweep wordmark, the blue credit pill, the dollar icon that opens
- * Payment History, the bell with its unread badge and the messages icon. Payments has no tab of
- * its own; this icon is the way in. The bell and messages icons stay decorative.
+ * Home's teal header: the Sweep wordmark, the dollar icon that opens Payment History, the bell
+ * with its unread badge and the messages icon. Payments has no tab of its own; this icon is the
+ * way in. The bell and messages icons stay decorative.
+ *
+ * The reference also carries a blue "Get $100 credit" pill here; it was removed on request.
  */
 export function HomeHeader({
   unreadCount,
-  showCreditPill,
   onOpenPayments,
 }: {
   unreadCount: number;
-  showCreditPill: boolean;
   onOpenPayments: () => void;
 }) {
   return (
@@ -26,11 +26,6 @@ export function HomeHeader({
         Sweep
       </Text>
       <View className="flex-1" />
-      {showCreditPill ? (
-        <Pressable testID="home.credit-pill" className="mr-4">
-          <Pill label="Get $100 credit" tone="blue" />
-        </Pressable>
-      ) : null}
       <Pressable
         testID="home.payments"
         accessibilityRole="button"

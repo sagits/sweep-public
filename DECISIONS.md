@@ -101,7 +101,9 @@ Choices made while building from `poc/PRD.md` where the PRD left something open.
   last card and inside a card all return `#FFFEFF`: on Home the cards separate from the page by
   their shadow alone. The screenshot wins, so Home passes `surface` to `Screen`. The `background`
   token keeps the PRD's gray for the screens that do show it.
-- **Screenshot conflict — the blue "Get $100 credit" pill is not unconditional.** The PRD lists it
+- **Screenshot conflict — the blue "Get $100 credit" pill is not unconditional.** *(Moot as of the
+  polish pass: the pill was removed from Home's header on request. The `Pill` component stays —
+  the Payments "Paid" chip uses it.)* The PRD lists it
   as part of the Home header. Screenshot `02` shows the pill *and* the promo card; screenshot `01`
   is the same screen with the promo card gone, and the pill is gone with it. They are one feature,
   so dismissing the promo hides both.

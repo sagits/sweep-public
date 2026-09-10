@@ -53,7 +53,6 @@ export default function HomeScreen() {
     <Screen testID="screen.home" insetTop={false} surface>
       <HomeHeader
         unreadCount={notifications.length}
-        showCreditPill={!promoDismissed}
         onOpenPayments={() => router.navigate('/payments')}
       />
       <ScrollView

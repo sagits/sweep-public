@@ -75,16 +75,38 @@ export default function PropertiesScreen() {
         </View>
 
         <View className="flex-row pt-4">
-          <TextInput
-            testID="properties.search-input"
-            value={term}
-            onChangeText={setTerm}
-            onSubmitEditing={() => setQuery(term)}
-            placeholder="I'm looking for..."
-            placeholderTextColor={colors.inkMuted}
-            returnKeyType="search"
-            className="h-[52px] flex-1 rounded-l border border-border bg-surface px-4 text-[16px] text-ink"
-          />
+          <View className="flex-1">
+            <TextInput
+              testID="properties.search-input"
+              value={term}
+              onChangeText={setTerm}
+              onSubmitEditing={() => setQuery(term)}
+              placeholder="I'm looking for..."
+              placeholderTextColor={colors.inkMuted}
+              returnKeyType="search"
+              className="h-[52px] rounded-l border border-border bg-surface pl-4 pr-11 text-[16px] text-ink"
+            />
+            {/* Only once a filter is actually applied — typing alone has nothing to clear yet. */}
+            {query === '' ? null : (
+              <Pressable
+                testID="properties.search-clear"
+                accessibilityRole="button"
+                accessibilityLabel="Clear search"
+                onPress={() => {
+                  setTerm('');
+                  setQuery('');
+                }}
+                hitSlop={8}
+                className="absolute right-2 top-0 h-[52px] w-8 items-center justify-center"
+              >
+                <MaterialCommunityIcons
+                  name="close-circle"
+                  size={20}
+                  color={colors.inkMuted}
+                />
+              </Pressable>
+            )}
+          </View>
           <Pressable
             testID="properties.search-button"
             accessibilityRole="button"

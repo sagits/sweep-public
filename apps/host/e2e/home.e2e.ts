@@ -42,8 +42,6 @@ describe('home', () => {
   it('renders the teal header and the static cards', async () => {
     await exists('home.header');
     await expect(element(by.id('home.wordmark'))).toHaveText('Sweep');
-    await exists('home.credit-pill');
-    await expect(element(by.text('Get $100 credit'))).toBeVisible();
     await exists('home.bell');
     await exists('home.messages');
 
@@ -105,7 +103,7 @@ describe('home', () => {
     await exists('home.cleaner-search-card', 20000);
   });
 
-  it('dismisses the promo card, and its header pill, for the session', async () => {
+  it('dismisses the promo card for the session', async () => {
     await exists('home.promo-card');
     await scrolledToText('Invite a Host and get $100 in Credits');
 
@@ -113,13 +111,11 @@ describe('home', () => {
     await element(by.id('home.promo-dismiss')).tap();
 
     await gone('home.promo-card');
-    await gone('home.credit-pill');
 
     // Still gone after leaving Home and coming back.
     await element(by.id('tabs.projects')).tap();
     await element(by.id('tabs.home')).tap();
     await gone('home.promo-card');
-    await gone('home.credit-pill');
   });
 
   it('shows the seeded Cleaner Search card, with a bid chip per search', async () => {

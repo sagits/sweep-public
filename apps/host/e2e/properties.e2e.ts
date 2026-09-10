@@ -124,4 +124,23 @@ describe('properties', () => {
       .whileElement(by.id('properties.scroll'))
       .scroll(300, 'down');
   });
+  it('clears an applied search, and offers no clear button until one is', async () => {
+    await openPropertiesTab();
+    await exists('properties.card.property-1');
+
+    // Nothing to clear before a search is run, even with text typed in.
+    await gone('properties.search-clear');
+    await element(by.id('properties.search-input')).typeText('Beach');
+    await gone('properties.search-clear');
+
+    await element(by.id('properties.search-button')).tap();
+    await exists('properties.search-clear');
+    await gone('properties.card.property-2');
+
+    await element(by.id('properties.search-clear')).tap();
+
+    await gone('properties.search-clear');
+    await exists('properties.card.property-1');
+    await exists('properties.card.property-2');
+  });
 });
