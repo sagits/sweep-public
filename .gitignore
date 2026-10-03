@@ -20,6 +20,3 @@ artifacts/
 
 # Env
 .env*.local
-
-# The PoC brief and its reference screenshots stay local.
-poc/
